@@ -4,6 +4,6 @@
 [submodule "services/team-hub-gateway"]
 	path = services/team-hub-gateway
 	url = https://github.com/Mitrivxxx/team-hub-gateway.git
-[submodule "services/team-hub-web"]
-	path = services/team-hub-web
+[submodule "frontend/team-hub-web"]
+	path = frontend/team-hub-web
 	url = https://github.com/Mitrivxxx/team-hub-web.git
