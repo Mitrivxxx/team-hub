@@ -1,0 +1,54 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "web",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/dev-terminal.sh web ./node_modules/.bin/ng serve",
+      "options": {
+        "cwd": "${workspaceFolder}/frontend/team-hub-web"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "showReuseMessage": false
+      }
+    },
+    {
+      "label": "auth",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/dev-terminal.sh auth dotnet run",
+      "options": {
+        "cwd": "${workspaceFolder}/services/team-hub-auth/team-hub-auth"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "showReuseMessage": false
+      }
+    },
+    {
+      "label": "gateway",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/dev-terminal.sh gateway dotnet run",
+      "options": {
+        "cwd": "${workspaceFolder}/services/team-hub-gateway/team-hub-gateway"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "showReuseMessage": false
+      }
+    },
+    {
+      "label": "dev-local",
+      "dependsOn": ["web", "auth", "gateway"],
+      "dependsOrder": "parallel",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    }
+  ]
+}
