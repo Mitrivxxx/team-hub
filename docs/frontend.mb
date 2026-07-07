@@ -1,0 +1,26 @@
+## Purpose
+- Define current frontend/auth integration contract.
+
+## Source of truth
+- `frontend/team-hub-web/src/environments/environment.ts`
+- `frontend/team-hub-web/proxy.conf.json`
+- `frontend/team-hub-web/src/app/core/auth/auth.service.ts`
+- `frontend/team-hub-web/src/app/public/pages/*`
+
+## Do
+- Use `environment.apiUrl = '/api/auth'` for auth calls.
+- In Angular dev server, keep proxy `/api` -> `https://localhost:7172`.
+- Keep `withCredentials: true` on login/refresh/logout to support refresh cookie flow.
+- Keep session restore via `refresh()` on app start (`restoreSession()` logic).
+- Treat auth response shape as source contract for UI state:
+  - `accessToken`, `expiresInSeconds`, `user`.
+
+## Don't
+- Do not call auth service directly on `http://localhost:5101` from frontend.
+- Do not store refresh token in local storage/session storage.
+- Do not add frontend assumptions about endpoints outside `/api/auth/*`.
+
+## Checklist
+- Frontend calls still align with auth endpoints (`register`, `login`, `refresh`, `logout`).
+- Proxy target points to gateway HTTPS port `7172`.
+- Credentials mode is enabled where cookie is required.

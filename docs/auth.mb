@@ -1,0 +1,29 @@
+## Purpose
+- Pin down the auth API contract and token/cookie behavior.
+
+## Source of truth
+- `services/team-hub-auth/team-hub-auth/Controllers/AuthController*.cs`
+- `services/team-hub-auth/team-hub-auth/Configuration/JwtOptions.cs`
+- `services/team-hub-auth/team-hub-auth/.env.example`
+- `frontend/team-hub-web/src/app/core/auth/auth.service.ts`
+
+## Do
+- Use base route `/api/auth`.
+- Keep these endpoints:
+  - `POST /api/auth/register` -> `201 Created`, `409 Conflict` on duplicate username.
+  - `POST /api/auth/login` -> `200 OK` with access token + user.
+  - `POST /api/auth/refresh` -> `200 OK` with rotated refresh token cookie, `401 Unauthorized` if invalid/missing.
+  - `POST /api/auth/logout` -> `204 No Content` and cookie cleanup.
+- Keep refresh token in `refreshToken` HttpOnly cookie (`SameSite=Strict`).
+- Keep `withCredentials: true` for login/refresh/logout in frontend clients.
+- Keep JWT options from env/config: `Jwt__Key`, `Jwt__Issuer`, `Jwt__Audience`, `Jwt:ExpireMinutes`.
+
+## Don't
+- Do not return refresh token in response body.
+- Do not loosen cookie security flags without explicit requirement.
+- Do not introduce undocumented auth endpoints.
+
+## Checklist
+- Endpoint names and status codes match controller code/tests.
+- Cookie name remains exactly `refreshToken`.
+- JWT options are present before app start (`ValidateOnStart`).

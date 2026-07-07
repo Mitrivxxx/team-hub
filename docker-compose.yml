@@ -1,0 +1,41 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: auth-postgres
+    environment:
+      POSTGRES_USER: matsma
+      POSTGRES_DB: authdb
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  auth:
+    build: ./services/team-hub-auth
+    container_name: auth-api
+    depends_on:
+      - postgres
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=authdb;Username=matsma
+    ports:
+      - "5112:8080"
+
+  gateway:
+    build:
+      context: .
+      dockerfile: services/team-hub-gateway/Dockerfile
+    container_name: team-hub-gateway
+    depends_on:
+      - auth
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+    ports:
+      - "7172:8080"
+    volumes:
+      - gateway_certs:/https
+
+volumes:
+  postgres_data:
+  gateway_certs:

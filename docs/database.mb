@@ -1,0 +1,27 @@
+## Purpose
+- Capture DB ownership and migration workflow for auth service.
+
+## Source of truth
+- `services/team-hub-auth/team-hub-auth/Data/AuthDbContext.cs`
+- `services/team-hub-auth/team-hub-auth/Migrations/*.cs`
+- `services/team-hub-auth/team-hub-auth/appsettings*.json`
+- `docker-compose.yml`
+
+## Do
+- Use PostgreSQL for auth data only (users, roles, refresh token fields).
+- Treat `AuthDbContext` as schema contract (`users`, `roles`, indexes, FK role optional).
+- Keep default seeded roles from model config (`admin`, `user`).
+- Create schema changes through EF Core migrations in `Migrations/`.
+- Keep connection string environment-aware:
+  - local: `Host=localhost;Port=5433;...`
+  - docker auth container: `Host=postgres;Port=5432;...`
+
+## Don't
+- Do not edit migration history manually unless fixing broken migration state.
+- Do not use direct SQL schema changes outside migrations.
+- Do not assume postgres on host port `5432` for this project setup.
+
+## Checklist
+- New/changed model has migration and snapshot update.
+- DB startup path still works with `docker-compose` postgres service.
+- Unique constraints (username, refresh token hash) remain intentional.

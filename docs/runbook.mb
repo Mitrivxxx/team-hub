@@ -1,0 +1,33 @@
+## Purpose
+- Give fast operational commands for local bring-up and smoke checks.
+
+## Source of truth
+- `docker-compose.yml`
+- `frontend/team-hub-web/package.json`
+- `services/team-hub-auth/team-hub-auth/Properties/launchSettings.json`
+- `services/team-hub-gateway/team-hub-gateway/Properties/launchSettings.json`
+
+## Do
+- Full stack via docker:
+  - `docker compose up --build`
+- Expected host ports after start:
+  - gateway `https://localhost:7172`
+  - auth (direct) `http://localhost:5112`
+  - postgres `localhost:5433`
+- Frontend local (from `frontend/team-hub-web`):
+  - `npm install`
+  - `npm start` (uses proxy to gateway)
+- Quick auth smoke through gateway:
+  - `POST https://localhost:7172/api/auth/register`
+  - `POST https://localhost:7172/api/auth/login`
+  - `POST https://localhost:7172/api/auth/refresh` (with cookie)
+  - `POST https://localhost:7172/api/auth/logout`
+
+## Don't
+- Do not run heavy builds/tests for docs-only updates.
+- Do not verify auth flow by bypassing gateway when checking end-to-end.
+
+## Checklist
+- Containers healthy (`postgres`, `auth`, `gateway`).
+- Gateway route `/api/auth/*` reaches auth service.
+- Frontend can authenticate with cookie-based refresh flow.

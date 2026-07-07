@@ -1,0 +1,36 @@
+# Git metadata
+.git/
+
+# JS/TS dependencies and caches
+**/node_modules/
+**/.pnpm-store/
+**/.npm/
+**/.yarn/
+**/.angular/
+**/.cache/
+
+# .NET build artifacts
+**/bin/
+**/obj/
+
+# Generic build outputs
+**/dist/
+**/build/
+**/out/
+**/coverage/
+
+# Logs and temp
+**/*.log
+**/tmp/
+**/.tmp/
+
+# OS/editor noise
+**/.DS_Store
+**/Thumbs.db
+**/.idea/
+**/.vscode/
+
+# Certificates and generated assets
+certs/
+**/*.pfx
+**/*.pem

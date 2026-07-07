@@ -1,0 +1,26 @@
+## Purpose
+- Provide quick navigation for an AI agent working in this repository.
+
+## Source of truth
+- `docs/*.md`
+- `docs/*.mb`
+
+## Do
+- Read in this order before coding:
+  1. `architecture.md`
+  2. `gateway.mb`
+  3. `auth.mb`
+  4. `database.mb`
+  5. `frontend.mb`
+  6. `backend.mb`
+  7. `runbook.mb`
+  8. `coding-style.mb`
+- Use file-specific docs for implementation details, not assumptions.
+
+## Don't
+- Do not treat docs as higher priority than actual code/config; verify against source files.
+- Do not skip `runbook.mb` before runtime checks.
+
+## Checklist
+- Correct doc selected for planned change area.
+- Endpoint/port/config names copied exactly from source files.

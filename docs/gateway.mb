@@ -1,0 +1,32 @@
+## Purpose
+- Describe gateway routing contract and safe extension rules.
+
+## Source of truth
+- `services/team-hub-gateway/team-hub-gateway/Program.cs`
+- `services/team-hub-gateway/team-hub-gateway/reverseproxy.json`
+- `services/team-hub-gateway/team-hub-gateway/appsettings.Development.json`
+- `services/team-hub-gateway/team-hub-gateway/appsettings.Production.json`
+- `docker-compose.yml`
+
+## Do
+- Treat gateway as YARP reverse proxy only.
+- Keep `reverseproxy.json` route:
+  - Path match: `/api/auth/{**catch-all}`
+  - Cluster: `auth-cluster`
+- Keep destination per environment:
+  - Development: `http://localhost:5101/`
+  - Production/container: `http://auth:8080/`
+- Keep HTTPS endpoint on gateway:
+  - local dev: `https://localhost:7172`
+  - container: `https://+:8080` (mapped to host `7172`)
+- Keep cert paths aligned with environment files (`certs/*` locally, `/https/*` in container).
+
+## Don't
+- Do not add business logic/auth validation in gateway.
+- Do not modify route path shape without updating frontend API base/proxy.
+- Do not point production config to localhost targets.
+
+## Checklist
+- `Program.cs` loads `reverseproxy.json` and calls `MapReverseProxy()`.
+- Route and cluster ids are consistent across all gateway configs.
+- Port mapping in `docker-compose.yml` remains `7172:8080`.

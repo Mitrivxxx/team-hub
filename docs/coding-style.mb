@@ -1,0 +1,24 @@
+## Purpose
+- Keep agent changes small, verifiable, and consistent with project practices.
+
+## Source of truth
+- Existing code layout in `services/`, `frontend/`, `docker-compose.yml`
+- Existing tests in `services/team-hub-auth/team-hub-auth.Tests`
+
+## Do
+- Make minimal scoped changes; keep unrelated files untouched.
+- Prefer config-driven values (`appsettings*.json`, env vars) over hardcoded constants.
+- Add/adjust tests with behavior changes (especially auth endpoints and token logic).
+- Keep naming consistent with existing route/config ids (`auth-cluster`, `/api/auth/*`).
+- Validate docs/code consistency after edits (paths, ports, endpoint names).
+
+## Don't
+- Do not use destructive git commands.
+- Do not introduce "magic" URLs/ports outside config.
+- Do not change public API contract silently.
+- Do not add verbose comments where code is already clear.
+
+## Checklist
+- Scope limited to requested files.
+- Behavior changes are testable and tested when relevant.
+- Commit/PR messages should explain why, not only what.

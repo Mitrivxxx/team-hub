@@ -1,0 +1,27 @@
+## Purpose
+- Define where backend changes belong and how to keep them safe.
+
+## Source of truth
+- `services/team-hub-auth/team-hub-auth/Program.cs`
+- `services/team-hub-auth/team-hub-auth/Configuration/*.cs`
+- `services/team-hub-auth/team-hub-auth/Controllers/AuthController*.cs`
+- `services/team-hub-auth/team-hub-auth/Data/AuthDbContext.cs`
+- `services/team-hub-auth/team-hub-auth.Tests/Controllers/*.cs`
+- `services/team-hub-auth/team-hub-auth.Tests/Services/*.cs`
+
+## Do
+- Add API logic in auth service controllers/services, not in gateway.
+- Keep DI in `Configuration/ServiceCollectionExtensions.cs`.
+- Keep pipeline/middleware changes in `Configuration/WebApplicationExtensions.cs`.
+- Register new data model changes in `AuthDbContext` and migrations.
+- Add/adjust tests next to touched behavior (controller/service tests).
+
+## Don't
+- Do not hardcode secrets in `appsettings*.json`; use env (see `.env.example`).
+- Do not add endpoints outside `/api/auth` unless explicitly changing route contract.
+- Do not skip validation for request DTOs.
+
+## Checklist
+- Endpoint compiles, mapped by controller attributes, covered by tests.
+- Config keys are bound through options/`IConfiguration`, not magic strings in handlers.
+- Logging level/shape remains consistent with Serilog setup.
