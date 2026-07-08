@@ -2,52 +2,49 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "web",
+      "label": "dev-local:web",
       "type": "shell",
-      "command": "${workspaceFolder}/scripts/dev-terminal.sh web ./node_modules/.bin/ng serve",
-      "options": {
-        "cwd": "${workspaceFolder}/frontend/team-hub-web"
-      },
+      "command": "bash -lc 'cd \"${workspaceFolder}/frontend/team-hub-web\" && exec bash -i'",
       "presentation": {
         "reveal": "always",
         "panel": "dedicated",
-        "showReuseMessage": false
-      }
+        "group": "dev-local-web",
+        "clear": false
+      },
+      "problemMatcher": []
     },
     {
-      "label": "auth",
+      "label": "dev-local:gateway",
       "type": "shell",
-      "command": "${workspaceFolder}/scripts/dev-terminal.sh auth dotnet run",
-      "options": {
-        "cwd": "${workspaceFolder}/services/team-hub-auth/team-hub-auth"
-      },
+      "command": "bash -lc 'cd \"${workspaceFolder}/services/team-hub-gateway/team-hub-gateway\" && exec bash -i'",
       "presentation": {
         "reveal": "always",
         "panel": "dedicated",
-        "showReuseMessage": false
-      }
+        "group": "dev-local-gateway",
+        "clear": false
+      },
+      "problemMatcher": []
     },
     {
-      "label": "gateway",
+      "label": "dev-local:auth",
       "type": "shell",
-      "command": "${workspaceFolder}/scripts/dev-terminal.sh gateway dotnet run",
-      "options": {
-        "cwd": "${workspaceFolder}/services/team-hub-gateway/team-hub-gateway"
-      },
+      "command": "bash -lc 'cd \"${workspaceFolder}/services/team-hub-auth/team-hub-auth\" && exec bash -i'",
       "presentation": {
         "reveal": "always",
         "panel": "dedicated",
-        "showReuseMessage": false
-      }
+        "group": "dev-local-auth",
+        "clear": false
+      },
+      "problemMatcher": []
     },
     {
       "label": "dev-local",
-      "dependsOn": ["web", "auth", "gateway"],
       "dependsOrder": "parallel",
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
+      "dependsOn": [
+        "dev-local:web",
+        "dev-local:gateway",
+        "dev-local:auth"
+      ],
       "problemMatcher": []
     }
   ]

@@ -8,20 +8,18 @@ WEB_DIR="$ROOT/frontend/team-hub-web"
 GATEWAY_DIR="$ROOT/services/team-hub-gateway/team-hub-gateway"
 AUTH_DIR="$ROOT/services/team-hub-auth/team-hub-auth"
 
-DEV_TERMINAL="$ROOT/scripts/dev-terminal.sh"
-
-WEB_CMD="cd \"$WEB_DIR\" && \"$DEV_TERMINAL\" web ./node_modules/.bin/ng serve"
-GATEWAY_CMD="cd \"$GATEWAY_DIR\" && \"$DEV_TERMINAL\" gateway dotnet run"
-AUTH_CMD="cd \"$AUTH_DIR\" && \"$DEV_TERMINAL\" auth dotnet run"
+WEB_CMD="cd \"$WEB_DIR\" && exec bash -i"
+GATEWAY_CMD="cd \"$GATEWAY_DIR\" && exec bash -i"
+AUTH_CMD="cd \"$AUTH_DIR\" && exec bash -i"
 
 is_vscode_terminal() {
   [ "${TERM_PROGRAM:-}" = "vscode" ] || [ -n "${VSCODE_IPC_HOOK_CLI:-}" ]
 }
 
 run_vscode_tasks() {
-  echo "Uruchom task 'dev-local' w VS Code/Cursor:"
-  echo "  Ctrl+Shift+B"
-  echo "  lub: Ctrl+Shift+P -> Tasks: Run Task -> dev-local"
+  echo "Ten skrypt nie tworzy terminali bezposrednio w panelu VS Code/Cursor."
+  echo "Uruchom task 'dev-local' (otwiera czyste terminale w odpowiednich katalogach):"
+  echo "  Ctrl+Shift+P -> Tasks: Run Task -> dev-local"
   echo ""
   echo "Powinny pojawic sie 3 terminale: web, auth, gateway."
 }
@@ -58,16 +56,9 @@ run_gnome_terminal() {
 }
 
 run_background() {
-  mkdir -p "$LOG_DIR"
-  nohup bash -lc "$WEB_CMD" > "$LOG_DIR/web.log" 2>&1 &
-  nohup bash -lc "$GATEWAY_CMD" > "$LOG_DIR/gateway.log" 2>&1 &
-  nohup bash -lc "$AUTH_CMD" > "$LOG_DIR/auth.log" 2>&1 &
-
-  echo "No terminal multiplexer found. Started in background."
-  echo "Logs:"
-  echo "  $LOG_DIR/web.log"
-  echo "  $LOG_DIR/gateway.log"
-  echo "  $LOG_DIR/auth.log"
+  echo "Brak tmux/gnome-terminal. Nie moge otworzyc wielu interaktywnych terminali."
+  echo "Zainstaluj tmux lub gnome-terminal i uruchom ponownie."
+  exit 1
 }
 
 if is_vscode_terminal; then
