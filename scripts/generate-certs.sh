@@ -21,4 +21,5 @@ openssl req -x509 -nodes -days 825 -newkey rsa:2048 \
 chmod 644 "$CERT_FILE"
 chmod 600 "$KEY_FILE"
 
-echo "Generated TLS certs in $CERTS_DIR"
+echo "Generated self-signed TLS certs in $CERTS_DIR"
+echo "Browsers will show a security warning until you run: ./scripts/setup-certs.sh"

@@ -3,31 +3,46 @@
 
 ## Source of truth
 - `docker-compose.yml`
+- `services/team-hub-auth/team-hub-auth/.env.example`
+- `services/team-hub-gateway/team-hub-gateway/.env.example`
 - `frontend/team-hub-web/package.json`
 - `services/team-hub-auth/team-hub-auth/Properties/launchSettings.json`
 - `services/team-hub-gateway/team-hub-gateway/Properties/launchSettings.json`
 
 ## Do
-- Full stack via docker:
+- Production-like full stack via docker (ready build before deployment):
+  - `./scripts/setup-certs.sh` (mkcert = trusted HTTPS in browser; otherwise self-signed with warning)
+  - copy each `.env.example` to `.env` in auth and gateway service directories
+  - set `Jwt__Key` to at least 32 characters (same values in auth and gateway)
   - `docker compose up --build`
+- Docker runs with `ASPNETCORE_ENVIRONMENT=Production` and `appsettings.Production.json`.
+- TLS certs are shared from `./certs` into `web` and `gateway` containers.
+- Use `https://localhost:4200` and `https://localhost:5000` (HTTP on :4200 redirects to HTTPS).
+- Each microservice keeps its own `.env` (not in repo root).
 - Expected host ports after start:
-  - gateway `https://localhost:7172`
-  - auth (direct) `http://localhost:5112`
-  - postgres `localhost:5433`
-- Frontend local (from `frontend/team-hub-web`):
+  - frontend `https://localhost:4200` (`team-hub-web-prod`)
+  - gateway `https://localhost:5000` (`team-hub-gateway-prod`)
+  - auth (direct) `http://localhost:5001` (`team-hub-auth-prod`)
+  - postgres `localhost:5433` (`team-hub-postgres-prod`)
+- Frontend local dev (from `frontend/team-hub-web`):
   - `npm install`
-  - `npm start` (uses proxy to gateway)
+  - `npm start` (uses proxy to gateway on `https://localhost:5000`)
 - Quick auth smoke through gateway:
-  - `POST https://localhost:7172/api/auth/register`
-  - `POST https://localhost:7172/api/auth/login`
-  - `POST https://localhost:7172/api/auth/refresh` (with cookie)
-  - `POST https://localhost:7172/api/auth/logout`
+  - `POST https://localhost:5000/api/auth/register`
+  - `POST https://localhost:5000/api/auth/login`
+  - `POST https://localhost:5000/api/auth/refresh` (with cookie)
+  - `POST https://localhost:5000/api/auth/logout`
+- Quick auth smoke through frontend nginx proxy:
+  - `POST https://localhost:4200/api/auth/register`
 
 ## Don't
+- Do not keep secrets in repo root `.env` or `.env.production`.
+- Do not use docker compose for daily local dev; use `dotnet run` / `npm start` with Development config.
 - Do not run heavy builds/tests for docs-only updates.
 - Do not verify auth flow by bypassing gateway when checking end-to-end.
+- Do not run `dotnet run` and `docker compose` on the same host ports at once.
 
 ## Checklist
-- Containers healthy (`postgres`, `auth`, `gateway`).
+- Containers healthy (`team-hub-postgres-prod`, `team-hub-auth-prod`, `team-hub-gateway-prod`, `team-hub-web-prod`).
 - Gateway route `/api/auth/*` reaches auth service.
 - Frontend can authenticate with cookie-based refresh flow.

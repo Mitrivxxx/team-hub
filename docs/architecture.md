@@ -5,22 +5,25 @@
 
 ## Source of truth
 - `docker-compose.yml`
+- `services/team-hub-auth/team-hub-auth/.env.example`
+- `services/team-hub-gateway/team-hub-gateway/.env.example`
 - `services/team-hub-gateway/team-hub-gateway/Program.cs`
 - `services/team-hub-gateway/team-hub-gateway/reverseproxy.json`
 - `services/team-hub-gateway/team-hub-gateway/appsettings.*.json`
 - `services/team-hub-auth/team-hub-auth/Program.cs`
 - `services/team-hub-auth/team-hub-auth/appsettings*.json`
-- `services/team-hub-auth/team-hub-auth/.env.example`
 - `frontend/team-hub-web/src/environments/environment.ts`
 - `frontend/team-hub-web/proxy.conf.json`
 
 ## Do
 - Treat flow as: frontend -> gateway -> auth -> postgres.
+- Keep secrets in per-service `.env` files (auth, gateway); do not use repo root `.env`.
 - Use gateway route `/api/auth/{**catch-all}` as only declared reverse proxy route.
-- In local Angular dev, keep `/api` proxied to `https://localhost:7172`.
-- For docker runtime, use mapped ports: gateway `7172`, auth `5112`, postgres `5433`.
+- In local Angular dev, keep `/api` proxied to `https://localhost:5000`.
+- For docker runtime, use mapped host ports: frontend `4200`, gateway `5000`, auth `5001`, postgres `5433`.
+- Docker compose runs `ASPNETCORE_ENVIRONMENT=Production` with `appsettings.Production.json` (pre-deployment build).
 - Read gateway destination per environment:
-  - Development: `http://localhost:5101/`
+  - Development: `http://localhost:5001/`
   - Production/container: `http://auth:8080/`
 - Keep auth DB host context-aware:
   - local dotnet run: `localhost:5433`
@@ -29,7 +32,8 @@
 ## Don't
 - Do not bypass gateway for frontend API calls.
 - Do not document routes not present in controllers or proxy config.
-- Do not assume extra services (only auth, gateway, postgres are wired).
+- Do not assume extra services beyond auth, gateway, postgres, and web frontend container.
+- Do not use docker compose for daily Development workflow.
 
 ## Checklist
 - Verify route chain frontend `/api/auth/*` -> gateway -> auth.

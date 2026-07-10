@@ -10,11 +10,14 @@
 ## Do
 - Use base route `/api/auth`.
 - Keep these endpoints:
-  - `POST /api/auth/register` -> `201 Created`, `409 Conflict` on duplicate username.
-  - `POST /api/auth/login` -> `200 OK` with access token + user.
+  - `POST /api/auth/register` -> `201 Created`, `400 Bad Request` on format validation errors, `409 Conflict` on business validation errors (e.g. duplicate username, case-insensitive) with `errors` payload.
+  - `POST /api/auth/login` -> `200 OK` with access token + user; request accepts `rememberMe` (boolean) to control persistent refresh cookie.
   - `POST /api/auth/refresh` -> `200 OK` with rotated refresh token cookie, `401 Unauthorized` if invalid/missing.
   - `POST /api/auth/logout` -> `204 No Content` and cookie cleanup.
-- Keep refresh token in `refreshToken` HttpOnly cookie (`SameSite=Strict`).
+- Keep register validation:
+  - format (`400`): `name`, `surname`, `username`, `password` field rules.
+  - business (`409`): duplicate `username` in `errors.username` (case-insensitive).
+- Keep refresh token in `refreshToken` HttpOnly cookie (`SameSite=Lax`); when `rememberMe=false`, keep it session-scoped.
 - Keep `withCredentials: true` for login/refresh/logout in frontend clients.
 - Keep JWT options from env/config: `Jwt__Key`, `Jwt__Issuer`, `Jwt__Audience`, `Jwt:ExpireMinutes`.
 

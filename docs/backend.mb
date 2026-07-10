@@ -17,7 +17,7 @@
 - Add/adjust tests next to touched behavior (controller/service tests).
 
 ## Don't
-- Do not hardcode secrets in `appsettings*.json`; use env (see `.env.example`).
+- Do not hardcode secrets in `appsettings*.json`; use per-service `.env` (see `.env.example` in auth and gateway).
 - Do not add endpoints outside `/api/auth` unless explicitly changing route contract.
 - Do not skip validation for request DTOs.
 

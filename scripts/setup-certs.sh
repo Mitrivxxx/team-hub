@@ -10,8 +10,10 @@ mkdir -p "$CERTS_DIR"
 if command -v mkcert >/dev/null 2>&1; then
   mkcert -install
   mkcert -cert-file "$CERTS_DIR/localhost.pem" -key-file "$CERTS_DIR/localhost-key.pem" localhost 127.0.0.1 ::1
+  chmod 644 "$CERTS_DIR/localhost.pem"
+  chmod 600 "$CERTS_DIR/localhost-key.pem"
   echo "Browser-trusted certs written to $CERTS_DIR (mkcert)."
-  echo "Restart gateway (https profile) and Angular dev server."
+  echo "Restart local dev or docker: docker compose up --build web gateway"
   exit 0
 fi
 

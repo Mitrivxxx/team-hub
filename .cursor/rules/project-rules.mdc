@@ -1,3 +1,8 @@
+---
+description: Team Hub architecture, ports, gateway flow, and agent do/don't rules
+alwaysApply: true
+---
+
 # Team Hub Project Rules
 
 ## Purpose
@@ -12,14 +17,17 @@
 - `services/team-hub-gateway/team-hub-gateway/reverseproxy.json`
 - `services/team-hub-gateway/team-hub-gateway/appsettings.*.json`
 - `services/team-hub-auth/team-hub-auth/Controllers/AuthController*.cs`
-- `services/team-hub-auth/team-hub-auth/.env.example`
+- `services/team-hub-auth/team-hub-auth/.env.example` (local dev + docker compose)
+- `services/team-hub-gateway/team-hub-gateway/.env.example` (docker compose; JWT when AuthValidation enabled)
 - `docs/README.mb` and related `docs/*.mb`
+- Component `AGENT.md` files in each service and frontend
 
 ## Do
 - Route auth API through gateway path `/api/auth/{**catch-all}`.
 - Keep auth endpoints aligned with controllers: `register`, `login`, `refresh`, `logout`.
-- Use documented ports/env from config (`7172`, `5112`, `5433`) and verify before edits.
-- Update docs in `docs/` when API contract, ports, or runtime flow changes.
+- Docker compose is for Production-like pre-deployment builds (`ASPNETCORE_ENVIRONMENT=Production`, per-service `.env` files).
+- Use documented ports/env from config (`5000`, `5001`, `4200`, `5433`) and verify before edits.
+- Update docs in `docs/` and component `AGENT.md` when API contract, ports, or runtime flow changes.
 - Prefer minimal diffs and preserve existing naming/style in touched files.
 
 ## Don't

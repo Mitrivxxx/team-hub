@@ -1,4 +1,6 @@
 .env
+.env.*
+!.env.example
 *.txt
 certs/*.pem
 certs/*.pfx

@@ -17,11 +17,16 @@
 - Aktualizuj dokumentacje po zmianie kontraktu, flow, configu.
 
 ## Obowiazkowe pliki komponentow
-- W kazdym mikroserwisie i we frontendzie musi byc `agent.mb`.
-- Jesli `agent.mb` nie istnieje, utworz go przy pierwszej pracy.
-- Po kazdej zmianie funkcjonalnej zaktualizuj `agent.mb`, aby byl spojny z aktualnym stanem komponentu.
+- W kazdym mikroserwisie i we frontendzie musi byc `AGENT.md`.
+- Jesli `AGENT.md` nie istnieje, utworz go przy pierwszej pracy.
+- Po kazdej zmianie funkcjonalnej zaktualizuj `AGENT.md`, aby byl spojny z aktualnym stanem komponentu.
 
 ## Styl pracy
 - Uzywaj mozliwie najmniej slow.
 - Opisuj tylko rzeczy potrzebne do wykonania pracy.
 - Bez fuszerki: kod, testy i docs maja byc spojne.
+
+## Dokumentacja kodu
+- Wszystkie opisy w projekcie maja byc po angielsku (w tym `AGENT.md`)
+- Zawsze używaj Serilog.
+- Opisuj każdy endpoint za pomocą XML, używaj tylko <summary> i jak najmniej tekstu.

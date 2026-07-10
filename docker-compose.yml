@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:16
-    container_name: auth-postgres
+    container_name: team-hub-postgres-prod
     environment:
       POSTGRES_USER: matsma
       POSTGRES_DB: authdb
@@ -9,33 +9,60 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U matsma -d authdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   auth:
     build: ./services/team-hub-auth
-    container_name: auth-api
+    container_name: team-hub-auth-prod
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ./services/team-hub-auth/team-hub-auth/.env
     environment:
-      ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=authdb;Username=matsma
+      ASPNETCORE_ENVIRONMENT: Production
     ports:
-      - "5112:8080"
+      - "5001:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
 
   gateway:
     build:
       context: .
       dockerfile: services/team-hub-gateway/Dockerfile
-    container_name: team-hub-gateway
+    container_name: team-hub-gateway-prod
     depends_on:
-      - auth
+      auth:
+        condition: service_healthy
+    env_file:
+      - ./services/team-hub-gateway/team-hub-gateway/.env
     environment:
       ASPNETCORE_ENVIRONMENT: Production
     ports:
-      - "7172:8080"
+      - "5000:8080"
     volumes:
-      - gateway_certs:/https
+      - ./certs:/https
+
+  web:
+    build:
+      context: .
+      dockerfile: frontend/team-hub-web/Dockerfile
+    container_name: team-hub-web-prod
+    depends_on:
+      - gateway
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./certs:/etc/nginx/certs
 
 volumes:
-  postgres_data:
-  gateway_certs:
+  postgres_data_prod:

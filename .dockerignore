@@ -1,0 +1,11 @@
+**/bin/
+**/obj/
+**/.git/
+certs/
+**/*.Tests/
+**/.vs/
+**/*.user
+**/*.log
+**/node_modules/
+**/.angular/
+**/dist/

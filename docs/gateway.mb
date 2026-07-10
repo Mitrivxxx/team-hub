@@ -14,11 +14,11 @@
   - Path match: `/api/auth/{**catch-all}`
   - Cluster: `auth-cluster`
 - Keep destination per environment:
-  - Development: `http://localhost:5101/`
+  - Development: `http://localhost:5001/`
   - Production/container: `http://auth:8080/`
 - Keep HTTPS endpoint on gateway:
-  - local dev: `https://localhost:7172`
-  - container: `https://+:8080` (mapped to host `7172`)
+  - local dev: `https://localhost:5000`
+  - container: `https://+:8080` (mapped to host `5000`)
 - Keep cert paths aligned with environment files (`certs/*` locally, `/https/*` in container).
 
 ## Don't
@@ -29,4 +29,4 @@
 ## Checklist
 - `Program.cs` loads `reverseproxy.json` and calls `MapReverseProxy()`.
 - Route and cluster ids are consistent across all gateway configs.
-- Port mapping in `docker-compose.yml` remains `7172:8080`.
+- Port mapping in `docker-compose.yml` remains `5000:8080`.
