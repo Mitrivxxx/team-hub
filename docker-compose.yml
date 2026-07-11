@@ -1,7 +1,20 @@
+name: team-hub
+
 services:
+  redis:
+    image: redis:7-alpine
+    container_name: team-hub-redis-prod
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   postgres:
     image: postgres:16
-    container_name: team-hub-postgres-prod
+    container_name: team-hub
     environment:
       POSTGRES_USER: matsma
       POSTGRES_DB: authdb
@@ -21,6 +34,8 @@ services:
     container_name: team-hub-auth-prod
     depends_on:
       postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     env_file:
       - ./services/team-hub-auth/team-hub-auth/.env
@@ -49,8 +64,19 @@ services:
       ASPNETCORE_ENVIRONMENT: Production
     ports:
       - "5000:8080"
+
+  nginx:
+    build:
+      context: .
+      dockerfile: infrastructure/nginx/Dockerfile
+    container_name: team-hub-nginx-prod
+    depends_on:
+      gateway:
+        condition: service_started
+    ports:
+      - "8080:443"
     volumes:
-      - ./certs:/https
+      - ./certs:/etc/nginx/certs
 
   web:
     build:
@@ -59,6 +85,7 @@ services:
     container_name: team-hub-web-prod
     depends_on:
       - gateway
+      - nginx
     ports:
       - "4200:4200"
     volumes:

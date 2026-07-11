@@ -9,11 +9,13 @@ alwaysApply: true
 - Keep agent changes small, safe, and consistent with current architecture.
 
 ## Project context
-- Runtime flow: `frontend -> gateway -> auth -> postgres`.
-- Services wired in repo: `team-hub-gateway`, `team-hub-auth`, `postgres`.
+- Runtime flow: `frontend -> infrastructure nginx -> gateway -> auth -> postgres`.
+- Services wired in repo: `infrastructure/nginx`, `team-hub-gateway`, `team-hub-auth`, `postgres`.
 
 ## Source of truth
 - `docker-compose.yml`
+- `docker-compose.dev.yml`
+- `infrastructure/nginx/nginx.conf`
 - `services/team-hub-gateway/team-hub-gateway/reverseproxy.json`
 - `services/team-hub-gateway/team-hub-gateway/appsettings.*.json`
 - `services/team-hub-auth/team-hub-auth/Controllers/AuthController*.cs`
@@ -26,12 +28,13 @@ alwaysApply: true
 - Route auth API through gateway path `/api/auth/{**catch-all}`.
 - Keep auth endpoints aligned with controllers: `register`, `login`, `refresh`, `logout`.
 - Docker compose is for Production-like pre-deployment builds (`ASPNETCORE_ENVIRONMENT=Production`, per-service `.env` files).
-- Use documented ports/env from config (`5000`, `5001`, `4200`, `5433`) and verify before edits.
+- Local dev database: `docker compose -f docker-compose.dev.yml up -d` (`team-hub-dev`, database `auth`, volume `postgres_data_dev`).
+- Use documented ports/env from config (`8080`, `5000`, `5001`, `4200`, `5433`) and verify before edits.
 - Update docs in `docs/` and component `AGENT.md` when API contract, ports, or runtime flow changes.
 - Prefer minimal diffs and preserve existing naming/style in touched files.
 
 ## Don't
-- Do not bypass gateway in frontend integration.
+- Do not bypass infrastructure nginx or gateway in frontend integration.
 - Do not invent routes, env vars, or services not present in config/code.
 - Do not run destructive git commands (`reset --hard`, forced history rewrites).
 - Do not modify unrelated files outside the requested scope.

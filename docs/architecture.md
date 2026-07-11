@@ -14,13 +14,14 @@
 - `services/team-hub-auth/team-hub-auth/appsettings*.json`
 - `frontend/team-hub-web/src/environments/environment.ts`
 - `frontend/team-hub-web/proxy.conf.json`
+- `infrastructure/nginx/nginx.conf`
 
 ## Do
-- Treat flow as: frontend -> gateway -> auth -> postgres.
+- Treat flow as: frontend -> infrastructure nginx -> gateway -> auth -> postgres.
 - Keep secrets in per-service `.env` files (auth, gateway); do not use repo root `.env`.
 - Use gateway route `/api/auth/{**catch-all}` as only declared reverse proxy route.
-- In local Angular dev, keep `/api` proxied to `https://localhost:5000`.
-- For docker runtime, use mapped host ports: frontend `4200`, gateway `5000`, auth `5001`, postgres `5433`.
+- In local Angular dev, keep `/api` proxied to `https://localhost:8080` (infrastructure nginx HTTPS).
+- For docker runtime, use mapped host ports: frontend `4200` (HTTPS), nginx `8080` (HTTPS API edge), gateway `5000` (HTTP debug), auth `5001`, postgres `5433`.
 - Docker compose runs `ASPNETCORE_ENVIRONMENT=Production` with `appsettings.Production.json` (pre-deployment build).
 - Read gateway destination per environment:
   - Development: `http://localhost:5001/`
@@ -32,10 +33,10 @@
 ## Don't
 - Do not bypass gateway for frontend API calls.
 - Do not document routes not present in controllers or proxy config.
-- Do not assume extra services beyond auth, gateway, postgres, and web frontend container.
+- Do not assume extra services beyond auth, gateway, infrastructure nginx, postgres, and web frontend container.
 - Do not use docker compose for daily Development workflow.
 
 ## Checklist
-- Verify route chain frontend `/api/auth/*` -> gateway -> auth.
+- Verify route chain frontend `/api/auth/*` -> infrastructure nginx -> gateway -> auth.
 - Verify all documented ports match `docker-compose.yml` and launch settings.
 - Verify env/config references point to existing files only.

@@ -16,10 +16,11 @@
 - Keep destination per environment:
   - Development: `http://localhost:5001/`
   - Production/container: `http://auth:8080/`
-- Keep HTTPS endpoint on gateway:
-  - local dev: `https://localhost:5000`
-  - container: `https://+:8080` (mapped to host `5000`)
-- Keep cert paths aligned with environment files (`certs/*` locally, `/https/*` in container).
+- Keep HTTP endpoint on gateway (TLS terminates at infrastructure nginx):
+  - local dev: `http://localhost:5000`
+  - container: `http://+:8080` (mapped to host `5000` for debug)
+- Treat infrastructure nginx (`https://localhost:8080`) as the public API entry point in docker.
+- Keep cert paths aligned with environment files (`certs/*` locally for nginx/web, not gateway).
 
 ## Don't
 - Do not add business logic/auth validation in gateway.

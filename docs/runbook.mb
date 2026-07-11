@@ -3,6 +3,7 @@
 
 ## Source of truth
 - `docker-compose.yml`
+- `docker-compose.dev.yml`
 - `services/team-hub-auth/team-hub-auth/.env.example`
 - `services/team-hub-gateway/team-hub-gateway/.env.example`
 - `frontend/team-hub-web/package.json`
@@ -10,39 +11,52 @@
 - `services/team-hub-gateway/team-hub-gateway/Properties/launchSettings.json`
 
 ## Do
-- Production-like full stack via docker (ready build before deployment):
+- Local dev database (postgres only, separate from prod-like data):
+  - `docker compose -f docker-compose.dev.yml up -d`
+  - compose project `team-hub-dev` (isolated from compose project `team-hub`)
+  - container `team-hub-dev`, postgres on `localhost:5433`, database `auth`
+  - then `dotnet run` / `npm start` with Development config (auth auto-migrates on start)
+- Production-like full stack via docker compose project `team-hub` (ready build before deployment):
   - `./scripts/setup-certs.sh` (mkcert = trusted HTTPS in browser; otherwise self-signed with warning)
   - copy each `.env.example` to `.env` in auth and gateway service directories
   - set `Jwt__Key` to at least 32 characters (same values in auth and gateway)
-  - `docker compose up --build`
+  - `docker compose up --build` (project `team-hub`)
 - Docker runs with `ASPNETCORE_ENVIRONMENT=Production` and `appsettings.Production.json`.
-- TLS certs are shared from `./certs` into `web` and `gateway` containers.
-- Use `https://localhost:4200` and `https://localhost:5000` (HTTP on :4200 redirects to HTTPS).
+- TLS certs are shared from `./certs` into `web` and `nginx` containers.
+- Use `https://localhost:4200`, `https://localhost:8080` (API edge), and `http://localhost:5000` (gateway debug).
 - Each microservice keeps its own `.env` (not in repo root).
 - Expected host ports after start:
   - frontend `https://localhost:4200` (`team-hub-web-prod`)
-  - gateway `https://localhost:5000` (`team-hub-gateway-prod`)
+  - infrastructure nginx `https://localhost:8080` (`team-hub-nginx-prod`, API entry)
+  - gateway `http://localhost:5000` (`team-hub-gateway-prod`, debug only)
   - auth (direct) `http://localhost:5001` (`team-hub-auth-prod`)
-  - postgres `localhost:5433` (`team-hub-postgres-prod`)
+  - postgres `localhost:5433` (`team-hub`, database `authdb`)
 - Frontend local dev (from `frontend/team-hub-web`):
   - `npm install`
-  - `npm start` (uses proxy to gateway on `https://localhost:5000`)
-- Quick auth smoke through gateway:
-  - `POST https://localhost:5000/api/auth/register`
-  - `POST https://localhost:5000/api/auth/login`
-  - `POST https://localhost:5000/api/auth/refresh` (with cookie)
-  - `POST https://localhost:5000/api/auth/logout`
+  - start infrastructure nginx + gateway + auth + postgres (e.g. `docker compose up nginx gateway auth postgres`)
+  - `npm start` (uses proxy to infrastructure nginx on `https://localhost:8080`)
+- Quick auth smoke through infrastructure nginx:
+  - `POST https://localhost:8080/api/auth/register`
+  - `POST https://localhost:8080/api/auth/login`
+  - `POST https://localhost:8080/api/auth/refresh` (with cookie)
+  - `POST https://localhost:8080/api/auth/logout`
+- Quick auth smoke through gateway (debug):
+  - `POST http://localhost:5000/api/auth/register`
+  - `POST http://localhost:5000/api/auth/login`
+  - `POST http://localhost:5000/api/auth/refresh` (with cookie)
+  - `POST http://localhost:5000/api/auth/logout`
 - Quick auth smoke through frontend nginx proxy:
   - `POST https://localhost:4200/api/auth/register`
 
 ## Don't
 - Do not keep secrets in repo root `.env` or `.env.production`.
-- Do not use docker compose for daily local dev; use `dotnet run` / `npm start` with Development config.
+- Do not use full `docker compose` for daily local dev; use `docker-compose.dev.yml` for DB plus `dotnet run` / `npm start`.
+- Do not start compose project `team-hub-dev` and compose project `team-hub` at the same time (both bind postgres to `5433`).
 - Do not run heavy builds/tests for docs-only updates.
 - Do not verify auth flow by bypassing gateway when checking end-to-end.
 - Do not run `dotnet run` and `docker compose` on the same host ports at once.
 
 ## Checklist
-- Containers healthy (`team-hub-postgres-prod`, `team-hub-auth-prod`, `team-hub-gateway-prod`, `team-hub-web-prod`).
+- Containers healthy (`team-hub`, `team-hub-auth-prod`, `team-hub-gateway-prod`, `team-hub-nginx-prod`, `team-hub-web-prod`).
 - Gateway route `/api/auth/*` reaches auth service.
 - Frontend can authenticate with cookie-based refresh flow.

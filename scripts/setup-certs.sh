@@ -13,7 +13,7 @@ if command -v mkcert >/dev/null 2>&1; then
   chmod 644 "$CERTS_DIR/localhost.pem"
   chmod 600 "$CERTS_DIR/localhost-key.pem"
   echo "Browser-trusted certs written to $CERTS_DIR (mkcert)."
-  echo "Restart local dev or docker: docker compose up --build web gateway"
+  echo "Then restart local dev or docker: docker compose up --build nginx web"
   exit 0
 fi
 

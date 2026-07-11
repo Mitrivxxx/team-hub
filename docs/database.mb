@@ -5,16 +5,20 @@
 - `services/team-hub-auth/team-hub-auth/Data/AuthDbContext.cs`
 - `services/team-hub-auth/team-hub-auth/Migrations/*.cs`
 - `services/team-hub-auth/team-hub-auth/appsettings*.json`
-- `docker-compose.yml`
+- `docker-compose.yml` (prod-like stack)
+- `docker-compose.dev.yml` (local dev database only)
 
 ## Do
-- Use PostgreSQL for auth data only (users, roles, refresh token fields).
+- Use PostgreSQL for auth data only (users, roles).
+- Use Redis for refresh-token sessions (`auth:session:*`).
 - Treat `AuthDbContext` as schema contract (`users`, `roles`, indexes, FK role optional).
 - Keep default seeded roles from model config (`admin`, `user`).
 - Create schema changes through EF Core migrations in `Migrations/`.
 - Keep connection string environment-aware:
-  - local: `Host=localhost;Port=5433;...`
-  - docker auth container: `Host=postgres;Port=5432;...`
+  - local dev (`dotnet run`, `appsettings.Development.json`): `Host=localhost;Port=5433;Database=auth;Username=matsma`
+  - docker auth container (`appsettings.Production.json`): `Host=postgres;Port=5432;Database=authdb;Username=matsma`
+- Run dev database via `docker compose -f docker-compose.dev.yml up -d` (`team-hub-dev`, `team-hub-redis-dev`, volume `postgres_data_dev`).
+- Run prod-like database via `docker compose up` (`team-hub`, volume `postgres_data_prod`, database `authdb`).
 
 ## Don't
 - Do not edit migration history manually unless fixing broken migration state.
@@ -23,5 +27,5 @@
 
 ## Checklist
 - New/changed model has migration and snapshot update.
-- DB startup path still works with `docker-compose` postgres service.
-- Unique constraints (username, refresh token hash) remain intentional.
+- DB startup path still works with `docker-compose.dev.yml` and `docker-compose.yml` postgres services.
+- Unique constraints (username) remain intentional.

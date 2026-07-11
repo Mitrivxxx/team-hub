@@ -8,12 +8,13 @@
 - `services/team-hub-auth` - API auth (.NET, EF Core, JWT, cookies).
 - `services/team-hub-gateway` - reverse proxy (YARP).
 - `frontend/team-hub-web` - UI (Angular).
-- `docker-compose.yml` - lokalny runtime (gateway, auth, postgres).
+- `infrastructure/nginx` - edge reverse proxy (nginx) before gateway.
+- `docker-compose.yml` - lokalny runtime (nginx, gateway, auth, postgres).
 
 ## Zasady glowna
 - Najpierw sprawdz kod i config, potem zmieniaj.
 - Nie wymyslaj endpointow/portow/uslug.
-- Frontend gada przez gateway (`/api/auth/*`), nie bezposrednio z auth.
+- Frontend gada przez infrastructure nginx i gateway (`/api/auth/*`), nie bezposrednio z auth.
 - Aktualizuj dokumentacje po zmianie kontraktu, flow, configu.
 
 ## Obowiazkowe pliki komponentow
