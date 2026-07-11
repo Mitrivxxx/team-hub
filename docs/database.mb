@@ -10,7 +10,7 @@
 
 ## Do
 - Use PostgreSQL for auth data only (users, roles).
-- Use Redis for refresh-token sessions (`auth:session:*`).
+- Use Redis for refresh-token sessions (`auth:session:*`); Redis is shared infrastructure (`infrastructure/redis/`).
 - Treat `AuthDbContext` as schema contract (`users`, `roles`, indexes, FK role optional).
 - Keep default seeded roles from model config (`admin`, `user`).
 - Create schema changes through EF Core migrations in `Migrations/`.

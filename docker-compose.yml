@@ -1,17 +1,11 @@
 name: team-hub
 
-services:
-  redis:
-    image: redis:7-alpine
-    container_name: team-hub-redis-prod
-    ports:
-      - "6379:6379"
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+include:
+  - path: infrastructure/redis/docker-compose.redis.yml
+    env_file:
+      - infrastructure/redis/compose.prod.env
 
+services:
   postgres:
     image: postgres:16
     container_name: team-hub
@@ -30,7 +24,9 @@ services:
       retries: 5
 
   auth:
-    build: ./services/team-hub-auth
+    build:
+      context: .
+      dockerfile: services/team-hub-auth/Dockerfile
     container_name: team-hub-auth-prod
     depends_on:
       postgres:
@@ -41,6 +37,7 @@ services:
       - ./services/team-hub-auth/team-hub-auth/.env
     environment:
       ASPNETCORE_ENVIRONMENT: Production
+      Redis__ConnectionString: redis:6379
     ports:
       - "5001:8080"
     healthcheck:

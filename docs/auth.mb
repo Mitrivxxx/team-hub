@@ -20,7 +20,8 @@
 - Keep refresh token in `refreshToken` HttpOnly cookie (`SameSite=Lax`); when `rememberMe=false`, keep it session-scoped.
 - Store refresh sessions in Redis (`auth:session:{refreshTokenHash}`) with TTL matching refresh token expiry.
 - Keep `withCredentials: true` for login/refresh/logout in frontend clients.
-- Keep JWT options from env/config: `Jwt__Key`, `Jwt__Issuer`, `Jwt__Audience`, `Jwt:ExpireMinutes`, `Redis__ConnectionString`.
+- Keep JWT options from env/config: `Jwt__Key`, `Jwt__Issuer`, `Jwt__Audience`, `Jwt:ExpireMinutes`.
+- Keep Redis connection from infrastructure: `Redis__ConnectionString` (see `infrastructure/redis/.env.example`; docker compose sets `redis:6379` for auth).
 
 ## Don't
 - Do not return refresh token in response body.

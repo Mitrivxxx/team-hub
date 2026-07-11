@@ -33,7 +33,7 @@
 ## Don't
 - Do not bypass gateway for frontend API calls.
 - Do not document routes not present in controllers or proxy config.
-- Do not assume extra services beyond auth, gateway, infrastructure nginx, postgres, and web frontend container.
+- Do not assume extra services beyond auth, gateway, infrastructure nginx, infrastructure redis, postgres, and web frontend container.
 - Do not use docker compose for daily Development workflow.
 
 ## Checklist
