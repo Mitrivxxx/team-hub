@@ -357,16 +357,16 @@
     ]
   },
   "packageFolders": {
-    "/home/matsma/.nuget/packages/": {}
+    "/tmp/cursor-sandbox-cache/e40494c378787a2383fe4c053d18c2fa/nuget": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/matsma/project/team-hub/infrastructure/team-hub-redis/TeamHub.Redis.csproj",
+      "projectUniqueName": "/home/matsma/project/team-hub/building-blocks/team-hub-redis/TeamHub.Redis.csproj",
       "projectName": "TeamHub.Redis",
-      "projectPath": "/home/matsma/project/team-hub/infrastructure/team-hub-redis/TeamHub.Redis.csproj",
-      "packagesPath": "/home/matsma/.nuget/packages/",
-      "outputPath": "/home/matsma/project/team-hub/infrastructure/team-hub-redis/obj/",
+      "projectPath": "/home/matsma/project/team-hub/building-blocks/team-hub-redis/TeamHub.Redis.csproj",
+      "packagesPath": "/tmp/cursor-sandbox-cache/e40494c378787a2383fe4c053d18c2fa/nuget",
+      "outputPath": "/home/matsma/project/team-hub/building-blocks/team-hub-redis/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/matsma/.nuget/NuGet/NuGet.Config"

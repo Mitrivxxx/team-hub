@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "dgSpecHash": "NSvnm1+MwwScTzAnLeuO/pORVsPAIyRgpexGIv2Cw1OKVCHwfa7P8JRKOTFdA+sKFYmTDVuiC0F06Txr3jDnvg==",
+  "success": true,
+  "projectFilePath": "/home/matsma/project/team-hub/building-blocks/team-hub-redis/TeamHub.Redis.csproj",
+  "expectedPackageFiles": [
+    "/tmp/cursor-sandbox-cache/e40494c378787a2383fe4c053d18c2fa/nuget/microsoft.extensions.dependencyinjection.abstractions/10.0.5/microsoft.extensions.dependencyinjection.abstractions.10.0.5.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/e40494c378787a2383fe4c053d18c2fa/nuget/microsoft.extensions.logging.abstractions/10.0.5/microsoft.extensions.logging.abstractions.10.0.5.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/e40494c378787a2383fe4c053d18c2fa/nuget/respite/3.0.11/respite.3.0.11.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/e40494c378787a2383fe4c053d18c2fa/nuget/stackexchange.redis/3.0.11/stackexchange.redis.3.0.11.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/e40494c378787a2383fe4c053d18c2fa/nuget/system.diagnostics.diagnosticsource/10.0.5/system.diagnostics.diagnosticsource.10.0.5.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/e40494c378787a2383fe4c053d18c2fa/nuget/system.io.hashing/10.0.5/system.io.hashing.10.0.5.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/e40494c378787a2383fe4c053d18c2fa/nuget/system.io.pipelines/10.0.5/system.io.pipelines.10.0.5.nupkg.sha512"
+  ],
+  "logs": []
+}
