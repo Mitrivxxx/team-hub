@@ -7,7 +7,7 @@
 - `infrastructure/nginx/docker-entrypoint.sh`
 - `infrastructure/redis/docker-compose.redis.yml`
 - `infrastructure/redis/.env.example`
-- `building-blocks/team-hub-redis/*`
+- `building-blocks/TeamHub.Redis/*`
 - `docker-compose.yml`
 
 ## Do
@@ -20,13 +20,13 @@
 - Mount TLS certs from `./certs` to `/etc/nginx/certs`.
 - Treat flow as: frontend -> infrastructure nginx -> gateway (HTTP) -> auth.
 - Run one shared Redis instance via `infrastructure/redis/docker-compose.redis.yml` (included by root compose files).
-- Use `building-blocks/team-hub-redis` (`TeamHub.Redis`) for service-side Redis connection bootstrap.
+- Use `building-blocks/TeamHub.Redis` (`TeamHub.Redis`) for service-side Redis connection bootstrap.
 
 ## Don't
 - Do not add business logic or auth validation in nginx.
 - Do not expose auth service directly from this container.
 - Do not terminate TLS on gateway; TLS ends at nginx (and frontend UI).
-- Do not add per-service Redis containers or connection bootstrap outside `building-blocks/team-hub-redis`.
+- Do not add per-service Redis containers or connection bootstrap outside `building-blocks/TeamHub.Redis`.
 
 ## Listeners
 - **Port 80 (internal):** HTTP proxy to gateway for `web` container.

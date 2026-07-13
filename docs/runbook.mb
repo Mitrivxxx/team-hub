@@ -11,10 +11,10 @@
 - `services/team-hub-gateway/team-hub-gateway/Properties/launchSettings.json`
 
 ## Do
-- Local dev database (postgres only, separate from prod-like data):
+- Local dev database and Redis (separate from prod-like data):
   - `docker compose -f docker-compose.dev.yml up -d`
   - compose project `team-hub-dev` (isolated from compose project `team-hub`)
-  - container `team-hub-dev`, postgres on `localhost:5433`, database `auth`
+  - containers `team-hub-dev` (postgres on `localhost:5433`, database `auth`) and `team-hub-redis-dev` (`localhost:6379`)
   - then `dotnet run` / `npm start` with Development config (auth auto-migrates on start)
 - Production-like full stack via docker compose project `team-hub` (ready build before deployment):
   - `./scripts/setup-certs.sh` (mkcert = trusted HTTPS in browser; otherwise self-signed with warning)
@@ -29,12 +29,16 @@
   - frontend `https://localhost:4200` (`team-hub-web-prod`)
   - infrastructure nginx `https://localhost:8080` (`team-hub-nginx-prod`, API entry)
   - gateway `http://localhost:5000` (`team-hub-gateway-prod`, debug only)
-  - auth (direct) `http://localhost:5001` (`team-hub-auth-prod`)
+  - auth (direct) `http://localhost:5001` (`team-hub-auth-prod`); health `GET http://localhost:5001/health`
+  - redis `localhost:6379` (`team-hub-redis-dev` / `team-hub-redis-prod`)
   - postgres `localhost:5433` (`team-hub`, database `authdb`)
 - Frontend local dev (from `frontend/team-hub-web`):
   - `npm install`
   - start infrastructure nginx + gateway + auth + postgres (e.g. `docker compose up nginx gateway auth postgres`)
   - `npm start` (uses proxy to infrastructure nginx on `https://localhost:8080`)
+- Optional standalone Redis (without root compose):
+  - `cp infrastructure/redis/.env.example infrastructure/redis/.env`
+  - `docker compose -f infrastructure/redis/docker-compose.redis.yml --env-file infrastructure/redis/.env up -d`
 - Quick auth smoke through infrastructure nginx:
   - `POST https://localhost:8080/api/auth/register`
   - `POST https://localhost:8080/api/auth/login`

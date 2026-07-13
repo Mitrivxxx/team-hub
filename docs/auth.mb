@@ -11,8 +11,8 @@
 - Use base route `/api/auth`.
 - Keep these endpoints:
   - `POST /api/auth/register` -> `201 Created`, `400 Bad Request` on format validation errors, `409 Conflict` on business validation errors (e.g. duplicate username, case-insensitive) with `errors` payload.
-  - `POST /api/auth/login` -> `200 OK` with access token + user; request accepts `rememberMe` (boolean) to control persistent refresh cookie.
-  - `POST /api/auth/refresh` -> `200 OK` with rotated refresh token cookie, `401 Unauthorized` if invalid/missing.
+  - `POST /api/auth/login` -> `200 OK` with access token + user; request accepts `rememberMe` (boolean) to control persistent refresh cookie; `503 Service Unavailable` when Redis session store is down.
+  - `POST /api/auth/refresh` -> `200 OK` with rotated refresh token cookie, `401 Unauthorized` if invalid/missing; `503 Service Unavailable` when Redis session store is down.
   - `POST /api/auth/logout` -> `204 No Content` and cookie cleanup.
 - Keep register validation:
   - format (`400`): `name`, `surname`, `username`, `password` field rules.
@@ -22,6 +22,7 @@
 - Keep `withCredentials: true` for login/refresh/logout in frontend clients.
 - Keep JWT options from env/config: `Jwt__Key`, `Jwt__Issuer`, `Jwt__Audience`, `Jwt:ExpireMinutes`.
 - Keep Redis connection from infrastructure: `Redis__ConnectionString` (see `infrastructure/redis/.env.example`; docker compose sets `redis:6379` for auth).
+- Keep auth health endpoint: `GET /health` checks PostgreSQL and Redis (`200` healthy, `503` unhealthy).
 
 ## Don't
 - Do not return refresh token in response body.

@@ -17,7 +17,7 @@ alwaysApply: true
 - `docker-compose.dev.yml`
 - `infrastructure/nginx/nginx.conf`
 - `infrastructure/redis/docker-compose.redis.yml`
-- `building-blocks/team-hub-redis/*`
+- `building-blocks/TeamHub.Redis/*`
 - `services/team-hub-gateway/team-hub-gateway/reverseproxy.json`
 - `services/team-hub-gateway/team-hub-gateway/appsettings.*.json`
 - `services/team-hub-auth/team-hub-auth/Controllers/AuthController*.cs`

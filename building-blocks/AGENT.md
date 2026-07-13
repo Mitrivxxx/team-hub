@@ -2,7 +2,7 @@
 - Shared .NET libraries reused by Team Hub microservices.
 
 ## Components
-- `building-blocks/team-hub-redis` — Redis connection bootstrap (`TeamHub.Redis`).
+- `building-blocks/TeamHub.Redis` — Redis connection bootstrap (`TeamHub.Redis`).
 
 ## Do
 - Keep building blocks free of domain/business logic.

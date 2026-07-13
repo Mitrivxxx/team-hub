@@ -10,7 +10,7 @@
 - `frontend/team-hub-web` - UI (Angular).
 - `infrastructure/nginx` - edge reverse proxy (nginx) before gateway.
 - `infrastructure/redis` - shared Redis container (compose).
-- `building-blocks/team-hub-redis` - shared Redis .NET library.
+- `building-blocks/TeamHub.Redis` - shared Redis .NET library.
 - `docker-compose.yml` - lokalny runtime (nginx, gateway, auth, postgres).
 
 ## Zasady glowna
