@@ -5,13 +5,16 @@
 - Minimalne zmiany, maksymalna zgodnosc z repo.
 
 ## Zakres projektu
+- `aspire/TeamHub.AppHost` - lokalny orchestrator .NET Aspire (dev).
+- `aspire/TeamHub.ServiceDefaults` - wspolne service discovery i health dla serwisow .NET.
 - `services/team-hub-auth` - API auth (.NET, EF Core, JWT, cookies).
 - `services/team-hub-gateway` - reverse proxy (YARP).
 - `frontend/team-hub-web` - UI (Angular).
 - `infrastructure/nginx` - edge reverse proxy (nginx) before gateway.
 - `infrastructure/redis` - shared Redis container (compose).
 - `building-blocks/TeamHub.Redis` - shared Redis .NET library.
-- `docker-compose.yml` - lokalny runtime (nginx, gateway, auth, postgres).
+- `docker-compose.yml` - prod/pre-prod runtime (nginx, gateway, auth, postgres).
+- `TeamHub.sln` - solution file; prefer `aspire/TeamHub.AppHost` for local full-stack dev.
 
 ## Zasady glowna
 - Najpierw sprawdz kod i config, potem zmieniaj.

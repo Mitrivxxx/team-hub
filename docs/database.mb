@@ -15,7 +15,7 @@
 - Keep default seeded roles from model config (`admin`, `user`).
 - Create schema changes through EF Core migrations in `Migrations/`.
 - Keep connection string environment-aware:
-  - local dev (`dotnet run`, `appsettings.Development.json`): `Host=localhost;Port=5433;Database=auth;Username=matsma`
+  - local dev (`dotnet run`, `appsettings.Development.json`): `Host=localhost;Port=5433;Database=auth_db;Username=matsma`
   - docker auth container (`appsettings.Production.json`): `Host=postgres;Port=5432;Database=authdb;Username=matsma`
 - Run dev database via `docker compose -f docker-compose.dev.yml up -d` (`team-hub-dev`, `team-hub-redis-dev`, volume `postgres_data_dev`).
 - Run prod-like database via `docker compose up` (`team-hub`, volume `postgres_data_prod`, database `authdb`).

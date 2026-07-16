@@ -30,7 +30,7 @@ alwaysApply: true
 - Route auth API through gateway path `/api/auth/{**catch-all}`.
 - Keep auth endpoints aligned with controllers: `register`, `login`, `refresh`, `logout`.
 - Docker compose is for Production-like pre-deployment builds (`ASPNETCORE_ENVIRONMENT=Production`, per-service `.env` files).
-- Local dev database: `docker compose -f docker-compose.dev.yml up -d` (`team-hub-dev`, database `auth`, volume `postgres_data_dev`).
+- Local dev database: `docker compose -f docker-compose.dev.yml up -d` (`team-hub-dev`, database `auth_db`, volume `postgres_data_dev`).
 - Use documented ports/env from config (`8080`, `5000`, `5001`, `4200`, `5433`) and verify before edits.
 - Update docs in `docs/` and component `AGENT.md` when API contract, ports, or runtime flow changes.
 - Prefer minimal diffs and preserve existing naming/style in touched files.

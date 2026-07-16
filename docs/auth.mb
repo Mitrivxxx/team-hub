@@ -23,7 +23,7 @@
 - Keep `withCredentials: true` for login/refresh/logout in frontend clients.
 - Keep JWT options from env/config: `Jwt__Key`, `Jwt__Issuer`, `Jwt__Audience`, `Jwt:ExpireMinutes`.
 - Keep Redis connection from infrastructure: `Redis__ConnectionString` (see `infrastructure/redis/.env.example`; docker compose sets `redis:6379` for auth).
-- Keep PostgreSQL connection: `ConnectionStrings__DefaultConnection` in auth `.env` (docker compose prod: `Host=postgres;...`; local `dotnet run`: `Host=localhost;Port=5433;Database=auth;...`).
+- Keep PostgreSQL connection: `ConnectionStrings__DefaultConnection` in auth `.env` (docker compose prod: `Host=postgres;...;Database=authdb;...`; local `dotnet run`: `Host=localhost;Port=5433;Database=auth_db;...`).
 - Keep auth health endpoint: `GET /health` checks PostgreSQL and Redis (`200` healthy, `503` unhealthy).
 
 ## Don't

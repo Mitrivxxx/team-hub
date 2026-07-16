@@ -2,6 +2,7 @@
 - Give fast operational commands for local bring-up and smoke checks.
 
 ## Source of truth
+- `aspire/TeamHub.AppHost/Program.cs`
 - `docker-compose.yml`
 - `docker-compose.dev.yml`
 - `services/team-hub-auth/team-hub-auth/.env.example`
@@ -16,10 +17,16 @@
 - `infrastructure/monitoring/.env.example`
 
 ## Do
-- Local dev database and Redis (separate from prod-like data):
+- **Preferred local dev (full stack, one command):**
+  - prerequisites: `dotnet workload install aspire`, Docker, Node.js/npm
+  - `cd aspire/TeamHub.AppHost && dotnet run`
+  - opens Aspire Dashboard (URL in console); endpoints: frontend `http://localhost:4200`, nginx API `https://localhost:8080`, gateway `http://localhost:5000`
+  - JWT dev config: `aspire/TeamHub.AppHost/appsettings.Development.json` (`Aspire:Jwt:*`)
+  - stop with `Ctrl+C` in AppHost terminal
+- Local dev database and Redis (manual workflow, separate from prod-like data):
   - `docker compose -f docker-compose.dev.yml up -d`
   - compose project `team-hub-dev` (isolated from compose project `team-hub`)
-  - containers `team-hub-dev` (postgres on `localhost:5433`, database `auth`) and `team-hub-redis-dev` (`localhost:6379`)
+  - containers `team-hub-dev` (postgres on `localhost:5433`, database `auth_db`) and `team-hub-redis-dev` (`localhost:6379`)
   - then `dotnet run` / `npm start` with Development config (auth auto-migrates on start)
 - Production-like full stack via docker compose project `team-hub` (ready build before deployment):
   - `./scripts/setup-certs.sh` (mkcert = trusted HTTPS in browser; otherwise self-signed with warning)
@@ -96,11 +103,11 @@
 
 ## Don't
 - Do not keep secrets in repo root `.env` or `.env.production`.
-- Do not use full `docker compose` for daily local dev; use `docker-compose.dev.yml` for DB plus `dotnet run` / `npm start`.
+- Do not use full `docker compose` for daily local dev when Aspire AppHost is available; use AppHost or `docker-compose.dev.yml` for DB plus `dotnet run` / `npm start`.
 - Do not start compose project `team-hub-dev` and compose project `team-hub` at the same time (both bind postgres to `5433`).
 - Do not run heavy builds/tests for docs-only updates.
 - Do not verify auth flow by bypassing gateway when checking end-to-end.
-- Do not run `dotnet run` and `docker compose` on the same host ports at once.
+- Do not run AppHost and `docker compose` on the same host ports at once.
 
 ## Checklist
 - Containers healthy (`team-hub`, `team-hub-auth-prod`, `team-hub-gateway-prod`, `team-hub-nginx-prod`, `team-hub-web-prod`).

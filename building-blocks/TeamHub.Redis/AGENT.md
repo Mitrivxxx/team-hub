@@ -11,6 +11,7 @@
 - Bind config section `Redis:ConnectionString` (env: `Redis__ConnectionString`).
 - Build segmented Redis keys via `IRedisKeySegmenter`.
 - Use `RedisDataSegments.Users` for user-related data.
+- Use `RedisDataSegments.AuthLoginAttempts/AuthLoginLockout` for auth login lockout counters.
 - Add future segments via `RedisDataSegments.Create("segment-name")`.
 - Keep domain-specific stores (e.g. session store) in consuming services.
 - Reference this project from microservices via `ProjectReference`.

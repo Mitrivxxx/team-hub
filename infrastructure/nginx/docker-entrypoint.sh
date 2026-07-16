@@ -5,6 +5,12 @@ CERT_DIR=/etc/nginx/certs
 CERT_FILE="$CERT_DIR/localhost.pem"
 KEY_FILE="$CERT_DIR/localhost-key.pem"
 
+if [ -n "$GATEWAY_UPSTREAM" ]; then
+  echo "upstream gateway { server ${GATEWAY_UPSTREAM}; }" > /etc/nginx/conf.d/upstream.conf
+else
+  echo "upstream gateway { server gateway:8080; }" > /etc/nginx/conf.d/upstream.conf
+fi
+
 /generate-certs.sh "$CERT_DIR"
 
 if ! openssl x509 -in "$CERT_FILE" -noout >/dev/null 2>&1; then
