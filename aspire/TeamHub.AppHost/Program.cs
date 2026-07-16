@@ -26,7 +26,7 @@ var auth = builder.AddProject<Projects.team_hub_auth>("team-hub-auth")
 var gateway = builder.AddProject<Projects.team_hub_gateway>("team-hub-gateway")
     .WithReference(auth)
     .WithEnvironment("ASPNETCORE_ENVIRONMENT", "Development")
-    .WithEnvironment("ReverseProxy__Clusters__auth-cluster__Destinations__auth__Address", "https+http://team-hub-auth")
+    .WithEnvironment("ReverseProxy__Clusters__auth-cluster__Destinations__auth__Address", "http://team-hub-auth")
     .WithEndpoint("http", endpoint =>
     {
         endpoint.Port = 5000;

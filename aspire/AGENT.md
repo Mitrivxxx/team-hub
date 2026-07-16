@@ -16,7 +16,7 @@
 - Aspire resource names: only ASCII letters, digits, hyphens (no underscores).
 - Keep production/pre-prod on `docker-compose.yml` — Aspire is dev-only.
 - JWT dev secrets live in `aspire/TeamHub.AppHost/appsettings.Development.json` (`Aspire:Jwt:*`).
-- Gateway auth destination under Aspire: env override `https+http://team-hub-auth` (YARP service discovery).
+- Gateway auth destination under Aspire: env override `http://team-hub-auth` (YARP service discovery).
 - Aspire Dashboard is one UI for the whole AppHost run (all resources at once: logs, endpoints, traces).
 - Nginx under Aspire uses `GATEWAY_UPSTREAM=host.docker.internal:5000` (gateway runs as host process).
 - Manual dev without Aspire remains available via `docker-compose.dev.yml` + `dotnet run` / `npm start`.

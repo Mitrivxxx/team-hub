@@ -29,7 +29,7 @@
 - Docker compose runs `ASPNETCORE_ENVIRONMENT=Production` with `appsettings.Production.json` (pre-deployment build).
 - Read gateway destination per environment:
   - Development (manual): `http://localhost:5001/`
-  - Development (Aspire): `https+http://team-hub-auth` via service discovery (env override from AppHost)
+  - Development (Aspire): `http://team-hub-auth` via service discovery (env override from AppHost)
   - Production/container: `http://auth:8080/`
 - Keep auth DB host context-aware:
   - local/dev (`docker-compose.dev.yml` / Aspire): database `auth_db`
