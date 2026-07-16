@@ -9,6 +9,11 @@
 - `frontend/team-hub-web/package.json`
 - `services/team-hub-auth/team-hub-auth/Properties/launchSettings.json`
 - `services/team-hub-gateway/team-hub-gateway/Properties/launchSettings.json`
+- `infrastructure/monitoring/docker-compose.monitoring.yml`
+- `infrastructure/monitoring/otel-collector-config.yaml`
+- `infrastructure/monitoring/tempo.yaml`
+- `infrastructure/monitoring/prometheus.yml`
+- `infrastructure/monitoring/.env.example`
 
 ## Do
 - Local dev database and Redis (separate from prod-like data):
@@ -32,6 +37,11 @@
   - auth (direct) `http://localhost:5001` (`team-hub-auth-prod`); health `GET http://localhost:5001/health`
   - redis `localhost:6379` (`team-hub-redis-dev` / `team-hub-redis-prod`)
   - postgres `localhost:5433` (`team-hub`, database `authdb`)
+  - monitoring Grafana `http://localhost:3000` (`team-hub-grafana-prod` / `team-hub-grafana-dev`)
+  - monitoring Loki `http://localhost:3100` (`team-hub-loki-prod` / `team-hub-loki-dev`)
+  - monitoring Tempo `http://localhost:3200` (`team-hub-tempo-prod` / `team-hub-tempo-dev`)
+  - monitoring Prometheus `http://localhost:9090` (`team-hub-prometheus-prod` / `team-hub-prometheus-dev`)
+  - monitoring OTel Collector OTLP gRPC `localhost:4317`, HTTP `localhost:4318`
 - Frontend local dev (from `frontend/team-hub-web`):
   - `npm install`
   - start infrastructure nginx + gateway + auth + postgres (e.g. `docker compose up nginx gateway auth postgres`)
@@ -39,6 +49,20 @@
 - Optional standalone Redis (without root compose):
   - `cp infrastructure/redis/.env.example infrastructure/redis/.env`
   - `docker compose -f infrastructure/redis/docker-compose.redis.yml --env-file infrastructure/redis/.env up -d`
+- Optional standalone monitoring (without root compose):
+  - `cp infrastructure/monitoring/.env.example infrastructure/monitoring/.env`
+  - `docker compose -f infrastructure/monitoring/docker-compose.monitoring.yml --env-file infrastructure/monitoring/.env up -d`
+  - Grafana: `http://localhost:3000` (default user `admin`, password from env file)
+  - Loki ready check: `GET http://localhost:3100/ready`
+- First telemetry in Grafana (OTLP via collector):
+  - start stack: `docker compose up -d otel-collector loki tempo prometheus grafana auth gateway`
+  - generate traffic: `curl http://localhost:5000/health` (gateway) or `curl http://localhost:5001/health` (auth)
+  - metrics scrape check: `curl http://localhost:5001/metrics | head`
+  - open Grafana `http://localhost:3000` (credentials from `infrastructure/monitoring/compose.prod.env`)
+  - Explore -> **Loki** -> `{service_name="team-hub-auth"}` or `{service_name="team-hub-gateway"}`
+  - Explore -> **Tempo** -> search by TraceId from `X-Correlation-ID` response header
+  - Explore -> **Prometheus** -> `http_server_request_duration_seconds_count`
+  - note: prod logs are pushed via OTLP (not Docker stdout scraping); `dotnet run` logs stay local unless OTLP endpoint is reachable
 - Quick auth smoke through infrastructure nginx:
   - `POST https://localhost:8080/api/auth/register`
   - `POST https://localhost:8080/api/auth/login`
@@ -51,6 +75,24 @@
   - `POST http://localhost:5000/api/auth/logout`
 - Quick auth smoke through frontend nginx proxy:
   - `POST https://localhost:4200/api/auth/register`
+- Debug prod request by Correlation ID:
+  - reproduce in UI and copy `X-Correlation-ID` from browser DevTools (Network tab, request or response headers)
+  - or call API directly and read response header: `curl -s -D - -o /dev/null -H "X-Correlation-ID: test-id" http://localhost:5000/health`
+  - open Grafana `http://localhost:3000` -> Explore -> Loki
+  - query both services: `{service_name=~"team-hub-gateway|team-hub-auth"} | json | CorrelationId="<trace-id>"`
+  - gateway proxy lines include `CorrelationId` in structured log; auth request logs include the same field
+  - if log lines look like `[09:14:47 INF] team_hub_auth...` (plain text), the container is not using Production Serilog JSON — rebuild with `docker compose up --build auth gateway` and confirm `ASPNETCORE_ENVIRONMENT=Production`
+  - in Grafana, use `| json` to extract `CorrelationId`; plain-text log lines do not show structured fields in the message body
+  - after deploy, a prod log line should start with `{"@t":` (compact JSON); search `{service="auth", env="prod"} |= "\"CorrelationId\""` to confirm the field exists
+  - register flow uses one Correlation ID for both `/register` and auto-login `/login`; query `{service=~"gateway|auth", env="prod"} | json | CorrelationId="<uuid>" | RequestPath=~"/api/auth/(register|login)"`
+  - filter auth logs by user: `{service="auth", env="prod"} | json | UserId="019f5fe8-2b37-749d-8680-009f8cc5e67f"` (requires Bearer JWT on request; cookie-only login/register have empty `UserId`)
+  - filter auth logs by visit: `{service="auth", env="prod"} | json | SessionId="<session-id>"` (copy `X-Session-ID` from DevTools; same value for all requests in one tab visit)
+  - debug unhandled errors: copy `correlationId` from API error response (`application/problem+json`) and query `{service="auth", env="prod"} | json | CorrelationId="<id>" | @l="Error"`
+- Health checks (reduce Grafana/console noise):
+  - auth Docker healthcheck interval is `120s` (`docker-compose.yml` + auth `Dockerfile`)
+  - `/health` and `/metrics` requests are excluded from Serilog request logging in gateway and auth
+  - gateway logs `/health` only when unhealthy
+  - after `docker compose up --build -d auth gateway`, Loki should not show `/health` spam every few seconds
 
 ## Don't
 - Do not keep secrets in repo root `.env` or `.env.production`.

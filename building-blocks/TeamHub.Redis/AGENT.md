@@ -9,6 +9,9 @@
 ## Do
 - Call `AddTeamHubRedis(configuration)` to register `RedisOptions` and `IConnectionMultiplexer`.
 - Bind config section `Redis:ConnectionString` (env: `Redis__ConnectionString`).
+- Build segmented Redis keys via `IRedisKeySegmenter`.
+- Use `RedisDataSegments.Users` for user-related data.
+- Add future segments via `RedisDataSegments.Create("segment-name")`.
 - Keep domain-specific stores (e.g. session store) in consuming services.
 - Reference this project from microservices via `ProjectReference`.
 

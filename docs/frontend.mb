@@ -6,6 +6,10 @@
 - `frontend/team-hub-web/proxy.conf.json`
 - `frontend/team-hub-web/nginx.conf`
 - `frontend/team-hub-web/src/app/core/auth/auth.service.ts`
+- `frontend/team-hub-web/src/app/core/http/correlation-id.interceptor.ts`
+- `frontend/team-hub-web/src/app/core/http/correlation-context.service.ts`
+- `frontend/team-hub-web/src/app/core/http/session-id.interceptor.ts`
+- `frontend/team-hub-web/src/app/core/http/session-context.service.ts`
 - `frontend/team-hub-web/src/app/public/pages/*`
 
 ## Do
@@ -18,6 +22,12 @@
 - After successful register, auto-login via `/login` and redirect to `/app`.
 - Treat auth response shape as source contract for UI state:
   - `accessToken`, `expiresInSeconds`, `user`.
+- Set `X-Correlation-ID` on every outbound API request via `correlationIdInterceptor` (new UUID per request).
+- Set `X-Session-ID` on every outbound API request via `sessionIdInterceptor` (one ID per visit in `sessionStorage`).
+- Reuse one `X-Correlation-ID` for the full register flow (`POST /register` + auto `POST /login`) via `CorrelationContextService`.
+- Register interceptors in `app.config.ts` with `provideHttpClient(withInterceptors([sessionIdInterceptor, correlationIdInterceptor]))`.
+- Trace create-account in Grafana: `{service=~"gateway|auth", env="prod"} | json | CorrelationId="<uuid>" | RequestPath=~"/api/auth/(register|login)"`.
+- Trace visit in Grafana: `{service="auth", env="prod"} | json | SessionId="<session-id>"`.
 
 ## Don't
 - Do not call auth service directly on `http://localhost:5001` from frontend.
@@ -25,7 +35,7 @@
 - Do not add frontend assumptions about endpoints outside `/api/auth/*`.
 
 ## Checklist
-- Frontend calls still align with auth endpoints (`register`, `login`, `refresh`, `logout`).
+- Frontend calls still align with auth endpoints (`register`, `login`, `refresh`, `logout`, `change-password`).
 - Local dev proxy target points to infrastructure nginx HTTPS port `8080`.
 - Docker web container serves HTTPS on host port `4200`.
 - Credentials mode is enabled where cookie is required.

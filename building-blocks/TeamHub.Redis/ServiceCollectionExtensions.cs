@@ -20,6 +20,7 @@ public static class ServiceCollectionExtensions
             var redisOptions = sp.GetRequiredService<IOptions<RedisOptions>>().Value;
             return ConnectionMultiplexer.Connect(redisOptions.ConnectionString);
         });
+        services.AddSingleton<IRedisKeySegmenter, RedisKeySegmenter>();
 
         return services;
     }

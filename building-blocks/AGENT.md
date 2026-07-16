@@ -3,6 +3,7 @@
 
 ## Components
 - `building-blocks/TeamHub.Redis` — Redis connection bootstrap (`TeamHub.Redis`).
+- `building-blocks/TeamHub.Observability` — OpenTelemetry tracing/metrics and Serilog bootstrap (`TeamHub.Observability`).
 
 ## Do
 - Keep building blocks free of domain/business logic.

@@ -4,6 +4,9 @@ include:
   - path: infrastructure/redis/docker-compose.redis.yml
     env_file:
       - infrastructure/redis/compose.dev.env
+  - path: infrastructure/monitoring/docker-compose.monitoring.yml
+    env_file:
+      - infrastructure/monitoring/compose.dev.env
 
 services:
   postgres:

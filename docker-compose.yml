@@ -4,6 +4,9 @@ include:
   - path: infrastructure/redis/docker-compose.redis.yml
     env_file:
       - infrastructure/redis/compose.prod.env
+  - path: infrastructure/monitoring/docker-compose.monitoring.yml
+    env_file:
+      - infrastructure/monitoring/compose.prod.env
 
 services:
   postgres:
@@ -33,16 +36,20 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      otel-collector:
+        condition: service_started
     env_file:
       - ./services/team-hub-auth/team-hub-auth/.env
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       Redis__ConnectionString: redis:6379
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      Observability__OtlpEndpoint: http://otel-collector:4317
     ports:
       - "5001:8080"
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
-      interval: 10s
+      interval: 120s
       timeout: 5s
       retries: 5
       start_period: 15s
@@ -55,10 +62,14 @@ services:
     depends_on:
       auth:
         condition: service_healthy
+      otel-collector:
+        condition: service_started
     env_file:
       - ./services/team-hub-gateway/team-hub-gateway/.env
     environment:
       ASPNETCORE_ENVIRONMENT: Production
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      Observability__OtlpEndpoint: http://otel-collector:4317
     ports:
       - "5000:8080"
 

@@ -7,7 +7,13 @@
 - `infrastructure/nginx/docker-entrypoint.sh`
 - `infrastructure/redis/docker-compose.redis.yml`
 - `infrastructure/redis/.env.example`
+- `infrastructure/monitoring/docker-compose.monitoring.yml`
+- `infrastructure/monitoring/otel-collector-config.yaml`
+- `infrastructure/monitoring/tempo.yaml`
+- `infrastructure/monitoring/prometheus.yml`
+- `infrastructure/monitoring/.env.example`
 - `building-blocks/TeamHub.Redis/*`
+- `building-blocks/TeamHub.Observability/*`
 - `docker-compose.yml`
 
 ## Do
@@ -21,6 +27,7 @@
 - Treat flow as: frontend -> infrastructure nginx -> gateway (HTTP) -> auth.
 - Run one shared Redis instance via `infrastructure/redis/docker-compose.redis.yml` (included by root compose files).
 - Use `building-blocks/TeamHub.Redis` (`TeamHub.Redis`) for service-side Redis connection bootstrap.
+- Use `building-blocks/TeamHub.Observability` (`TeamHub.Observability`) for OpenTelemetry and Serilog bootstrap.
 
 ## Don't
 - Do not add business logic or auth validation in nginx.
