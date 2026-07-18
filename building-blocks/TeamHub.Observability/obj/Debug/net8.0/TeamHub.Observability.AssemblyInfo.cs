@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TeamHub.Observability")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+82b6dfa0e44610e26b5fc5aabf5ba396601b0bdc")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2fcdb34577de1deec61e7784dd6e2d55cf1735b3")]
 [assembly: System.Reflection.AssemblyProductAttribute("TeamHub.Observability")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TeamHub.Observability")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
