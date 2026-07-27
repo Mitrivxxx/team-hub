@@ -7,12 +7,15 @@
 - `infrastructure/nginx/docker-entrypoint.sh`
 - `infrastructure/redis/docker-compose.redis.yml`
 - `infrastructure/redis/.env.example`
+- `infrastructure/azurite/docker-compose.azurite.yml`
+- `infrastructure/azurite/.env.example`
 - `infrastructure/monitoring/docker-compose.monitoring.yml`
 - `infrastructure/monitoring/otel-collector-config.yaml`
 - `infrastructure/monitoring/tempo.yaml`
 - `infrastructure/monitoring/prometheus.yml`
 - `infrastructure/monitoring/.env.example`
 - `building-blocks/TeamHub.Redis/*`
+- `building-blocks/TeamHub.BlobStorage/*`
 - `building-blocks/TeamHub.Observability/*`
 - `docker-compose.yml`
 
@@ -29,6 +32,7 @@
 - Treat flow as: frontend -> infrastructure nginx -> gateway (HTTP) -> auth.
 - Run one shared Redis instance via `infrastructure/redis/docker-compose.redis.yml` (included by root compose files).
 - Use `building-blocks/TeamHub.Redis` (`TeamHub.Redis`) for service-side Redis connection bootstrap.
+- Use `building-blocks/TeamHub.BlobStorage` (`TeamHub.BlobStorage`) for dev Azurite/blob client bootstrap in organization service.
 - Use `building-blocks/TeamHub.Observability` (`TeamHub.Observability`) for OpenTelemetry and Serilog bootstrap.
 
 ## Don't
@@ -46,3 +50,9 @@
 - Prod container: `team-hub-redis-prod` (`docker-compose.yml`)
 - Host port: `6379`
 - Docker network: `redis:6379`
+
+## Azurite (dev only)
+- Dev container: `team-hub-azurite-dev` (`docker-compose.dev.yml` only)
+- Host blob port: `10000`
+- Docker network: `azurite:10000`
+- Browser SAS URLs: `BlobStorage__PublicBlobEndpoint=http://127.0.0.1:10000/devstoreaccount1`

@@ -11,17 +11,17 @@ include:
 services:
   postgres:
     image: postgres:16
-    container_name: team-hub
+    container_name: postgres-prod
     environment:
       POSTGRES_USER: matsma
-      POSTGRES_DB: authdb
       POSTGRES_HOST_AUTH_METHOD: trust
     ports:
       - "5433:5432"
     volumes:
       - postgres_data_prod:/var/lib/postgresql/data
+      - ./infrastructure/postgres/init/01-create-dbs-prod.sql:/docker-entrypoint-initdb.d/01-create-dbs.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U matsma -d authdb"]
+      test: ["CMD-SHELL", "pg_isready -U matsma"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -47,6 +47,64 @@ services:
       Observability__OtlpEndpoint: http://otel-collector:4317
     ports:
       - "5001:8080"
+    expose:
+      - "8081"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 120s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  team:
+    build:
+      context: .
+      dockerfile: services/team-hub-organization/Dockerfile
+    container_name: team-hub-organization-prod
+    depends_on:
+      postgres:
+        condition: service_healthy
+      otel-collector:
+        condition: service_started
+    env_file:
+      - ./services/team-hub-organization/team-hub-organization/.env
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      Observability__OtlpEndpoint: http://otel-collector:4317
+    ports:
+      - "5002:8080"
+    expose:
+      - "8081"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 120s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  bff:
+    build:
+      context: .
+      dockerfile: services/team-hub-bff/Dockerfile
+    container_name: team-hub-bff-prod
+    depends_on:
+      auth:
+        condition: service_healthy
+      team:
+        condition: service_healthy
+      otel-collector:
+        condition: service_started
+    env_file:
+      - ./services/team-hub-bff/team-hub-bff/.env
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      Observability__OtlpEndpoint: http://otel-collector:4317
+      Grpc__Auth: http://auth:8081
+      Grpc__Organization: http://team:8081
+    ports:
+      - "5003:8080"
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
       interval: 120s
@@ -61,6 +119,10 @@ services:
     container_name: team-hub-gateway-prod
     depends_on:
       auth:
+        condition: service_healthy
+      team:
+        condition: service_healthy
+      bff:
         condition: service_healthy
       otel-collector:
         condition: service_started

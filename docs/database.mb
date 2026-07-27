@@ -8,17 +8,39 @@
 - `docker-compose.yml` (prod-like stack)
 - `docker-compose.dev.yml` (local dev database only)
 
+## Organization database
+
+### Purpose
+- Store organization/team/invitation data for `team-hub-organization`.
+
+### Source of truth
+- `services/team-hub-organization/team-hub-organization/Data/OrganizationDbContext.cs`
+- `services/team-hub-organization/team-hub-organization/Migrations/*`
+- `services/team-hub-organization/team-hub-organization/.env.example`
+- `docker-compose.yml` / `docker-compose.dev.yml`
+
+### Connection strings
+- local dev (`dotnet run`, `docker-compose.dev.yml`): `Host=localhost;Port=5433;Database=organization_db;Username=matsma`
+- docker production (`ASPNETCORE_ENVIRONMENT=Production`): `Host=postgres;Port=5432;Database=organizationdb;Username=matsma`
+
+### DB startup
+- `docker compose -f docker-compose.dev.yml up -d`, then `dotnet run` — Postgres init script creates `organization_db`; EF `Database.Migrate()` applies schema on startup.
+- `docker compose up` — Postgres init script creates `organizationdb`; EF `Database.Migrate()` in organization container applies schema on startup.
+
+## Organization API
+
+See `docs/organization.mb` for `/api/organizations` contract.
+
 ## Do
-- Use PostgreSQL for auth data only (users, roles).
+- Use PostgreSQL for auth data only (users).
 - Use Redis for refresh-token sessions (`auth:session:*`); Redis is shared infrastructure (`infrastructure/redis/`).
-- Treat `AuthDbContext` as schema contract (`users`, `roles`, indexes, FK role optional).
-- Keep default seeded roles from model config (`admin`, `user`).
+- Treat `AuthDbContext` as schema contract (`users`, indexes).
 - Create schema changes through EF Core migrations in `Migrations/`.
 - Keep connection string environment-aware:
   - local dev (`dotnet run`, `appsettings.Development.json`): `Host=localhost;Port=5433;Database=auth_db;Username=matsma`
   - docker auth container (`appsettings.Production.json`): `Host=postgres;Port=5432;Database=authdb;Username=matsma`
-- Run dev database via `docker compose -f docker-compose.dev.yml up -d` (`team-hub-dev`, `team-hub-redis-dev`, volume `postgres_data_dev`).
-- Run prod-like database via `docker compose up` (`team-hub`, volume `postgres_data_prod`, database `authdb`).
+- Run dev database via `docker compose -f docker-compose.dev.yml up -d` (`postgres-dev`, `team-hub-redis-dev`, volume `postgres_data_dev`); init script creates both `auth_db` and `organization_db`.
+- Run prod-like database via `docker compose up` (`postgres-prod`, volume `postgres_data_prod`); init script creates both `authdb` and `organizationdb`.
 
 ## Don't
 - Do not edit migration history manually unless fixing broken migration state.

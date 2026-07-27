@@ -13,7 +13,7 @@
 - `frontend/team-hub-web/src/app/public/pages/*`
 
 ## Do
-- Use `environment.apiUrl = '/api/auth'` for auth calls.
+- Use `environment.apiUrl = '/api/auth/v0.0'` for auth calls.
 - In Angular dev server, keep proxy `/api` -> `https://localhost:8080` (infrastructure nginx HTTPS).
 - In docker, frontend nginx on port `4200` proxies `/api` -> `http://nginx:80` (internal HTTP to infrastructure nginx).
 - Keep `withCredentials: true` on login/refresh/logout to support refresh cookie flow.

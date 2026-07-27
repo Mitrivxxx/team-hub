@@ -10,7 +10,7 @@
         "projectUniqueName": "/home/matsma/project/team-hub/aspire/TeamHub.AppHost/TeamHub.AppHost.csproj",
         "projectName": "TeamHub.AppHost",
         "projectPath": "/home/matsma/project/team-hub/aspire/TeamHub.AppHost/TeamHub.AppHost.csproj",
-        "packagesPath": "/home/matsma/.nuget/packages/",
+        "packagesPath": "/tmp/cursor-sandbox-cache/11fe24ff21eea38b95374c1a74ad63bb/nuget",
         "outputPath": "/home/matsma/project/team-hub/aspire/TeamHub.AppHost/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
@@ -47,6 +47,10 @@
               "target": "Package",
               "version": "[8.2.2, )"
             },
+            "Aspire.Hosting.Azure.Storage": {
+              "target": "Package",
+              "version": "[8.2.2, )"
+            },
             "Aspire.Hosting.Orchestration.linux-x64": {
               "target": "Package",
               "version": "[8.2.2, )",
@@ -77,7 +81,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.127/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.129/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

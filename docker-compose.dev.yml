@@ -4,6 +4,9 @@ include:
   - path: infrastructure/redis/docker-compose.redis.yml
     env_file:
       - infrastructure/redis/compose.dev.env
+  - path: infrastructure/azurite/docker-compose.azurite.yml
+    env_file:
+      - infrastructure/azurite/compose.dev.env
   - path: infrastructure/monitoring/docker-compose.monitoring.yml
     env_file:
       - infrastructure/monitoring/compose.dev.env
@@ -11,17 +14,17 @@ include:
 services:
   postgres:
     image: postgres:16
-    container_name: team-hub-dev
+    container_name: postgres-dev
     environment:
       POSTGRES_USER: matsma
-      POSTGRES_DB: auth_db
       POSTGRES_HOST_AUTH_METHOD: trust
     ports:
       - "5433:5432"
     volumes:
       - postgres_data_dev:/var/lib/postgresql/data
+      - ./infrastructure/postgres/init/01-create-dbs-dev.sql:/docker-entrypoint-initdb.d/01-create-dbs.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U matsma -d auth_db"]
+      test: ["CMD-SHELL", "pg_isready -U matsma"]
       interval: 5s
       timeout: 5s
       retries: 5

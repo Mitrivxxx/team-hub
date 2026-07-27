@@ -8,13 +8,13 @@
 - `frontend/team-hub-web/src/app/core/auth/auth.service.ts`
 
 ## Do
-- Use base route `/api/auth`.
+- Use base route `/api/auth/v0.0` (API version `0.0`).
 - Keep these endpoints:
-  - `POST /api/auth/register` -> `201 Created`, `400 Bad Request` on format validation errors, `409 Conflict` on business validation errors (e.g. duplicate username, case-insensitive) with `errors` payload.
-  - `POST /api/auth/login` -> `200 OK` with access token + user; request accepts `rememberMe` (boolean) to control persistent refresh cookie; `503 Service Unavailable` when Redis session store is down.
-  - `POST /api/auth/refresh` -> `200 OK` with rotated refresh token cookie, `401 Unauthorized` if invalid/missing; `503 Service Unavailable` when Redis session store is down.
-  - `POST /api/auth/logout` -> `204 No Content` and cookie cleanup.
-  - `POST /api/auth/change-password` -> `204 No Content` after username + name + surname verification; `400 Bad Request` on format validation errors; `401 Unauthorized` when identity verification fails.
+  - `POST /api/auth/v0.0/register` -> `201 Created`, `400 Bad Request` on format validation errors, `409 Conflict` on business validation errors (e.g. duplicate username, case-insensitive) with `errors` payload.
+  - `POST /api/auth/v0.0/login` -> `200 OK` with access token + user; request accepts `rememberMe` (boolean) to control persistent refresh cookie; `503 Service Unavailable` when Redis session store is down.
+  - `POST /api/auth/v0.0/refresh` -> `200 OK` with rotated refresh token cookie, `401 Unauthorized` if invalid/missing; `503 Service Unavailable` when Redis session store is down.
+  - `POST /api/auth/v0.0/logout` -> `204 No Content` and cookie cleanup.
+  - `POST /api/auth/v0.0/change-password` -> `204 No Content` after username + name + surname verification; `400 Bad Request` on format validation errors; `401 Unauthorized` when identity verification fails.
 - Keep register validation:
   - format (`400`): `name`, `surname`, `username`, `password` field rules.
   - business (`409`): duplicate `username` in `errors.username` (case-insensitive).

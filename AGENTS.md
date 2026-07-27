@@ -7,19 +7,23 @@
 ## Zakres projektu
 - `aspire/TeamHub.AppHost` - lokalny orchestrator .NET Aspire (dev).
 - `aspire/TeamHub.ServiceDefaults` - wspolne service discovery i health dla serwisow .NET.
-- `services/team-hub-auth` - API auth (.NET, EF Core, JWT, cookies).
+- `services/team-hub-auth` - API auth (.NET, EF Core, JWT, cookies) + internal gRPC profiles.
 - `services/team-hub-gateway` - reverse proxy (YARP).
+- `services/team-hub-organization` - API organization (.NET Web API) + internal gRPC members.
+- `services/team-hub-bff` - GraphQL BFF (Hot Chocolate) aggregating auth + organization over gRPC.
 - `frontend/team-hub-web` - UI (Angular).
 - `infrastructure/nginx` - edge reverse proxy (nginx) before gateway.
 - `infrastructure/redis` - shared Redis container (compose).
 - `building-blocks/TeamHub.Redis` - shared Redis .NET library.
-- `docker-compose.yml` - prod/pre-prod runtime (nginx, gateway, auth, postgres).
+- `building-blocks/TeamHub.BlobStorage` - shared Azure Blob Storage .NET library.
+- `building-blocks/TeamHub.GrpcContracts` - shared gRPC protobuf contracts.
+- `docker-compose.yml` - prod/pre-prod runtime (nginx, gateway, auth, team, bff, postgres).
 - `TeamHub.sln` - solution file; prefer `aspire/TeamHub.AppHost` for local full-stack dev.
 
 ## Zasady glowna
 - Najpierw sprawdz kod i config, potem zmieniaj.
 - Nie wymyslaj endpointow/portow/uslug.
-- Frontend gada przez infrastructure nginx i gateway (`/api/auth/*`), nie bezposrednio z auth.
+- Frontend gada przez infrastructure nginx i gateway (`/api/auth/*`, `/api/organizations/*`), nie bezposrednio z serwisami.
 - Aktualizuj dokumentacje po zmianie kontraktu, flow, configu.
 
 ## Obowiazkowe pliki komponentow

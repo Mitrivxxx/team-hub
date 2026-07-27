@@ -10,7 +10,7 @@
         "projectUniqueName": "/home/matsma/project/team-hub/aspire/TeamHub.ServiceDefaults/TeamHub.ServiceDefaults.csproj",
         "projectName": "TeamHub.ServiceDefaults",
         "projectPath": "/home/matsma/project/team-hub/aspire/TeamHub.ServiceDefaults/TeamHub.ServiceDefaults.csproj",
-        "packagesPath": "/home/matsma/.nuget/packages/",
+        "packagesPath": "/tmp/cursor-sandbox-cache/11fe24ff21eea38b95374c1a74ad63bb/nuget",
         "outputPath": "/home/matsma/project/team-hub/aspire/TeamHub.ServiceDefaults/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
@@ -66,7 +66,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.127/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.129/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

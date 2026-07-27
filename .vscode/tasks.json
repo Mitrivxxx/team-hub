@@ -38,12 +38,25 @@
       "problemMatcher": []
     },
     {
+      "label": "dev-local:team",
+      "type": "shell",
+      "command": "bash -lc 'cd \"${workspaceFolder}/services/team-hub-organization/team-hub-organization\" && exec bash -i'",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "dev-local-team",
+        "clear": false
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "dev-local",
       "dependsOrder": "parallel",
       "dependsOn": [
         "dev-local:web",
         "dev-local:gateway",
-        "dev-local:auth"
+        "dev-local:auth",
+        "dev-local:team"
       ],
       "problemMatcher": []
     }

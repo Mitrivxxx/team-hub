@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+option csharp_namespace = "TeamHub.GrpcContracts.Auth.V1";
+
+package teamhub.auth.v1;
+
+service UserProfileService {
+  rpc GetUsersByIds (GetUsersByIdsRequest) returns (GetUsersByIdsResponse);
+}
+
+message GetUsersByIdsRequest {
+  repeated string user_ids = 1;
+}
+
+message GetUsersByIdsResponse {
+  repeated UserProfile users = 1;
+}
+
+message UserProfile {
+  string id = 1;
+  string username = 2;
+  string name = 3;
+  string surname = 4;
+}

@@ -1,0 +1,112 @@
+## Purpose
+- Pin down the organization API contract for organizations, members, teams, roles/permissions, and invitations.
+
+## Source of truth
+- `services/team-hub-organization/team-hub-organization/Controllers/*.cs`
+- `services/team-hub-organization/team-hub-organization/Configuration/JwtOptions.cs`
+- `services/team-hub-organization/team-hub-organization/.env.example`
+- `services/team-hub-organization/team-hub-organization/Data/OrganizationDbContext.cs`
+
+## Do
+- Use base route `/api/organizations/v0.1.0` (API version `0.1.0`).
+- Require JWT Bearer on all organization endpoints (`sub` claim = user id from auth).
+- Authorization is local (membership + role permissions); JWT carries identity only.
+- RBAC: permissions are org-scoped; roles attach permissions; members get one or more org roles via `organization_member_roles`. Effective permissions = union of assigned roles. No direct user→permission grants.
+- System org roles seeded on create: `Owner`, `Admin`, `Member`. System team roles: `TeamLead`, `Member`.
+- System permission catalog cloned per organization on create (immutable `Code`, `IsSystem=true`): `org.manage`, `org.members.manage`, `org.teams.manage`, `org.roles.manage`, `org.delete`, `team.manage`, `team.members.manage`. Custom permissions may be created per org.
+- Keep these endpoints:
+
+### Health / ops
+  - `GET /health` -> `200` healthy / `503` unhealthy (PostgreSQL)
+
+### Organization
+  - `POST /api/organizations/v0.1.0` -> `201 Created` with `OrganizationResponse`; body: `name` (required), `slug` (optional), `description` (optional, max 500); seeds org permissions + system roles + bindings; creator becomes Owner; `409 Conflict` on explicit slug conflict; auto-generated slug suffixes on name collision (`acme`, `acme-2`, ...)
+  - `GET /api/organizations/v0.1.0` -> `200 OK` with organizations for current user (non-deleted)
+  - `GET /api/organizations/v0.1.0/{orgId}` -> `200 OK` for members; `403 Forbidden` for non-members; `404 Not Found` when missing or soft-deleted
+  - `GET /api/organizations/v0.1.0/by-slug/{slug}` -> same rules as by id
+  - `PATCH /api/organizations/v0.1.0/{orgId}` -> `200 OK`; updates `name` and/or `description`; requires `org.manage`; slug unchanged
+  - `PUT /api/organizations/v0.1.0/{orgId}/avatar` -> `200 OK`; multipart field `file` (JPEG/PNG/WebP, max 2 MB); requires `org.manage`; stores blob path in DB; response `avatarUrl` is read-only SAS URL
+  - `DELETE /api/organizations/v0.1.0/{orgId}/avatar` -> `200 OK`; requires `org.manage`; removes blob and clears avatar
+  - `DELETE /api/organizations/v0.1.0/{orgId}` -> `204 No Content` for Owner (`org.delete`); soft delete via `DeletedAt`
+  - `POST /api/organizations/v0.1.0/{orgId}/transfer-ownership` -> `200 OK`; body `{ newOwnerUserId }`; Owner only; moves Owner role to target; previous Owner keeps/gains Admin
+  - `POST /api/organizations/v0.1.0/{orgId}/leave` -> `204 No Content`; self-remove; Owner cannot leave without transfer (`409`)
+
+### Members
+  - `GET /api/organizations/v0.1.0/{orgId}/members` -> `200 OK`; member-only; response includes `roles[]`; optional query `roleId`, `teamId` (AND); unknown/deleted team → empty list
+  - `GET /api/organizations/v0.1.0/{orgId}/members/{userId}` -> `200 OK`; membership + `roles[]` + teams
+  - `POST /api/organizations/v0.1.0/{orgId}/members` -> `201 Created`; body `{ userId, roleIds: guid[] }` (min 1); requires `org.members.manage`; cannot assign Owner unless actor is Owner
+  - `PATCH /api/organizations/v0.1.0/{orgId}/members/{userId}` -> `200 OK`; body `{ roleIds: guid[] }` replaces org role set; requires `org.members.manage`; cannot demote last Owner
+  - `DELETE /api/organizations/v0.1.0/{orgId}/members/{userId}` -> `204 No Content`; requires `org.members.manage`; cannot remove last Owner
+  - `GET /api/organizations/v0.1.0/{orgId}/members/{userId}/teams` -> `200 OK`; team memberships in org
+
+### Teams
+  - `GET /api/organizations/v0.1.0/{orgId}/teams` -> `200 OK`; non-deleted
+  - `POST /api/organizations/v0.1.0/{orgId}/teams` -> `201 Created`; body `{ name, description? }`; requires `org.teams.manage`
+  - `GET /api/organizations/v0.1.0/{orgId}/teams/{teamId}` -> `200 OK`; includes `memberCount`
+  - `PATCH /api/organizations/v0.1.0/{orgId}/teams/{teamId}` -> `200 OK`; body `{ name?, description? }`; requires `org.teams.manage`
+  - `DELETE /api/organizations/v0.1.0/{orgId}/teams/{teamId}` -> `204 No Content`; soft delete; requires `org.teams.manage`
+  - `PUT /api/organizations/v0.1.0/{orgId}/teams/{teamId}/avatar` -> `200 OK`; same file rules as org avatar; requires `org.teams.manage`
+  - `DELETE /api/organizations/v0.1.0/{orgId}/teams/{teamId}/avatar` -> `200 OK`; requires `org.teams.manage`
+  - `GET /api/organizations/v0.1.0/{orgId}/teams/{teamId}/members` -> `200 OK`
+  - `POST /api/organizations/v0.1.0/{orgId}/teams/{teamId}/members` -> `201 Created`; body `{ userId, roleId, jobTitle? }`; user must be org member; requires `org.teams.manage`
+  - `PATCH /api/organizations/v0.1.0/{orgId}/teams/{teamId}/members/{userId}` -> `200 OK`; body `{ roleId?, jobTitle? }`; requires `org.teams.manage`
+  - `DELETE /api/organizations/v0.1.0/{orgId}/teams/{teamId}/members/{userId}` -> `204 No Content`; requires `org.teams.manage`
+
+### Roles
+  - `GET /api/organizations/v0.1.0/{orgId}/roles` -> `200 OK`; query `?scope=ORG|TEAM` optional; includes `memberCount`, `permissionCount`; member-only
+  - `POST /api/organizations/v0.1.0/{orgId}/roles` -> `201 Created`; body `{ name, description?, scope }`; requires `org.roles.manage`; `409` on duplicate name/scope
+  - `GET /api/organizations/v0.1.0/{orgId}/roles/{roleId}` -> `200 OK`; detail with `members[]`, `permissions[]`, `memberCount`
+  - `PATCH /api/organizations/v0.1.0/{orgId}/roles/{roleId}` -> `200 OK`; body `{ name?, description? }`; cannot rename Owner; requires `org.roles.manage`
+  - `DELETE /api/organizations/v0.1.0/{orgId}/roles/{roleId}` -> `204 No Content`; blocked if system or in use (`409`); requires `org.roles.manage`
+  - `GET /api/organizations/v0.1.0/{orgId}/roles/{roleId}/permissions` -> `200 OK`; permission summaries
+  - `PUT /api/organizations/v0.1.0/{orgId}/roles/{roleId}/permissions` -> `200 OK`; replace set `{ permissionIds: guid[] }`; requires `org.roles.manage`; Owner role permissions immutable
+  - `POST /api/organizations/v0.1.0/{orgId}/roles/{roleId}/permissions` -> `200 OK`; add `{ permissionIds }` (idempotent); requires `org.roles.manage`
+  - `DELETE /api/organizations/v0.1.0/{orgId}/roles/{roleId}/permissions/{permissionId}` -> `204 No Content`; requires `org.roles.manage`
+  - `GET /api/organizations/v0.1.0/{orgId}/roles/{roleId}/members` -> `200 OK`; org members with this ORG role
+  - `POST /api/organizations/v0.1.0/{orgId}/roles/{roleId}/members` -> `201 Created`; body `{ userId }`; requires `org.members.manage`; `409` if already assigned
+  - `DELETE /api/organizations/v0.1.0/{orgId}/roles/{roleId}/members/{userId}` -> `204 No Content`; requires `org.members.manage`; cannot revoke last Owner
+
+### Permissions
+  - `GET /api/organizations/v0.1.0/{orgId}/permissions` -> `200 OK`; org permissions + `roleCount`; member-only
+  - `POST /api/organizations/v0.1.0/{orgId}/permissions` -> `201 Created`; body `{ name, code, description? }`; custom only; code pattern `^[a-z][a-z0-9._-]*$`; requires `org.roles.manage`; `409` on duplicate code
+  - `GET /api/organizations/v0.1.0/{orgId}/permissions/{permissionId}` -> `200 OK`; detail with `roles[]`, `roleCount`
+  - `PATCH /api/organizations/v0.1.0/{orgId}/permissions/{permissionId}` -> `200 OK`; body `{ name?, description? }`; system: description only; code never changes; requires `org.roles.manage`
+  - `DELETE /api/organizations/v0.1.0/{orgId}/permissions/{permissionId}` -> `204 No Content`; blocked if system or assigned to roles (`409`); requires `org.roles.manage`
+
+### Invitations
+  - `GET /api/organizations/v0.1.0/{orgId}/invitations` -> `200 OK`; query `?status=Pending` optional; requires `org.members.manage`
+  - `POST /api/organizations/v0.1.0/{orgId}/invitations` -> `201 Created`; body `{ email, orgRoleIds: guid[], teamId?, teamRoleId? }` (min 1 org role); requires `org.members.manage`
+  - `GET /api/organizations/v0.1.0/{orgId}/invitations/{invitationId}` -> `200 OK`; requires `org.members.manage`
+  - `DELETE /api/organizations/v0.1.0/{orgId}/invitations/{invitationId}` -> `204 No Content`; cancel Pending → Expired; requires `org.members.manage`
+  - `POST /api/organizations/v0.1.0/{orgId}/invitations/{invitationId}/resend` -> `200 OK`; new token + extended expiry; requires `org.members.manage`
+  - `GET /api/organizations/v0.1.0/invitations/by-token/{token}` -> `200 OK`; JWT required; preview pending invite
+  - `POST /api/organizations/v0.1.0/invitations/by-token/{token}/accept` -> `200 OK`; creates org member with all invite org roles (+ optional team member); JWT required
+  - `POST /api/organizations/v0.1.0/invitations/by-token/{token}/reject` -> `200 OK`; JWT required
+
+### Current user
+  - `GET /api/organizations/v0.1.0/{orgId}/me` -> `200 OK`; membership, `roles[]`, union of permission codes, teams
+  - `GET /api/organizations/v0.1.0/me/invitations` -> `200 OK`; pending invites matching JWT email claim; empty when email claim absent
+
+### Domain events (future — documented only; not emitted yet)
+  - `RoleCreated` / `RoleUpdated` / `RoleDeleted` — `organizationId`, `roleId`, `name`, `scope`, `actorUserId`, `occurredAt`
+  - `RolePermissionsChanged` — `organizationId`, `roleId`, `permissionIds`, `changeType` (`Added`|`Removed`|`Replaced`), `actorUserId`
+  - `MemberRoleAssigned` / `MemberRoleRevoked` — `organizationId`, `roleId`, `userId`, `actorUserId`
+  - `PermissionCreated` / `PermissionUpdated` / `PermissionDeleted` — `organizationId`, `permissionId`, `code`, `actorUserId`
+
+- Avatar upload/delete returns `503` when `BlobStorage:ConnectionString` is not configured.
+- Keep JWT options from env/config: `Jwt__Key`, `Jwt__Issuer`, `Jwt__Audience` (same values as auth).
+- Keep PostgreSQL connection: `ConnectionStrings__DefaultConnection` in organization `.env`.
+- Dev blob storage (Azurite): `BlobStorage__ConnectionString`, `BlobStorage__ContainerName`, `BlobStorage__PublicBlobEndpoint`, `BlobStorage__SasExpiryMinutes`.
+
+## Don't
+- Do not store user profiles here (auth owns users).
+- Do not set `avatarUrl` via PATCH (use avatar upload endpoint).
+- Do not introduce undocumented organization endpoints.
+- Do not grant permissions directly to users (use roles).
+- Do not delete or change `Code` on system permissions.
+- Do not emit domain events until an event bus is introduced.
+
+## Checklist
+- Endpoint names and status codes match controller code/tests.
+- Gateway route `/api/organizations/{**catch-all}` forwards to this service without path rewrite.
+- JWT options are present before app start (`ValidateOnStart`).

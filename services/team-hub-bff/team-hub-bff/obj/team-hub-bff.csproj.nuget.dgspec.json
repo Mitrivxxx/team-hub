@@ -1,0 +1,341 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/matsma/project/team-hub/services/team-hub-bff/team-hub-bff/team-hub-bff.csproj": {}
+  },
+  "projects": {
+    "/home/matsma/project/team-hub/aspire/TeamHub.ServiceDefaults/TeamHub.ServiceDefaults.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/matsma/project/team-hub/aspire/TeamHub.ServiceDefaults/TeamHub.ServiceDefaults.csproj",
+        "projectName": "TeamHub.ServiceDefaults",
+        "projectPath": "/home/matsma/project/team-hub/aspire/TeamHub.ServiceDefaults/TeamHub.ServiceDefaults.csproj",
+        "packagesPath": "/tmp/cursor-sandbox-cache/11fe24ff21eea38b95374c1a74ad63bb/nuget",
+        "outputPath": "/home/matsma/project/team-hub/aspire/TeamHub.ServiceDefaults/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/matsma/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.Extensions.Http.Resilience": {
+              "target": "Package",
+              "version": "[8.10.0, )"
+            },
+            "Microsoft.Extensions.ServiceDiscovery": {
+              "target": "Package",
+              "version": "[8.2.2, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.129/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/matsma/project/team-hub/building-blocks/TeamHub.GrpcContracts/TeamHub.GrpcContracts.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/matsma/project/team-hub/building-blocks/TeamHub.GrpcContracts/TeamHub.GrpcContracts.csproj",
+        "projectName": "TeamHub.GrpcContracts",
+        "projectPath": "/home/matsma/project/team-hub/building-blocks/TeamHub.GrpcContracts/TeamHub.GrpcContracts.csproj",
+        "packagesPath": "/tmp/cursor-sandbox-cache/11fe24ff21eea38b95374c1a74ad63bb/nuget",
+        "outputPath": "/home/matsma/project/team-hub/building-blocks/TeamHub.GrpcContracts/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/matsma/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Google.Protobuf": {
+              "target": "Package",
+              "version": "[3.28.3, )"
+            },
+            "Grpc.AspNetCore": {
+              "target": "Package",
+              "version": "[2.66.0, )"
+            },
+            "Grpc.Net.Client": {
+              "target": "Package",
+              "version": "[2.66.0, )"
+            },
+            "Grpc.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.67.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.129/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/matsma/project/team-hub/building-blocks/TeamHub.Observability/TeamHub.Observability.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/matsma/project/team-hub/building-blocks/TeamHub.Observability/TeamHub.Observability.csproj",
+        "projectName": "TeamHub.Observability",
+        "projectPath": "/home/matsma/project/team-hub/building-blocks/TeamHub.Observability/TeamHub.Observability.csproj",
+        "packagesPath": "/tmp/cursor-sandbox-cache/11fe24ff21eea38b95374c1a74ad63bb/nuget",
+        "outputPath": "/home/matsma/project/team-hub/building-blocks/TeamHub.Observability/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/matsma/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "OpenTelemetry.Exporter.OpenTelemetryProtocol": {
+              "target": "Package",
+              "version": "[1.9.0, )"
+            },
+            "OpenTelemetry.Exporter.Prometheus.AspNetCore": {
+              "target": "Package",
+              "version": "[1.9.0-beta.2, )"
+            },
+            "OpenTelemetry.Extensions.Hosting": {
+              "target": "Package",
+              "version": "[1.9.0, )"
+            },
+            "OpenTelemetry.Instrumentation.AspNetCore": {
+              "target": "Package",
+              "version": "[1.9.0, )"
+            },
+            "OpenTelemetry.Instrumentation.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[1.0.0-beta.12, )"
+            },
+            "OpenTelemetry.Instrumentation.Http": {
+              "target": "Package",
+              "version": "[1.9.0, )"
+            },
+            "OpenTelemetry.Instrumentation.Process": {
+              "target": "Package",
+              "version": "[0.5.0-beta.7, )"
+            },
+            "OpenTelemetry.Instrumentation.Runtime": {
+              "target": "Package",
+              "version": "[1.9.0, )"
+            },
+            "Serilog.AspNetCore": {
+              "target": "Package",
+              "version": "[8.0.3, )"
+            },
+            "Serilog.Enrichers.Span": {
+              "target": "Package",
+              "version": "[3.1.0, )"
+            },
+            "Serilog.Formatting.Compact": {
+              "target": "Package",
+              "version": "[3.0.0, )"
+            },
+            "Serilog.Sinks.Console": {
+              "target": "Package",
+              "version": "[5.0.1, )"
+            },
+            "Serilog.Sinks.OpenTelemetry": {
+              "target": "Package",
+              "version": "[4.1.1, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.129/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/matsma/project/team-hub/services/team-hub-bff/team-hub-bff/team-hub-bff.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/matsma/project/team-hub/services/team-hub-bff/team-hub-bff/team-hub-bff.csproj",
+        "projectName": "team-hub-bff",
+        "projectPath": "/home/matsma/project/team-hub/services/team-hub-bff/team-hub-bff/team-hub-bff.csproj",
+        "packagesPath": "/tmp/cursor-sandbox-cache/11fe24ff21eea38b95374c1a74ad63bb/nuget",
+        "outputPath": "/home/matsma/project/team-hub/services/team-hub-bff/team-hub-bff/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/matsma/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/home/matsma/project/team-hub/aspire/TeamHub.ServiceDefaults/TeamHub.ServiceDefaults.csproj": {
+                "projectPath": "/home/matsma/project/team-hub/aspire/TeamHub.ServiceDefaults/TeamHub.ServiceDefaults.csproj"
+              },
+              "/home/matsma/project/team-hub/building-blocks/TeamHub.GrpcContracts/TeamHub.GrpcContracts.csproj": {
+                "projectPath": "/home/matsma/project/team-hub/building-blocks/TeamHub.GrpcContracts/TeamHub.GrpcContracts.csproj"
+              },
+              "/home/matsma/project/team-hub/building-blocks/TeamHub.Observability/TeamHub.Observability.csproj": {
+                "projectPath": "/home/matsma/project/team-hub/building-blocks/TeamHub.Observability/TeamHub.Observability.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "DotNetEnv": {
+              "target": "Package",
+              "version": "[3.1.1, )"
+            },
+            "HotChocolate.AspNetCore": {
+              "target": "Package",
+              "version": "[14.3.0, )"
+            },
+            "HotChocolate.AspNetCore.Authorization": {
+              "target": "Package",
+              "version": "[14.3.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.11, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.129/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

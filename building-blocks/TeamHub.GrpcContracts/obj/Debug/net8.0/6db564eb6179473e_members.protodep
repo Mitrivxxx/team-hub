@@ -1,0 +1,2 @@
+obj/Debug/net8.0/Protos/organization/v1/Members.cs \
+obj/Debug/net8.0/Protos/organization/v1/MembersGrpc.cs: Protos/organization/v1/members.proto

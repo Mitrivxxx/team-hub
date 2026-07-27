@@ -11,12 +11,13 @@
 ## Do
 - Start the full local stack from AppHost:
   - `cd aspire/TeamHub.AppHost && dotnet run`
-- Prerequisites: .NET 8 SDK, Aspire workload (`dotnet workload install aspire`), Docker, Node.js/npm.
-- AppHost runs: Postgres (Aspire resource `auth-db`, database name `auth_db`), Redis, `team-hub-auth`, `team-hub-gateway`, infrastructure nginx, Angular (`npm start`).
+- Prerequisites: .NET 8 SDK, Aspire workload (`dotnet workload install aspire`), Docker, Node.js/npm, TLS certs in `certs/` (`./scripts/setup-certs.sh`).
+- AppHost runs: Postgres (Aspire resource `auth-db`, database name `auth_db`), Redis, Azurite blob storage (`storage` + `blobs`), `team-hub-auth`, `team-hub-organization`, `team-hub-bff`, `team-hub-gateway`, infrastructure nginx, Angular (`npm start`).
 - Aspire resource names: only ASCII letters, digits, hyphens (no underscores).
 - Keep production/pre-prod on `docker-compose.yml` — Aspire is dev-only.
 - JWT dev secrets live in `aspire/TeamHub.AppHost/appsettings.Development.json` (`Aspire:Jwt:*`).
-- Gateway auth destination under Aspire: env override `http://team-hub-auth` (YARP service discovery).
+- Gateway destinations under Aspire: auth `http://team-hub-auth`, team `http://team-hub-organization`, bff `http://team-hub-bff` (YARP service discovery).
+- Internal gRPC ports under Aspire: auth `5101`, organization `5102`; BFF `Grpc__Auth`/`Grpc__Organization` point at `127.0.0.1:5101/5102`.
 - Aspire Dashboard is one UI for the whole AppHost run (all resources at once: logs, endpoints, traces).
 - Nginx under Aspire uses `GATEWAY_UPSTREAM=host.docker.internal:5000` (gateway runs as host process).
 - Manual dev without Aspire remains available via `docker-compose.dev.yml` + `dotnet run` / `npm start`.
@@ -30,15 +31,19 @@
 | Resource | Host URL |
 |----------|----------|
 | Aspire Dashboard | printed in console on start (one UI for all resources) |
-| Frontend (web) | `http://localhost:4200` |
+| Frontend (web) | `https://localhost:4200` |
 | Infrastructure nginx (API edge) | `https://localhost:8080` |
 | Gateway (`team-hub-gateway`) | `http://localhost:5000` |
-| Auth (`team-hub-auth`) | dynamic (see dashboard) |
+| BFF (`team-hub-bff`) | `http://localhost:5003` |
+| Auth (`team-hub-auth`) | REST dynamic / gRPC `http://localhost:5101` |
+| Organization (`team-hub-organization`) | REST dynamic or `http://localhost:5002` / gRPC `http://localhost:5102` |
 | Postgres | dynamic (see dashboard; database `auth_db`) |
 | Redis | dynamic (see dashboard) |
+| Azurite (blob) | dynamic (see dashboard; host blob port often `10000`) |
 
 ## Request flow
 - Frontend `/api/auth/*` -> nginx `8080` -> gateway `5000` -> auth (service discovery) -> postgres + redis.
+- Frontend `/api/organizations/*` -> nginx `8080` -> gateway `5000` -> team (service discovery) -> postgres + Azurite (avatars).
 
 ## Troubleshooting
 - Port conflict: stop `docker compose` and any running `dotnet`/`npm` processes before `dotnet run` AppHost.

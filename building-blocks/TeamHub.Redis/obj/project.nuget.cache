@@ -1,16 +1,16 @@
 {
   "version": 2,
-  "dgSpecHash": "cK2EDHHWXnM34RS8ZJNr8VuYV06A9HS5uAgfC5J4WSr/VZ01mk+4yn7+cgUu2OCJfHzGkdVS1hl6A5jrV0T6yQ==",
+  "dgSpecHash": "+UHx/aQa91ju5EUCSBDR/xkh8B/K8qXwz9RlDann3YF/HkhMQ1OzT1ASpCCaneTiTLXe8z92UJLoxwaKNRC+2A==",
   "success": true,
   "projectFilePath": "/home/matsma/project/team-hub/building-blocks/TeamHub.Redis/TeamHub.Redis.csproj",
   "expectedPackageFiles": [
-    "/home/matsma/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/10.0.5/microsoft.extensions.dependencyinjection.abstractions.10.0.5.nupkg.sha512",
-    "/home/matsma/.nuget/packages/microsoft.extensions.logging.abstractions/10.0.5/microsoft.extensions.logging.abstractions.10.0.5.nupkg.sha512",
-    "/home/matsma/.nuget/packages/respite/3.0.11/respite.3.0.11.nupkg.sha512",
-    "/home/matsma/.nuget/packages/stackexchange.redis/3.0.11/stackexchange.redis.3.0.11.nupkg.sha512",
-    "/home/matsma/.nuget/packages/system.diagnostics.diagnosticsource/10.0.5/system.diagnostics.diagnosticsource.10.0.5.nupkg.sha512",
-    "/home/matsma/.nuget/packages/system.io.hashing/10.0.5/system.io.hashing.10.0.5.nupkg.sha512",
-    "/home/matsma/.nuget/packages/system.io.pipelines/10.0.5/system.io.pipelines.10.0.5.nupkg.sha512"
+    "/tmp/cursor-sandbox-cache/11fe24ff21eea38b95374c1a74ad63bb/nuget/microsoft.extensions.dependencyinjection.abstractions/10.0.5/microsoft.extensions.dependencyinjection.abstractions.10.0.5.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/11fe24ff21eea38b95374c1a74ad63bb/nuget/microsoft.extensions.logging.abstractions/10.0.5/microsoft.extensions.logging.abstractions.10.0.5.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/11fe24ff21eea38b95374c1a74ad63bb/nuget/respite/3.0.11/respite.3.0.11.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/11fe24ff21eea38b95374c1a74ad63bb/nuget/stackexchange.redis/3.0.11/stackexchange.redis.3.0.11.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/11fe24ff21eea38b95374c1a74ad63bb/nuget/system.diagnostics.diagnosticsource/10.0.5/system.diagnostics.diagnosticsource.10.0.5.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/11fe24ff21eea38b95374c1a74ad63bb/nuget/system.io.hashing/10.0.5/system.io.hashing.10.0.5.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/11fe24ff21eea38b95374c1a74ad63bb/nuget/system.io.pipelines/10.0.5/system.io.pipelines.10.0.5.nupkg.sha512"
   ],
   "logs": []
 }

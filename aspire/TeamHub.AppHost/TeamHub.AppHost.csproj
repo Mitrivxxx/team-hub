@@ -13,11 +13,14 @@
     <PackageReference Include="Aspire.Hosting.AppHost" Version="8.2.2" />
     <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="8.2.2" />
     <PackageReference Include="Aspire.Hosting.Redis" Version="8.2.2" />
+    <PackageReference Include="Aspire.Hosting.Azure.Storage" Version="8.2.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\services\team-hub-auth\team-hub-auth\team-hub-auth.csproj" />
     <ProjectReference Include="..\..\services\team-hub-gateway\team-hub-gateway\team-hub-gateway.csproj" />
+    <ProjectReference Include="..\..\services\team-hub-organization\team-hub-organization\team-hub-organization.csproj" />
+    <ProjectReference Include="..\..\services\team-hub-bff\team-hub-bff\team-hub-bff.csproj" />
   </ItemGroup>
 
 </Project>
