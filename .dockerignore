@@ -9,3 +9,6 @@ certs/
 **/node_modules/
 **/.angular/
 **/dist/
+**/.env
+**/.env.*
+!**/.env.example

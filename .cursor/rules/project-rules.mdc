@@ -10,7 +10,7 @@ alwaysApply: true
 
 ## Project context
 - Runtime flow: `frontend -> infrastructure nginx -> gateway -> auth|team` (auth also uses postgres).
-- Services wired in repo: `infrastructure/nginx`, `team-hub-gateway`, `team-hub-auth`, `team-hub-organization`, `postgres`.
+- Services wired in repo: `infrastructure/nginx`, `team-hub-gateway`, `team-hub-auth`, `team-hub-organization`, `team-hub-notification`, `postgres`.
 
 ## Source of truth
 - `docker-compose.yml`

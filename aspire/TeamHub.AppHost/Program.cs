@@ -36,6 +36,7 @@ var auth = builder.AddProject<Projects.team_hub_auth>("team-hub-auth")
 
 var team = builder.AddProject<Projects.team_hub_organization>("team-hub-organization")
     .WithReference(organizationDatabase, "DefaultConnection")
+    .WithReference(auth)
     .WithReference(blobs)
     .WithEnvironment("BlobStorage__ContainerName", "avatars")
     .WithEnvironment("BlobStorage__PublicBlobEndpoint", "http://127.0.0.1:10000/devstoreaccount1")
@@ -43,11 +44,20 @@ var team = builder.AddProject<Projects.team_hub_organization>("team-hub-organiza
     .WithEnvironment("Jwt__Key", jwtKey)
     .WithEnvironment("Jwt__Issuer", jwtIssuer)
     .WithEnvironment("Jwt__Audience", jwtAudience)
+    .WithEnvironment("Grpc__Auth", "http://127.0.0.1:5101")
     .WithEnvironment("ASPNETCORE_ENVIRONMENT", "Development")
     .WithEndpoint("grpc", endpoint =>
     {
         endpoint.Port = 5102;
         endpoint.UriScheme = "http";
+        endpoint.IsProxied = false;
+    });
+
+var notification = builder.AddProject<Projects.team_hub_notification>("team-hub-notification")
+    .WithEnvironment("ASPNETCORE_ENVIRONMENT", "Development")
+    .WithEndpoint("http", endpoint =>
+    {
+        endpoint.Port = 5004;
         endpoint.IsProxied = false;
     });
 
@@ -70,6 +80,7 @@ var bff = builder.AddProject<Projects.team_hub_bff>("team-hub-bff")
 var gateway = builder.AddProject<Projects.team_hub_gateway>("team-hub-gateway")
     .WithReference(auth)
     .WithReference(team)
+    .WithReference(notification)
     .WithReference(bff)
     .WithEnvironment("ASPNETCORE_ENVIRONMENT", "Development")
     .WithEnvironment("ReverseProxy__Clusters__auth-cluster__Destinations__auth__Address", "http://team-hub-auth")

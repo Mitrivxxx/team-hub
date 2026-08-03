@@ -1,0 +1,2 @@
+obj/Release/net10.0/Protos/auth/v1/UserProfile.cs \
+obj/Release/net10.0/Protos/auth/v1/UserProfileGrpc.cs: Protos/auth/v1/user_profile.proto

@@ -8,7 +8,8 @@
 ## Do
 - Keep contracts versioned under `auth/v1` and `organization/v1`.
 - Generate both client and server stubs (`GrpcServices=Both`).
-- Expose auth `UserProfileService.GetUsersByIds` for batch profile lookup.
+- Expose auth `UserProfileService.GetUsersByIds` for batch profile lookup by id.
+- Expose auth `UserProfileService.ResolveUsers` for batch lookup by email/username (import).
 - Expose organization `OrganizationMemberService.ListMembers` for membership lists.
 - Keep contracts internal; do not expose gRPC through nginx/gateway.
 

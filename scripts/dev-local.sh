@@ -5,14 +5,18 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 LOG_DIR="$ROOT/.logs"
 
 WEB_DIR="$ROOT/frontend/team-hub-web"
-GATEWAY_DIR="$ROOT/services/team-hub-gateway/team-hub-gateway"
-AUTH_DIR="$ROOT/services/team-hub-auth/team-hub-auth"
-TEAM_DIR="$ROOT/services/team-hub-organization/team-hub-organization"
+GATEWAY_DIR="$ROOT/services/team-hub-gateway"
+AUTH_DIR="$ROOT/services/team-hub-auth"
+ORGANIZATION_DIR="$ROOT/services/team-hub-organization"
+NOTIFICATION_DIR="$ROOT/services/team-hub-notification"
+ASPIRE_DIR="$ROOT/aspire/TeamHub.AppHost"
 
 WEB_CMD="cd \"$WEB_DIR\" && exec bash -i"
 GATEWAY_CMD="cd \"$GATEWAY_DIR\" && exec bash -i"
 AUTH_CMD="cd \"$AUTH_DIR\" && exec bash -i"
-TEAM_CMD="cd \"$TEAM_DIR\" && exec bash -i"
+ORGANIZATION_CMD="cd \"$ORGANIZATION_DIR\" && exec bash -i"
+NOTIFICATION_CMD="cd \"$NOTIFICATION_DIR\" && exec bash -i"
+ASPIRE_CMD="cd \"$ASPIRE_DIR\" && exec bash -i"
 
 is_vscode_terminal() {
   [ "${TERM_PROGRAM:-}" = "vscode" ] || [ -n "${VSCODE_IPC_HOOK_CLI:-}" ]
@@ -23,7 +27,7 @@ run_vscode_tasks() {
   echo "Uruchom task 'dev-local' (otwiera czyste terminale w odpowiednich katalogach):"
   echo "  Ctrl+Shift+P -> Tasks: Run Task -> dev-local"
   echo ""
-  echo "Powinny pojawic sie 4 terminale: web, auth, gateway, team."
+  echo "Powinny pojawic sie terminale: web, auth, gateway, organization, notification."
 }
 
 run_tmux() {
@@ -33,9 +37,10 @@ run_tmux() {
     tmux new-window -n web "bash -lc '$WEB_CMD; exec bash'"
     tmux new-window -n gateway "bash -lc '$GATEWAY_CMD; exec bash'"
     tmux new-window -n auth "bash -lc '$AUTH_CMD; exec bash'"
-    tmux new-window -n team "bash -lc '$TEAM_CMD; exec bash'"
+    tmux new-window -n organization "bash -lc '$ORGANIZATION_CMD; exec bash'"
+    tmux new-window -n notification "bash -lc '$NOTIFICATION_CMD; exec bash'"
     tmux select-window -t web
-    echo "Started in current tmux session: web, gateway, auth, team."
+    echo "Started in current tmux session: web, gateway, auth, organization, notification."
     return 0
   fi
 
@@ -47,7 +52,8 @@ run_tmux() {
   tmux new-session -d -s "$session" -n web "bash -lc '$WEB_CMD; exec bash'"
   tmux new-window -t "$session:" -n gateway "bash -lc '$GATEWAY_CMD; exec bash'"
   tmux new-window -t "$session:" -n auth "bash -lc '$AUTH_CMD; exec bash'"
-  tmux new-window -t "$session:" -n team "bash -lc '$TEAM_CMD; exec bash'"
+  tmux new-window -t "$session:" -n organization "bash -lc '$ORGANIZATION_CMD; exec bash'"
+  tmux new-window -t "$session:" -n notification "bash -lc '$NOTIFICATION_CMD; exec bash'"
   tmux select-window -t "$session:web"
   tmux attach -t "$session"
 }
@@ -57,7 +63,8 @@ run_gnome_terminal() {
     --tab --title="web" -- bash -lc "$WEB_CMD; exec bash" \
     --tab --title="gateway" -- bash -lc "$GATEWAY_CMD; exec bash" \
     --tab --title="auth" -- bash -lc "$AUTH_CMD; exec bash" \
-    --tab --title="team" -- bash -lc "$TEAM_CMD; exec bash"
+    --tab --title="organization" -- bash -lc "$ORGANIZATION_CMD; exec bash" \
+    --tab --title="notification" -- bash -lc "$NOTIFICATION_CMD; exec bash"
 }
 
 run_background() {

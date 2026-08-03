@@ -18,7 +18,7 @@
 
 ## Do
 - **Preferred local dev (full stack, one command):**
-  - prerequisites: `dotnet workload install aspire`, Docker, Node.js/npm
+  - prerequisites: .NET 10 SDK, Aspire 13 (`Aspire.AppHost.Sdk` via NuGet), Docker, Node.js/npm
   - `cd aspire/TeamHub.AppHost && dotnet run`
   - opens Aspire Dashboard (URL in console); endpoints: frontend `https://localhost:4200`, nginx API `https://localhost:8080`, gateway `http://localhost:5000`
   - JWT dev config: `aspire/TeamHub.AppHost/appsettings.Development.json` (`Aspire:Jwt:*`)

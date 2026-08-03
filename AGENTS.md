@@ -10,12 +10,14 @@
 - `services/team-hub-auth` - API auth (.NET, EF Core, JWT, cookies) + internal gRPC profiles.
 - `services/team-hub-gateway` - reverse proxy (YARP).
 - `services/team-hub-organization` - API organization (.NET Web API) + internal gRPC members.
+- `services/team-hub-notification` - API announcements and notifications (.NET Web API; skeleton).
 - `services/team-hub-bff` - GraphQL BFF (Hot Chocolate) aggregating auth + organization over gRPC.
 - `frontend/team-hub-web` - UI (Angular).
 - `infrastructure/nginx` - edge reverse proxy (nginx) before gateway.
 - `infrastructure/redis` - shared Redis container (compose).
 - `building-blocks/TeamHub.Redis` - shared Redis .NET library.
 - `building-blocks/TeamHub.BlobStorage` - shared Azure Blob Storage .NET library.
+- `building-blocks/TeamHub.Observability` - shared OTEL/Serilog + Exception/CorrelationId/UserIdLogging middleware.
 - `building-blocks/TeamHub.GrpcContracts` - shared gRPC protobuf contracts.
 - `docker-compose.yml` - prod/pre-prod runtime (nginx, gateway, auth, team, bff, postgres).
 - `TeamHub.sln` - solution file; prefer `aspire/TeamHub.AppHost` for local full-stack dev.

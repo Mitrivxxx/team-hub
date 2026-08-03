@@ -1,0 +1,6 @@
+{
+  "terminal.integrated.env.linux": {
+    "DOTNET_ROOT": "${env:HOME}/.dotnet",
+    "PATH": "${env:HOME}/.dotnet:${env:PATH}"
+  }
+}

@@ -44,4 +44,49 @@ public sealed class Query
             parsedTeamId,
             cancellationToken);
     }
+
+    /// <summary>List organization activity feed with filters and pagination.</summary>
+    public async Task<OrganizationActivityPageModel> OrganizationActivity(
+        string organizationId,
+        string? type,
+        string? q,
+        string? from,
+        string? to,
+        int? page,
+        int? pageSize,
+        [Service] IOrganizationMemberClient organizationMemberClient,
+        [Service] ICurrentUserService currentUserService,
+        CancellationToken cancellationToken)
+    {
+        if (!Guid.TryParse(organizationId, out var parsedOrganizationId))
+            throw new GraphQLException("Invalid organizationId.");
+
+        DateTimeOffset? parsedFrom = null;
+        if (!string.IsNullOrWhiteSpace(from))
+        {
+            if (!DateTimeOffset.TryParse(from, out var fromValue))
+                throw new GraphQLException("Invalid from.");
+            parsedFrom = fromValue;
+        }
+
+        DateTimeOffset? parsedTo = null;
+        if (!string.IsNullOrWhiteSpace(to))
+        {
+            if (!DateTimeOffset.TryParse(to, out var toValue))
+                throw new GraphQLException("Invalid to.");
+            parsedTo = toValue;
+        }
+
+        var actorUserId = currentUserService.GetRequiredUserId();
+        return await organizationMemberClient.ListActivityAsync(
+            parsedOrganizationId,
+            actorUserId,
+            type,
+            q,
+            parsedFrom,
+            parsedTo,
+            page ?? 1,
+            pageSize ?? 20,
+            cancellationToken);
+    }
 }

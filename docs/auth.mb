@@ -15,6 +15,7 @@
   - `POST /api/auth/v0.0/refresh` -> `200 OK` with rotated refresh token cookie, `401 Unauthorized` if invalid/missing; `503 Service Unavailable` when Redis session store is down.
   - `POST /api/auth/v0.0/logout` -> `204 No Content` and cookie cleanup.
   - `POST /api/auth/v0.0/change-password` -> `204 No Content` after username + name + surname verification; `400 Bad Request` on format validation errors; `401 Unauthorized` when identity verification fails.
+  - `GET /api/auth/v0.0/users` -> `200 OK` with all user profiles (`id`, `username`, `name`, `surname`) ordered by username; requires JWT Bearer; `401 Unauthorized` when missing/invalid.
 - Keep register validation:
   - format (`400`): `name`, `surname`, `username`, `password` field rules.
   - business (`409`): duplicate `username` in `errors.username` (case-insensitive).

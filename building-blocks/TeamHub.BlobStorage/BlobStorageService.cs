@@ -16,16 +16,29 @@ public sealed class BlobStorageService : IBlobStorageService
         _containerClient = blobServiceClient.GetBlobContainerClient(_options.ContainerName);
     }
 
-    public async Task UploadAsync(string blobName, Stream content, string contentType, CancellationToken cancellationToken = default)
+    public async Task UploadAsync(
+        string blobName,
+        Stream content,
+        string contentType,
+        CancellationToken cancellationToken = default,
+        string? downloadFileName = null)
     {
         var blobClient = _containerClient.GetBlobClient(blobName);
+        var headers = new BlobHttpHeaders { ContentType = contentType };
+        if (!string.IsNullOrWhiteSpace(downloadFileName))
+            headers.ContentDisposition = $"attachment; filename=\"{downloadFileName}\"";
+
         await blobClient.UploadAsync(
             content,
-            new BlobUploadOptions
-            {
-                HttpHeaders = new BlobHttpHeaders { ContentType = contentType }
-            },
+            new BlobUploadOptions { HttpHeaders = headers },
             cancellationToken);
+    }
+
+    public async Task<Stream> OpenReadAsync(string blobName, CancellationToken cancellationToken = default)
+    {
+        var blobClient = _containerClient.GetBlobClient(blobName);
+        var response = await blobClient.DownloadStreamingAsync(cancellationToken: cancellationToken);
+        return response.Value.Content;
     }
 
     public async Task DeleteIfExistsAsync(string blobName, CancellationToken cancellationToken = default)

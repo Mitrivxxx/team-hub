@@ -44,6 +44,7 @@ public sealed class AuthUserProfileClient : IAuthUserProfileClient, IDisposable
                 {
                     Id = Guid.Parse(u.Id),
                     Username = u.Username,
+                    Email = u.Email,
                     Name = u.Name,
                     Surname = u.Surname
                 });

@@ -1,0 +1,75 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "TeamHub.Redis/1.0.0": {
+        "dependencies": {
+          "StackExchange.Redis": "3.0.11"
+        },
+        "runtime": {
+          "TeamHub.Redis.dll": {}
+        }
+      },
+      "RESPite/3.0.11": {
+        "runtime": {
+          "lib/net10.0/RESPite.dll": {
+            "assemblyVersion": "3.0.0.0",
+            "fileVersion": "3.0.11.60088"
+          }
+        }
+      },
+      "StackExchange.Redis/3.0.11": {
+        "dependencies": {
+          "RESPite": "3.0.11",
+          "System.IO.Hashing": "10.0.5"
+        },
+        "runtime": {
+          "lib/net10.0/StackExchange.Redis.dll": {
+            "assemblyVersion": "3.0.0.0",
+            "fileVersion": "3.0.11.60088"
+          }
+        }
+      },
+      "System.IO.Hashing/10.0.5": {
+        "runtime": {
+          "lib/net10.0/System.IO.Hashing.dll": {
+            "assemblyVersion": "10.0.0.5",
+            "fileVersion": "10.0.526.15411"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "TeamHub.Redis/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "RESPite/3.0.11": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-txORk48Kw4utEaKHD5AWyfsxj7ZTb8EuJM9RaQjPg0pt0YxjBHgFEohE4bia0o3Ik1F5MhoayaUy3hYvcsb5Ng==",
+      "path": "respite/3.0.11",
+      "hashPath": "respite.3.0.11.nupkg.sha512"
+    },
+    "StackExchange.Redis/3.0.11": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-aLUOeQ3hpTg1H7AT6nVS3Roy8lKPsTG7VIEhspT5sNXWqcKbYJo1ytx8JqTNEWmnl/Ou/LwrDJntbl2P32IGcQ==",
+      "path": "stackexchange.redis/3.0.11",
+      "hashPath": "stackexchange.redis.3.0.11.nupkg.sha512"
+    },
+    "System.IO.Hashing/10.0.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-8IBJWcCT9+e4Bmevm4T7+fQEiAh133KGiz4oiVTgJckd3Q76OFdR1falgn9lpz7+C4HJvogCDJeAa2QmvbeVtg==",
+      "path": "system.io.hashing/10.0.5",
+      "hashPath": "system.io.hashing.10.0.5.nupkg.sha512"
+    }
+  }
+}

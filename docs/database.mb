@@ -26,6 +26,8 @@
 ### DB startup
 - `docker compose -f docker-compose.dev.yml up -d`, then `dotnet run` — Postgres init script creates `organization_db`; EF `Database.Migrate()` applies schema on startup.
 - `docker compose up` — Postgres init script creates `organizationdb`; EF `Database.Migrate()` in organization container applies schema on startup.
+- Activity feed table: `organization_activities` (append-only audit/activity log per org; indexes on `(OrganizationId, OccurredAt)` and `(OrganizationId, Type, OccurredAt)`).
+- Import/export jobs table: `import_export_jobs` (async CSV/JSON import and export history per org; blob paths for source/result/errors).
 
 ## Organization API
 

@@ -11,8 +11,9 @@
 ## Do
 - Start the full local stack from AppHost:
   - `cd aspire/TeamHub.AppHost && dotnet run`
-- Prerequisites: .NET 8 SDK, Aspire workload (`dotnet workload install aspire`), Docker, Node.js/npm, TLS certs in `certs/` (`./scripts/setup-certs.sh`).
-- AppHost runs: Postgres (Aspire resource `auth-db`, database name `auth_db`), Redis, Azurite blob storage (`storage` + `blobs`), `team-hub-auth`, `team-hub-organization`, `team-hub-bff`, `team-hub-gateway`, infrastructure nginx, Angular (`npm start`).
+- Prerequisites: .NET 10 SDK (`dotnet --version` should report 10.x), Aspire 13 (`Aspire.AppHost.Sdk` via NuGet — no Aspire workload), Docker, Node.js/npm, TLS certs in `certs/` (`./scripts/setup-certs.sh`).
+  - If `dotnet --list-sdks` only shows 8.x, install SDK 10 (`https://aka.ms/dotnet/download` or `curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 10.0`) and put `$HOME/.dotnet` first on `PATH` (`export DOTNET_ROOT=$HOME/.dotnet; export PATH=$HOME/.dotnet:$PATH`). Repo `global.json` pins SDK 10.0.x.
+- AppHost runs: Postgres (Aspire resource `auth-db`, database name `auth_db`), Redis, Azurite blob storage (`storage` + `blobs`), `team-hub-auth`, `team-hub-organization`, `team-hub-notification`, `team-hub-bff`, `team-hub-gateway`, infrastructure nginx, Angular (`npm start`).
 - Aspire resource names: only ASCII letters, digits, hyphens (no underscores).
 - Keep production/pre-prod on `docker-compose.yml` — Aspire is dev-only.
 - JWT dev secrets live in `aspire/TeamHub.AppHost/appsettings.Development.json` (`Aspire:Jwt:*`).
@@ -37,6 +38,7 @@
 | BFF (`team-hub-bff`) | `http://localhost:5003` |
 | Auth (`team-hub-auth`) | REST dynamic / gRPC `http://localhost:5101` |
 | Organization (`team-hub-organization`) | REST dynamic or `http://localhost:5002` / gRPC `http://localhost:5102` |
+| Notification (`team-hub-notification`) | `http://localhost:5004` |
 | Postgres | dynamic (see dashboard; database `auth_db`) |
 | Redis | dynamic (see dashboard) |
 | Azurite (blob) | dynamic (see dashboard; host blob port often `10000`) |

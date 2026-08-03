@@ -35,7 +35,7 @@
 - Do not add frontend assumptions about endpoints outside `/api/auth/*`.
 
 ## Checklist
-- Frontend calls still align with auth endpoints (`register`, `login`, `refresh`, `logout`, `change-password`).
+- Frontend calls still align with auth endpoints (`register`, `login`, `refresh`, `logout`, `change-password`, `users`).
 - Local dev proxy target points to infrastructure nginx HTTPS port `8080`.
 - Docker web container serves HTTPS on host port `4200`.
 - Credentials mode is enabled where cookie is required.

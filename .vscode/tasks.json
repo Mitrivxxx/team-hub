@@ -16,7 +16,7 @@
     {
       "label": "dev-local:gateway",
       "type": "shell",
-      "command": "bash -lc 'cd \"${workspaceFolder}/services/team-hub-gateway/team-hub-gateway\" && exec bash -i'",
+      "command": "bash -lc 'cd \"${workspaceFolder}/services/team-hub-gateway\" && exec bash -i'",
       "presentation": {
         "reveal": "always",
         "panel": "dedicated",
@@ -28,7 +28,7 @@
     {
       "label": "dev-local:auth",
       "type": "shell",
-      "command": "bash -lc 'cd \"${workspaceFolder}/services/team-hub-auth/team-hub-auth\" && exec bash -i'",
+      "command": "bash -lc 'cd \"${workspaceFolder}/services/team-hub-auth\" && exec bash -i'",
       "presentation": {
         "reveal": "always",
         "panel": "dedicated",
@@ -40,11 +40,35 @@
     {
       "label": "dev-local:team",
       "type": "shell",
-      "command": "bash -lc 'cd \"${workspaceFolder}/services/team-hub-organization/team-hub-organization\" && exec bash -i'",
+      "command": "bash -lc 'cd \"${workspaceFolder}/services/team-hub-organization\" && exec bash -i'",
       "presentation": {
         "reveal": "always",
         "panel": "dedicated",
         "group": "dev-local-team",
+        "clear": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "dev-local:aspire",
+      "type": "shell",
+      "command": "bash -lc 'cd \"${workspaceFolder}/aspire/TeamHub.AppHost\" && exec bash -i'",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "dev-local-aspire",
+        "clear": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "dev-local:notification",
+      "type": "shell",
+      "command": "bash -lc 'cd \"${workspaceFolder}/services/team-hub-notification\" && exec bash -i'",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "dev-local-notification",
         "clear": false
       },
       "problemMatcher": []
@@ -56,7 +80,9 @@
         "dev-local:web",
         "dev-local:gateway",
         "dev-local:auth",
-        "dev-local:team"
+        "dev-local:team",
+        "dev-local:aspire",
+        "dev-local:notification"
       ],
       "problemMatcher": []
     }

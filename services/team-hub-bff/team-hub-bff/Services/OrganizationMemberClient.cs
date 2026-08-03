@@ -14,6 +14,17 @@ public interface IOrganizationMemberClient
         Guid? roleId,
         Guid? teamId,
         CancellationToken cancellationToken = default);
+
+    Task<OrganizationActivityPageModel> ListActivityAsync(
+        Guid organizationId,
+        Guid actorUserId,
+        string? type,
+        string? q,
+        DateTimeOffset? from,
+        DateTimeOffset? to,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken = default);
 }
 
 public sealed class OrganizationMemberClient : IOrganizationMemberClient, IDisposable
@@ -61,6 +72,55 @@ public sealed class OrganizationMemberClient : IOrganizationMemberClient, IDispo
                 IsSystem = r.IsSystem
             }).ToArray()
         }).ToArray();
+    }
+
+    public async Task<OrganizationActivityPageModel> ListActivityAsync(
+        Guid organizationId,
+        Guid actorUserId,
+        string? type,
+        string? q,
+        DateTimeOffset? from,
+        DateTimeOffset? to,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken = default)
+    {
+        var request = new ListActivityRequest
+        {
+            OrganizationId = organizationId.ToString(),
+            ActorUserId = actorUserId.ToString(),
+            Page = page,
+            PageSize = pageSize
+        };
+
+        if (!string.IsNullOrWhiteSpace(type))
+            request.Type = type;
+        if (!string.IsNullOrWhiteSpace(q))
+            request.Q = q;
+        if (from is not null)
+            request.From = from.Value.ToString("O");
+        if (to is not null)
+            request.To = to.Value.ToString("O");
+
+        var response = await _client.ListActivityAsync(request, cancellationToken: cancellationToken);
+
+        return new OrganizationActivityPageModel
+        {
+            Page = response.Page,
+            PageSize = response.PageSize,
+            TotalCount = response.TotalCount,
+            Items = response.Items.Select(item => new OrganizationActivityModel
+            {
+                Id = Guid.Parse(item.Id),
+                Type = item.Type,
+                ActorUserId = item.HasActorUserId ? Guid.Parse(item.ActorUserId) : null,
+                TargetUserId = item.HasTargetUserId ? Guid.Parse(item.TargetUserId) : null,
+                EntityType = item.HasEntityType ? item.EntityType : null,
+                EntityId = item.HasEntityId ? Guid.Parse(item.EntityId) : null,
+                Details = item.HasDetails ? item.Details : null,
+                OccurredAt = DateTimeOffset.Parse(item.OccurredAt)
+            }).ToArray()
+        };
     }
 
     public void Dispose() => _channel.Dispose();

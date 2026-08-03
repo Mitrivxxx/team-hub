@@ -6,6 +6,7 @@ package teamhub.auth.v1;
 
 service UserProfileService {
   rpc GetUsersByIds (GetUsersByIdsRequest) returns (GetUsersByIdsResponse);
+  rpc ResolveUsers (ResolveUsersRequest) returns (ResolveUsersResponse);
 }
 
 message GetUsersByIdsRequest {
@@ -16,9 +17,21 @@ message GetUsersByIdsResponse {
   repeated UserProfile users = 1;
 }
 
+message ResolveUsersRequest {
+  repeated string emails = 1;
+  repeated string usernames = 2;
+}
+
+message ResolveUsersResponse {
+  repeated UserProfile users = 1;
+  repeated string unresolved_emails = 2;
+  repeated string unresolved_usernames = 3;
+}
+
 message UserProfile {
   string id = 1;
   string username = 2;
   string name = 3;
   string surname = 4;
+  string email = 5;
 }

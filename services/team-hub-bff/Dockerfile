@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 COPY aspire/TeamHub.ServiceDefaults/TeamHub.ServiceDefaults.csproj aspire/TeamHub.ServiceDefaults/
@@ -13,7 +13,7 @@ COPY building-blocks/TeamHub.GrpcContracts/ building-blocks/TeamHub.GrpcContract
 COPY services/team-hub-bff/team-hub-bff/ services/team-hub-bff/team-hub-bff/
 RUN dotnet publish services/team-hub-bff/team-hub-bff/team-hub-bff.csproj -c Release -o /app/publish
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+FROM mcr.microsoft.com/dotnet/aspnet:10.0
 RUN apt-get update \
     && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/*

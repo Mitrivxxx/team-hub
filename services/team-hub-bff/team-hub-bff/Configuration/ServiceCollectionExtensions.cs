@@ -57,6 +57,7 @@ public static class ServiceCollectionExtensions
             .AddAuthorization()
             .AddQueryType<Query>()
             .AddTypeExtension<OrganizationMemberExtensions>()
+            .AddTypeExtension<OrganizationActivityExtensions>()
             .AddDataLoader<UserByIdDataLoader>()
             .ModifyRequestOptions(o => o.IncludeExceptionDetails = true);
 

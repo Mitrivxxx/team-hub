@@ -38,8 +38,7 @@ public static class ServiceCollectionExtensions
 
                 if (includeEntityFrameworkCore)
                 {
-                    tracing.AddEntityFrameworkCoreInstrumentation(efOptions =>
-                        efOptions.SetDbStatementForText = true);
+                    tracing.AddEntityFrameworkCoreInstrumentation();
                 }
             })
             .WithMetrics(metrics =>
