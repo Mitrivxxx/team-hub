@@ -41,6 +41,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "team-hub-notification", "te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "team-hub-notification", "services\team-hub-notification\team-hub-notification\team-hub-notification.csproj", "{048B0260-5B84-4D71-AED7-7674E964AB04}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamHub.Configuration", "building-blocks\TeamHub.Configuration\TeamHub.Configuration.csproj", "{2FCE259F-D369-4A9B-884A-70C19EC3EBF4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -183,6 +185,18 @@ Global
 		{048B0260-5B84-4D71-AED7-7674E964AB04}.Release|x64.Build.0 = Release|Any CPU
 		{048B0260-5B84-4D71-AED7-7674E964AB04}.Release|x86.ActiveCfg = Release|Any CPU
 		{048B0260-5B84-4D71-AED7-7674E964AB04}.Release|x86.Build.0 = Release|Any CPU
+		{2FCE259F-D369-4A9B-884A-70C19EC3EBF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FCE259F-D369-4A9B-884A-70C19EC3EBF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FCE259F-D369-4A9B-884A-70C19EC3EBF4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2FCE259F-D369-4A9B-884A-70C19EC3EBF4}.Debug|x64.Build.0 = Debug|Any CPU
+		{2FCE259F-D369-4A9B-884A-70C19EC3EBF4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2FCE259F-D369-4A9B-884A-70C19EC3EBF4}.Debug|x86.Build.0 = Debug|Any CPU
+		{2FCE259F-D369-4A9B-884A-70C19EC3EBF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FCE259F-D369-4A9B-884A-70C19EC3EBF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FCE259F-D369-4A9B-884A-70C19EC3EBF4}.Release|x64.ActiveCfg = Release|Any CPU
+		{2FCE259F-D369-4A9B-884A-70C19EC3EBF4}.Release|x64.Build.0 = Release|Any CPU
+		{2FCE259F-D369-4A9B-884A-70C19EC3EBF4}.Release|x86.ActiveCfg = Release|Any CPU
+		{2FCE259F-D369-4A9B-884A-70C19EC3EBF4}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -204,5 +218,6 @@ Global
 		{A7997BE1-7687-439E-92BA-5BB65E29B2A1} = {23ED2749-A63C-42F6-BE9F-1F1BB0DA083E}
 		{F8364035-CDA1-3FFB-89C5-187C916D220D} = {5EF46000-3E9B-4371-ACD5-7361A0BB59B9}
 		{048B0260-5B84-4D71-AED7-7674E964AB04} = {F8364035-CDA1-3FFB-89C5-187C916D220D}
+		{2FCE259F-D369-4A9B-884A-70C19EC3EBF4} = {44B8BF88-F247-4E3F-9489-44B353376C0D}
 	EndGlobalSection
 EndGlobal

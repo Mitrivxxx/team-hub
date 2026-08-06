@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "dgSpecHash": "oRlnOFa53Mc=",
+  "success": true,
+  "projectFilePath": "/home/matsma/project/team-hub/building-blocks/TeamHub.Configuration/TeamHub.Configuration.csproj",
+  "expectedPackageFiles": [
+    "/tmp/cursor-sandbox-cache/16761d281e15f4111b5700a6db2f2b5a/nuget/dotnetenv/3.1.1/dotnetenv.3.1.1.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/16761d281e15f4111b5700a6db2f2b5a/nuget/microsoft.extensions.configuration/1.1.2/microsoft.extensions.configuration.1.1.2.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/16761d281e15f4111b5700a6db2f2b5a/nuget/microsoft.extensions.configuration.abstractions/1.1.2/microsoft.extensions.configuration.abstractions.1.1.2.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/16761d281e15f4111b5700a6db2f2b5a/nuget/microsoft.extensions.primitives/1.1.1/microsoft.extensions.primitives.1.1.1.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/16761d281e15f4111b5700a6db2f2b5a/nuget/microsoft.netcore.platforms/1.1.0/microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/16761d281e15f4111b5700a6db2f2b5a/nuget/netstandard.library/1.6.1/netstandard.library.1.6.1.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/16761d281e15f4111b5700a6db2f2b5a/nuget/sprache/2.3.1/sprache.2.3.1.nupkg.sha512"
+  ],
+  "logs": []
+}

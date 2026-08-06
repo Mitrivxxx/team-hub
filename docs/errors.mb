@@ -1,0 +1,54 @@
+## Purpose
+- Pin Team Hub HTTP error contract to RFC 9457 Problem Details.
+
+## Source of truth
+- `building-blocks/TeamHub.Observability/ProblemTypes.cs`
+- `building-blocks/TeamHub.Observability/TeamHubProblemDetailsFactory.cs`
+- `building-blocks/TeamHub.Observability/Middleware/ExceptionMiddleware.cs`
+- Service mappers: `OrganizationExceptionMapper`, `RedisUnavailableExceptionMapper`
+
+## Do
+- Content-Type: `application/problem+json`.
+- Required fields: `type`, `title`, `status`, `detail` (when useful), `instance` (request path).
+- Always include extension `correlationId`.
+- Include `sessionId` when auth set `HttpContext.Items["SessionId"]`.
+- In Development only: unhandled errors may include `stackTrace`.
+- Clients switch on `type`, not only HTTP status.
+- Base URI: `https://teamhub.dev/problems/{suffix}`.
+
+### Shared types
+| suffix | HTTP | when |
+|--------|------|------|
+| `internal` | 500 | unhandled exception |
+| `validation-failed` | 400 | ModelState / FluentValidation / domain validation |
+| `unauthorized` | 401 | missing/invalid auth for intentional controller returns |
+| `forbidden` | 403 | authenticated but not allowed |
+| `conflict` | 409 | business conflict (duplicate, sole owner leave, …) |
+| `service-unavailable` | 503 | dependency down (Redis, blob storage) |
+
+### Organization
+| suffix | HTTP | when |
+|--------|------|------|
+| `organization-not-found` | 404 | org / related entity missing |
+| `forbidden` | 403 | not a member / missing permission |
+| `conflict` | 409 | duplicate slug, sole owner leave, … |
+| `validation-failed` | 400 | domain / avatar validation |
+| `service-unavailable` | 503 | blob storage not configured |
+
+### Auth
+| suffix | HTTP | when | extensions |
+|--------|------|------|------------|
+| `invalid-credentials` | 401 | bad login | `code=AUTH_INVALID_CREDENTIALS`, `remainingAttempts`, `lockoutSeconds` |
+| `account-locked` | 423 | login lockout | `code=AUTH_LOCKED`, `remainingAttempts`, `lockoutSeconds` |
+| `unauthorized` | 401 | refresh / change-password identity failure | |
+| `conflict` | 409 | register duplicate username/email | `errors` (ValidationProblemDetails) |
+| `service-unavailable` | 503 | Redis unavailable | |
+
+### Validation
+- Format / ModelState → `ValidationProblemDetails` with `type=…/validation-failed` and `errors`.
+- Business field conflicts (register) → `ValidationProblemDetails` with `type=…/conflict` and `errors`.
+
+## Don't
+- Do not invent per-endpoint custom error DTOs for REST.
+- Do not use `https://httpstatuses.com/{code}` as `type`.
+- Do not put stack traces in non-Development responses.

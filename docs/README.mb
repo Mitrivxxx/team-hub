@@ -10,11 +10,12 @@
   1. `architecture.md`
   2. `gateway.mb`
   3. `auth.mb`
-  4. `database.mb`
-  5. `frontend.mb`
-  6. `backend.mb`
-  7. `runbook.mb`
-  8. `coding-style.mb`
+  4. `errors.mb`
+  5. `database.mb`
+  6. `frontend.mb`
+  7. `backend.mb`
+  8. `runbook.mb`
+  9. `coding-style.mb`
 - Use file-specific docs for implementation details, not assumptions.
 
 ## Don't

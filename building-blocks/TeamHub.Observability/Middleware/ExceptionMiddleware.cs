@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +13,6 @@ public sealed class ExceptionMiddleware(
     IEnumerable<IExceptionProblemDetailsMapper> mappers)
 {
     const string GenericErrorDetail = "An unexpected error occurred. Please contact administrator.";
-    const string SessionIdItemKey = "SessionId";
 
     static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
@@ -32,7 +30,7 @@ public sealed class ExceptionMiddleware(
                 throw;
             }
 
-            var correlationId = ResolveCorrelationId(context);
+            var correlationId = TeamHubProblemDetailsFactory.ResolveCorrelationId(context);
             logger.LogError(
                 ex,
                 "Unhandled exception for request {Method} {Path} (CorrelationId: {CorrelationId})",
@@ -40,87 +38,50 @@ public sealed class ExceptionMiddleware(
                 context.Request.Path,
                 correlationId);
 
-            var problem = BuildProblemDetails(context, ex, correlationId);
+            var problem = BuildProblemDetails(context, ex);
             context.Response.StatusCode = problem.Status ?? StatusCodes.Status500InternalServerError;
-            context.Response.ContentType = "application/problem+json; charset=utf-8";
+            context.Response.ContentType = TeamHubProblemDetailsFactory.ProblemJsonContentType;
             await context.Response.WriteAsync(JsonSerializer.Serialize(problem, JsonOptions));
         }
     }
 
-    static string ResolveCorrelationId(HttpContext context)
+    ProblemDetails BuildProblemDetails(HttpContext context, Exception exception)
     {
-        if (context.Items.TryGetValue(CorrelationIdMiddleware.ItemKey, out var item) &&
-            item is string correlationIdFromItems &&
-            !string.IsNullOrWhiteSpace(correlationIdFromItems))
-        {
-            return correlationIdFromItems;
-        }
+        var mapping = MapException(exception);
 
-        var correlationIdFromHeader = context.Request.Headers[CorrelationIdMiddleware.HeaderName].FirstOrDefault();
-        if (!string.IsNullOrWhiteSpace(correlationIdFromHeader))
-        {
-            return correlationIdFromHeader.Trim();
-        }
-
-        var traceId = Activity.Current?.TraceId.ToString();
-        if (!string.IsNullOrWhiteSpace(traceId))
-        {
-            return traceId;
-        }
-
-        return Guid.NewGuid().ToString("N");
-    }
-
-    ProblemDetails BuildProblemDetails(HttpContext context, Exception exception, string correlationId)
-    {
-        var (statusCode, title, detail, preferMappedDetail) = MapException(exception);
-
-        var detailToReturn = preferMappedDetail
-            ? detail
+        var detailToReturn = mapping.PreferMappedDetail
+            ? mapping.Detail
             : environment.IsDevelopment()
                 ? exception.Message
-                : detail;
+                : mapping.Detail;
 
-        var problem = new ProblemDetails
-        {
-            Status = statusCode,
-            Title = title,
-            Detail = detailToReturn,
-            Type = $"https://httpstatuses.com/{statusCode}",
-            Instance = context.Request.Path
-        };
+        var stackTrace = environment.IsDevelopment() ? exception.ToString() : null;
 
-        problem.Extensions["correlationId"] = correlationId;
-
-        if (context.Items.TryGetValue(SessionIdItemKey, out var sessionId) &&
-            sessionId is string sessionIdValue &&
-            !string.IsNullOrWhiteSpace(sessionIdValue))
-        {
-            problem.Extensions["sessionId"] = sessionIdValue;
-        }
-
-        if (environment.IsDevelopment())
-        {
-            problem.Extensions["stackTrace"] = exception.ToString();
-        }
-
-        return problem;
+        return TeamHubProblemDetailsFactory.Create(
+            context,
+            mapping.StatusCode,
+            mapping.Title,
+            detailToReturn,
+            mapping.Type,
+            mapping.Extensions,
+            stackTrace);
     }
 
-    (int StatusCode, string Title, string Detail, bool PreferMappedDetail) MapException(Exception exception)
+    ExceptionMapping MapException(Exception exception)
     {
         foreach (var mapper in mappers)
         {
             if (mapper.TryMap(exception, out var mapping))
             {
-                return (mapping.StatusCode, mapping.Title, mapping.Detail, mapping.PreferMappedDetail);
+                return mapping;
             }
         }
 
-        return (
+        return new ExceptionMapping(
             StatusCodes.Status500InternalServerError,
             "An unexpected error occurred",
             GenericErrorDetail,
+            ProblemTypes.Internal,
             PreferMappedDetail: false);
     }
 }

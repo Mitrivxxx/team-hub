@@ -1,23 +1,23 @@
 {
   "version": 2,
-  "dgSpecHash": "tw0ihyJaFOw=",
+  "dgSpecHash": "fAcXyCSte3o=",
   "success": true,
   "projectFilePath": "/home/matsma/project/team-hub/aspire/TeamHub.ServiceDefaults/TeamHub.ServiceDefaults.csproj",
   "expectedPackageFiles": [
-    "/tmp/cursor-sandbox-cache/a2d1450b9018cc89cdca1049801b3a45/nuget/microsoft.extensions.ambientmetadata.application/10.8.0/microsoft.extensions.ambientmetadata.application.10.8.0.nupkg.sha512",
-    "/tmp/cursor-sandbox-cache/a2d1450b9018cc89cdca1049801b3a45/nuget/microsoft.extensions.compliance.abstractions/10.8.0/microsoft.extensions.compliance.abstractions.10.8.0.nupkg.sha512",
-    "/tmp/cursor-sandbox-cache/a2d1450b9018cc89cdca1049801b3a45/nuget/microsoft.extensions.dependencyinjection.autoactivation/10.8.0/microsoft.extensions.dependencyinjection.autoactivation.10.8.0.nupkg.sha512",
-    "/tmp/cursor-sandbox-cache/a2d1450b9018cc89cdca1049801b3a45/nuget/microsoft.extensions.diagnostics.exceptionsummarization/10.8.0/microsoft.extensions.diagnostics.exceptionsummarization.10.8.0.nupkg.sha512",
-    "/tmp/cursor-sandbox-cache/a2d1450b9018cc89cdca1049801b3a45/nuget/microsoft.extensions.http.diagnostics/10.8.0/microsoft.extensions.http.diagnostics.10.8.0.nupkg.sha512",
-    "/tmp/cursor-sandbox-cache/a2d1450b9018cc89cdca1049801b3a45/nuget/microsoft.extensions.http.resilience/10.8.0/microsoft.extensions.http.resilience.10.8.0.nupkg.sha512",
-    "/tmp/cursor-sandbox-cache/a2d1450b9018cc89cdca1049801b3a45/nuget/microsoft.extensions.resilience/10.8.0/microsoft.extensions.resilience.10.8.0.nupkg.sha512",
-    "/tmp/cursor-sandbox-cache/a2d1450b9018cc89cdca1049801b3a45/nuget/microsoft.extensions.servicediscovery/10.8.0/microsoft.extensions.servicediscovery.10.8.0.nupkg.sha512",
-    "/tmp/cursor-sandbox-cache/a2d1450b9018cc89cdca1049801b3a45/nuget/microsoft.extensions.servicediscovery.abstractions/10.8.0/microsoft.extensions.servicediscovery.abstractions.10.8.0.nupkg.sha512",
-    "/tmp/cursor-sandbox-cache/a2d1450b9018cc89cdca1049801b3a45/nuget/microsoft.extensions.telemetry/10.8.0/microsoft.extensions.telemetry.10.8.0.nupkg.sha512",
-    "/tmp/cursor-sandbox-cache/a2d1450b9018cc89cdca1049801b3a45/nuget/microsoft.extensions.telemetry.abstractions/10.8.0/microsoft.extensions.telemetry.abstractions.10.8.0.nupkg.sha512",
-    "/tmp/cursor-sandbox-cache/a2d1450b9018cc89cdca1049801b3a45/nuget/polly.core/8.4.2/polly.core.8.4.2.nupkg.sha512",
-    "/tmp/cursor-sandbox-cache/a2d1450b9018cc89cdca1049801b3a45/nuget/polly.extensions/8.4.2/polly.extensions.8.4.2.nupkg.sha512",
-    "/tmp/cursor-sandbox-cache/a2d1450b9018cc89cdca1049801b3a45/nuget/polly.ratelimiting/8.4.2/polly.ratelimiting.8.4.2.nupkg.sha512"
+    "/tmp/cursor-sandbox-cache/d8c3649f218053ba288d135b214ada96/nuget/microsoft.extensions.ambientmetadata.application/10.8.0/microsoft.extensions.ambientmetadata.application.10.8.0.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/d8c3649f218053ba288d135b214ada96/nuget/microsoft.extensions.compliance.abstractions/10.8.0/microsoft.extensions.compliance.abstractions.10.8.0.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/d8c3649f218053ba288d135b214ada96/nuget/microsoft.extensions.dependencyinjection.autoactivation/10.8.0/microsoft.extensions.dependencyinjection.autoactivation.10.8.0.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/d8c3649f218053ba288d135b214ada96/nuget/microsoft.extensions.diagnostics.exceptionsummarization/10.8.0/microsoft.extensions.diagnostics.exceptionsummarization.10.8.0.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/d8c3649f218053ba288d135b214ada96/nuget/microsoft.extensions.http.diagnostics/10.8.0/microsoft.extensions.http.diagnostics.10.8.0.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/d8c3649f218053ba288d135b214ada96/nuget/microsoft.extensions.http.resilience/10.8.0/microsoft.extensions.http.resilience.10.8.0.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/d8c3649f218053ba288d135b214ada96/nuget/microsoft.extensions.resilience/10.8.0/microsoft.extensions.resilience.10.8.0.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/d8c3649f218053ba288d135b214ada96/nuget/microsoft.extensions.servicediscovery/10.8.0/microsoft.extensions.servicediscovery.10.8.0.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/d8c3649f218053ba288d135b214ada96/nuget/microsoft.extensions.servicediscovery.abstractions/10.8.0/microsoft.extensions.servicediscovery.abstractions.10.8.0.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/d8c3649f218053ba288d135b214ada96/nuget/microsoft.extensions.telemetry/10.8.0/microsoft.extensions.telemetry.10.8.0.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/d8c3649f218053ba288d135b214ada96/nuget/microsoft.extensions.telemetry.abstractions/10.8.0/microsoft.extensions.telemetry.abstractions.10.8.0.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/d8c3649f218053ba288d135b214ada96/nuget/polly.core/8.4.2/polly.core.8.4.2.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/d8c3649f218053ba288d135b214ada96/nuget/polly.extensions/8.4.2/polly.extensions.8.4.2.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/d8c3649f218053ba288d135b214ada96/nuget/polly.ratelimiting/8.4.2/polly.ratelimiting.8.4.2.nupkg.sha512"
   ],
   "logs": []
 }

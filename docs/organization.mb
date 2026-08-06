@@ -116,7 +116,7 @@
   - `PermissionCreated` / `PermissionUpdated` / `PermissionDeleted` — `organizationId`, `permissionId`, `code`, `actorUserId`
 
 - Avatar upload/delete returns `503` when `BlobStorage:ConnectionString` is not configured.
-- Keep JWT options from env/config: `Jwt__Key`, `Jwt__Issuer`, `Jwt__Audience` (same values as auth).
+- Keep JWT: `Jwt:Issuer`/`Jwt:Audience` in appsettings; `Jwt__Key` from env (same key as auth).
 - Keep PostgreSQL connection: `ConnectionStrings__DefaultConnection` in organization `.env`.
 - Dev blob storage (Azurite): `BlobStorage__ConnectionString`, `BlobStorage__ContainerName`, `BlobStorage__PublicBlobEndpoint`, `BlobStorage__SasExpiryMinutes`.
 

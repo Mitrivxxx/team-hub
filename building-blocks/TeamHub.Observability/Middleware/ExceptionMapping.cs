@@ -4,4 +4,6 @@ public readonly record struct ExceptionMapping(
     int StatusCode,
     string Title,
     string Detail,
-    bool PreferMappedDetail = false);
+    string Type,
+    bool PreferMappedDetail = false,
+    IReadOnlyDictionary<string, object?>? Extensions = null);
