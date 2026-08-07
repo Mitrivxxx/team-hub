@@ -10,7 +10,7 @@
         "projectUniqueName": "/home/matsma/project/team-hub/aspire/TeamHub.ServiceDefaults/TeamHub.ServiceDefaults.csproj",
         "projectName": "TeamHub.ServiceDefaults",
         "projectPath": "/home/matsma/project/team-hub/aspire/TeamHub.ServiceDefaults/TeamHub.ServiceDefaults.csproj",
-        "packagesPath": "/home/matsma/.nuget/packages/",
+        "packagesPath": "/tmp/cursor-sandbox-cache/4da3f7a31408809ae45a06eaed401d4e/nuget",
         "outputPath": "/home/matsma/project/team-hub/aspire/TeamHub.ServiceDefaults/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
@@ -499,7 +499,7 @@
         "projectUniqueName": "/home/matsma/project/team-hub/building-blocks/TeamHub.GrpcContracts/TeamHub.GrpcContracts.csproj",
         "projectName": "TeamHub.GrpcContracts",
         "projectPath": "/home/matsma/project/team-hub/building-blocks/TeamHub.GrpcContracts/TeamHub.GrpcContracts.csproj",
-        "packagesPath": "/home/matsma/.nuget/packages/",
+        "packagesPath": "/tmp/cursor-sandbox-cache/4da3f7a31408809ae45a06eaed401d4e/nuget",
         "outputPath": "/home/matsma/project/team-hub/building-blocks/TeamHub.GrpcContracts/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
@@ -855,7 +855,7 @@
         "projectUniqueName": "/home/matsma/project/team-hub/building-blocks/TeamHub.Observability/TeamHub.Observability.csproj",
         "projectName": "TeamHub.Observability",
         "projectPath": "/home/matsma/project/team-hub/building-blocks/TeamHub.Observability/TeamHub.Observability.csproj",
-        "packagesPath": "/home/matsma/.nuget/packages/",
+        "packagesPath": "/tmp/cursor-sandbox-cache/4da3f7a31408809ae45a06eaed401d4e/nuget",
         "outputPath": "/home/matsma/project/team-hub/building-blocks/TeamHub.Observability/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
@@ -1388,7 +1388,7 @@
         "projectUniqueName": "/home/matsma/project/team-hub/services/team-hub-bff/team-hub-bff/team-hub-bff.csproj",
         "projectName": "team-hub-bff",
         "projectPath": "/home/matsma/project/team-hub/services/team-hub-bff/team-hub-bff/team-hub-bff.csproj",
-        "packagesPath": "/home/matsma/.nuget/packages/",
+        "packagesPath": "/tmp/cursor-sandbox-cache/4da3f7a31408809ae45a06eaed401d4e/nuget",
         "outputPath": "/home/matsma/project/team-hub/services/team-hub-bff/team-hub-bff/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [

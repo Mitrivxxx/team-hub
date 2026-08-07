@@ -3,9 +3,11 @@
 
 ## Components
 - `building-blocks/TeamHub.Redis` — Redis connection bootstrap (`TeamHub.Redis`).
+- `building-blocks/TeamHub.Kafka` — Kafka producer/consumer bootstrap + shared events (`TeamHub.Kafka`).
 - `building-blocks/TeamHub.BlobStorage` — Azure Blob Storage bootstrap (`TeamHub.BlobStorage`).
 - `building-blocks/TeamHub.Observability` — OpenTelemetry tracing/metrics and Serilog bootstrap (`TeamHub.Observability`).
 - `building-blocks/TeamHub.GrpcContracts` — Shared gRPC protobuf contracts (`TeamHub.GrpcContracts`).
+- `building-blocks/TeamHub.DemoSeed` — Deterministic demo user identity factory for auth/organization seeders (`TeamHub.DemoSeed`).
 
 ## Do
 - Keep building blocks free of domain/business logic.

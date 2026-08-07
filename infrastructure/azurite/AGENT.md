@@ -23,7 +23,7 @@
 - Keep connection string templates in `infrastructure/azurite/.env.example`.
 - Use `building-blocks/TeamHub.BlobStorage` for blob client bootstrap in services.
 - Set `BlobStorage__PublicBlobEndpoint` to a host-reachable URL for browser SAS links (`http://127.0.0.1:10000/devstoreaccount1`).
-- Mount dev container name from root compose overrides (`team-hub-azurite-dev`).
+- Mount dev container name from root compose overrides (`blob-storage-dev`).
 - Persist blobs via Docker volume `azurite_data_dev`.
 
 ## Don't
@@ -33,5 +33,5 @@
 
 ## Connection strings
 - Local dev (`dotnet run`): `BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1`
-- Docker network: `BlobEndpoint=http://azurite:10000/devstoreaccount1`
+- Docker network: `BlobEndpoint=http://blob-storage:10000/devstoreaccount1`
 - Browser SAS URLs: use `BlobStorage__PublicBlobEndpoint=http://127.0.0.1:10000/devstoreaccount1`

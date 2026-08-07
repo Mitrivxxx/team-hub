@@ -3,16 +3,16 @@ global:
   evaluation_interval: 15s
 
 scrape_configs:
-  - job_name: auth
+  - job_name: srv-auth
     metrics_path: /metrics
     static_configs:
-      - targets: ["auth:8080"]
+      - targets: ["srv-auth:8080"]
         labels:
-          service: auth
+          service: srv-auth
 
-  - job_name: gateway
+  - job_name: gw-api
     metrics_path: /metrics
     static_configs:
-      - targets: ["gateway:8080"]
+      - targets: ["gw-api:8080"]
         labels:
-          service: gateway
+          service: gw-api

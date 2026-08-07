@@ -13,12 +13,13 @@
   - `cd aspire/TeamHub.AppHost && dotnet run`
 - Prerequisites: .NET 10 SDK (`dotnet --version` should report 10.x), Aspire 13 (`Aspire.AppHost.Sdk` via NuGet — no Aspire workload), Docker, Node.js/npm, TLS certs in `certs/` (`./scripts/setup-certs.sh`).
   - If `dotnet --list-sdks` only shows 8.x, install SDK 10 (`https://aka.ms/dotnet/download` or `curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 10.0`) and put `$HOME/.dotnet` first on `PATH` (`export DOTNET_ROOT=$HOME/.dotnet; export PATH=$HOME/.dotnet:$PATH`). Repo `global.json` pins SDK 10.0.x.
-- AppHost runs: Postgres (Aspire resource `auth-db`, database name `auth_db`), Redis, Azurite blob storage (`storage` + `blobs`), `team-hub-auth`, `team-hub-organization`, `team-hub-notification`, `team-hub-bff`, `team-hub-gateway`, infrastructure nginx, Angular (`npm start`).
+- AppHost runs: Postgres (Aspire resource `db-postgres` + `auth-db` / `organization-db` / `notification-db`), Redis (`cache-redis`), Kafka (`msg-kafka`), Azurite blob storage (`blob-storage` + `blobs`), `srv-auth`, `srv-organization`, `srv-notification`, `srv-bff`, `gw-api`, infrastructure nginx (`gw-nginx`), Angular (`ui-web` / `npm start`).
 - Aspire resource names: only ASCII letters, digits, hyphens (no underscores).
 - Keep production/pre-prod on `docker-compose.yml` — Aspire is dev-only.
 - JWT dev secrets live in `aspire/TeamHub.AppHost/appsettings.Development.json` (`Aspire:Jwt:*`).
-- Gateway destinations under Aspire: auth `http://team-hub-auth`, team `http://team-hub-organization`, bff `http://team-hub-bff` (YARP service discovery).
+- Gateway destinations under Aspire: auth `http://srv-auth`, team `http://srv-organization`, notification `http://srv-notification`, bff `http://srv-bff` (YARP service discovery).
 - Internal gRPC ports under Aspire: auth `5101`, organization `5102`; BFF `Grpc__Auth`/`Grpc__Organization` point at `127.0.0.1:5101/5102`.
+- Kafka bootstrap is injected as `Kafka__BootstrapServers` on organization (producer) and notification (consumer).
 - Aspire Dashboard is one UI for the whole AppHost run (all resources at once: logs, endpoints, traces).
 - Nginx under Aspire uses `GATEWAY_UPSTREAM=host.docker.internal:5000` (gateway runs as host process).
 - Manual dev without Aspire remains available via `docker-compose.dev.yml` + `dotnet run` / `npm start`.
@@ -32,20 +33,23 @@
 | Resource | Host URL |
 |----------|----------|
 | Aspire Dashboard | printed in console on start (one UI for all resources) |
-| Frontend (web) | `https://localhost:4200` |
-| Infrastructure nginx (API edge) | `https://localhost:8080` |
-| Gateway (`team-hub-gateway`) | `http://localhost:5000` |
-| BFF (`team-hub-bff`) | `http://localhost:5003` |
-| Auth (`team-hub-auth`) | REST dynamic / gRPC `http://localhost:5101` |
-| Organization (`team-hub-organization`) | REST dynamic or `http://localhost:5002` / gRPC `http://localhost:5102` |
-| Notification (`team-hub-notification`) | `http://localhost:5004` |
-| Postgres | dynamic (see dashboard; database `auth_db`) |
-| Redis | dynamic (see dashboard) |
-| Azurite (blob) | dynamic (see dashboard; host blob port often `10000`) |
+| Frontend (`ui-web`) | `https://localhost:4200` |
+| Infrastructure nginx (`gw-nginx`) | `https://localhost:8080` |
+| Gateway (`gw-api`) | `http://localhost:5000` |
+| BFF (`srv-bff`) | `http://localhost:5003` |
+| Auth (`srv-auth`) | REST dynamic / gRPC `http://localhost:5101` |
+| Organization (`srv-organization`) | REST dynamic or `http://localhost:5002` / gRPC `http://localhost:5102` |
+| Notification (`srv-notification`) | `http://localhost:5004` |
+| Postgres (`db-postgres`) | dynamic (see dashboard; databases `auth_db`, `organization_db`, `notification_db`) |
+| Redis (`cache-redis`) | dynamic (see dashboard) |
+| Kafka (`msg-kafka`) | dynamic (see dashboard) |
+| Azurite (`blob-storage`) | dynamic (see dashboard; host blob port often `10000`) |
 
 ## Request flow
 - Frontend `/api/auth/*` -> nginx `8080` -> gateway `5000` -> auth (service discovery) -> postgres + redis.
 - Frontend `/api/organizations/*` -> nginx `8080` -> gateway `5000` -> team (service discovery) -> postgres + Azurite (avatars).
+- Frontend `/api/notifications/*` -> nginx `8080` -> gateway `5000` -> notification (service discovery) -> postgres.
+- Async: organization member add -> Kafka `organization.events` -> notification consumer -> `notification_db`.
 
 ## Troubleshooting
 - Port conflict: stop `docker compose` and any running `dotnet`/`npm` processes before `dotnet run` AppHost.

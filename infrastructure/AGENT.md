@@ -21,16 +21,16 @@
 
 ## Do
 - Terminate HTTPS on container port `443` (host `8080`).
-- Serve internal HTTP on port `80` for docker network traffic (`web` -> `http://nginx:80`).
-- Proxy `/api/*` and `/health` to upstream `gateway` (see `upstream.conf` generated at container start).
-- When `GATEWAY_UPSTREAM` is set (Aspire dev), entrypoint writes `upstream gateway { server $GATEWAY_UPSTREAM; }`.
-- When `GATEWAY_UPSTREAM` is unset (docker compose prod), default upstream is `gateway:8080`.
+- Serve internal HTTP on port `80` for docker network traffic (`ui-web` -> `http://gw-nginx:80`).
+- Proxy `/api/*` and `/health` to upstream `gw-api` (see `upstream.conf` generated at container start).
+- When `GATEWAY_UPSTREAM` is set (Aspire dev), entrypoint writes `upstream gw-api { server $GATEWAY_UPSTREAM; }`.
+- When `GATEWAY_UPSTREAM` is unset (docker compose prod), default upstream is `gw-api:8080`.
 - Forward proxy headers: `Host`, `X-Real-IP`, `X-Forwarded-For`, `X-Forwarded-Proto`, `X-Forwarded-Host`.
 - Keep `client_max_body_size 10m`, HTTP/1.1 keep-alive to upstream, and proxy timeouts aligned with gateway.
 - On HTTPS listener (`443`): enable gzip, security headers, and rate limiting on `/api/`.
 - Mount TLS certs from `./certs` to `/etc/nginx/certs`.
-- Treat flow as: frontend -> infrastructure nginx -> gateway (HTTP) -> auth.
-- Run one shared Redis instance via `infrastructure/redis/docker-compose.redis.yml` (included by root compose files).
+- Treat flow as: frontend -> infrastructure nginx (`gw-nginx`) -> gateway (`gw-api`, HTTP) -> auth (`srv-auth`).
+- Run one shared Redis instance via `infrastructure/redis/docker-compose.redis.yml` (included by root compose files; service `cache-redis`).
 - Use `building-blocks/TeamHub.Redis` (`TeamHub.Redis`) for service-side Redis connection bootstrap.
 - Use `building-blocks/TeamHub.BlobStorage` (`TeamHub.BlobStorage`) for dev Azurite/blob client bootstrap in organization service.
 - Use `building-blocks/TeamHub.Observability` (`TeamHub.Observability`) for OpenTelemetry and Serilog bootstrap.
@@ -42,17 +42,17 @@
 - Do not add per-service Redis containers or connection bootstrap outside `building-blocks/TeamHub.Redis`.
 
 ## Listeners
-- **Port 80 (internal):** HTTP proxy to gateway for `web` container.
+- **Port 80 (internal):** HTTP proxy to gateway for `ui-web` container.
 - **Port 443 (public edge):** HTTPS with gzip, security headers, rate limiting.
 
 ## Redis
-- Dev container: `team-hub-redis-dev` (`docker-compose.dev.yml`)
-- Prod container: `team-hub-redis-prod` (`docker-compose.yml`)
+- Dev container: `cache-redis-dev` (`docker-compose.dev.yml`)
+- Prod container: `cache-redis-prod` (`docker-compose.yml`)
 - Host port: `6379`
-- Docker network: `redis:6379`
+- Docker network: `cache-redis:6379`
 
 ## Azurite (dev only)
-- Dev container: `team-hub-azurite-dev` (`docker-compose.dev.yml` only)
+- Dev container: `blob-storage-dev` (`docker-compose.dev.yml` only; service `blob-storage`)
 - Host blob port: `10000`
-- Docker network: `azurite:10000`
+- Docker network: `blob-storage:10000`
 - Browser SAS URLs: `BlobStorage__PublicBlobEndpoint=http://127.0.0.1:10000/devstoreaccount1`

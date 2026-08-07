@@ -10,6 +10,7 @@
         "dependencies": {
           "Aspire.Hosting.AppHost": "13.4.6",
           "Aspire.Hosting.Azure.Storage": "13.4.6",
+          "Aspire.Hosting.Kafka": "13.4.6",
           "Aspire.Hosting.PostgreSQL": "13.4.6",
           "Aspire.Hosting.Redis": "13.4.6"
         },
@@ -226,6 +227,35 @@
           }
         }
       },
+      "Aspire.Hosting.Kafka/13.4.6": {
+        "dependencies": {
+          "AspNetCore.HealthChecks.Kafka": "9.0.0",
+          "AspNetCore.HealthChecks.Uris": "9.0.0",
+          "Aspire.Hosting": "13.4.6",
+          "Confluent.Kafka": "2.14.0",
+          "Google.Protobuf": "3.34.1",
+          "Grpc.AspNetCore": "2.80.0",
+          "Grpc.Net.ClientFactory": "2.80.0",
+          "Humanizer.Core": "3.0.10",
+          "JsonPatch.Net": "3.3.0",
+          "KubernetesClient": "19.0.2",
+          "Microsoft.Extensions.Hosting": "10.0.8",
+          "ModelContextProtocol": "1.3.0",
+          "Newtonsoft.Json": "13.0.4",
+          "OpenTelemetry.Exporter.OpenTelemetryProtocol": "1.15.3",
+          "OpenTelemetry.Extensions.Hosting": "1.15.3",
+          "Polly.Core": "8.6.6",
+          "Semver": "3.0.0",
+          "StreamJsonRpc": "2.25.29",
+          "System.IO.Hashing": "10.0.8"
+        },
+        "runtime": {
+          "lib/net8.0/Aspire.Hosting.Kafka.dll": {
+            "assemblyVersion": "13.4.6.0",
+            "fileVersion": "13.400.626.31906"
+          }
+        }
+      },
       "Aspire.Hosting.PostgreSQL/13.4.6": {
         "dependencies": {
           "AspNetCore.HealthChecks.NpgSql": "9.0.0",
@@ -300,6 +330,17 @@
         },
         "runtime": {
           "lib/net8.0/HealthChecks.Azure.Storage.Queues.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.0.0"
+          }
+        }
+      },
+      "AspNetCore.HealthChecks.Kafka/9.0.0": {
+        "dependencies": {
+          "Confluent.Kafka": "2.14.0"
+        },
+        "runtime": {
+          "lib/net8.0/HealthChecks.Kafka.dll": {
             "assemblyVersion": "9.0.0.0",
             "fileVersion": "9.0.0.0"
           }
@@ -491,6 +532,17 @@
           }
         }
       },
+      "Confluent.Kafka/2.14.0": {
+        "dependencies": {
+          "librdkafka.redist": "2.14.0"
+        },
+        "runtime": {
+          "lib/net8.0/Confluent.Kafka.dll": {
+            "assemblyVersion": "2.14.0.0",
+            "fileVersion": "2.14.0.0"
+          }
+        }
+      },
       "Fractions/7.3.0": {
         "runtime": {
           "lib/netstandard2.1/Fractions.dll": {
@@ -625,6 +677,135 @@
           "lib/net10.0/KubernetesClient.dll": {
             "assemblyVersion": "19.0.0.0",
             "fileVersion": "19.0.2.63804"
+          }
+        }
+      },
+      "librdkafka.redist/2.14.0": {
+        "runtimeTargets": {
+          "runtimes/linux-arm64/native/alpine-librdkafka.so": {
+            "rid": "linux-arm64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/linux-arm64/native/librdkafka.so": {
+            "rid": "linux-arm64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/linux-x64/native/alpine-librdkafka.so": {
+            "rid": "linux-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/linux-x64/native/centos8-librdkafka.so": {
+            "rid": "linux-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/linux-x64/native/librdkafka.so": {
+            "rid": "linux-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/osx-arm64/native/librdkafka.dylib": {
+            "rid": "osx-arm64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/osx-x64/native/librdkafka.dylib": {
+            "rid": "osx-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x64/native/libcrypto-3-x64.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x64/native/libcurl.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x64/native/librdkafka.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x64/native/librdkafkacpp.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x64/native/libssl-3-x64.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x64/native/msvcp140.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x64/native/vcruntime140.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x64/native/zlib1.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x64/native/zstd.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x86/native/libcrypto-3.dll": {
+            "rid": "win-x86",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x86/native/libcurl.dll": {
+            "rid": "win-x86",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x86/native/librdkafka.dll": {
+            "rid": "win-x86",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x86/native/librdkafkacpp.dll": {
+            "rid": "win-x86",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x86/native/libssl-3.dll": {
+            "rid": "win-x86",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x86/native/msvcp140.dll": {
+            "rid": "win-x86",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x86/native/vcruntime140.dll": {
+            "rid": "win-x86",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x86/native/zlib1.dll": {
+            "rid": "win-x86",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x86/native/zstd.dll": {
+            "rid": "win-x86",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
           }
         }
       },
@@ -1127,6 +1308,13 @@
       "path": "aspire.hosting.azure.storage/13.4.6",
       "hashPath": "aspire.hosting.azure.storage.13.4.6.nupkg.sha512"
     },
+    "Aspire.Hosting.Kafka/13.4.6": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-gPOoBUvPgrHTZR7iDn6NGzBkDUmaJd0HDjIUh6V0ww992lM+TRtai4ipfqpmyhgf4aPde40xDM3/7C4fjBWubA==",
+      "path": "aspire.hosting.kafka/13.4.6",
+      "hashPath": "aspire.hosting.kafka.13.4.6.nupkg.sha512"
+    },
     "Aspire.Hosting.PostgreSQL/13.4.6": {
       "type": "package",
       "serviceable": true,
@@ -1154,6 +1342,13 @@
       "sha512": "sha512-ne+XNpiO2yVH9g6x5B1SJBMzNz8JR0YRiBvJR9qGdpTsHtcTY8GhmA9+mznQ+nTLgUQNvEbr6Xj8Ha9zjW0QDQ==",
       "path": "aspnetcore.healthchecks.azure.storage.queues/9.0.0",
       "hashPath": "aspnetcore.healthchecks.azure.storage.queues.9.0.0.nupkg.sha512"
+    },
+    "AspNetCore.HealthChecks.Kafka/9.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-RZur8bOLjg/odBq495aT2x606kaO8j/nq/FFvc4CKtRGR8Seh7PGlbVKsGR7cjwUVFkorxNCdlJ8JFvdzXP9jQ==",
+      "path": "aspnetcore.healthchecks.kafka/9.0.0",
+      "hashPath": "aspnetcore.healthchecks.kafka.9.0.0.nupkg.sha512"
     },
     "AspNetCore.HealthChecks.NpgSql/9.0.0": {
       "type": "package",
@@ -1267,6 +1462,13 @@
       "path": "azure.storage.queues/12.26.0",
       "hashPath": "azure.storage.queues.12.26.0.nupkg.sha512"
     },
+    "Confluent.Kafka/2.14.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-NnG0UXR9Wnup3Nvik6SBVaHRzCu0Iit8BE7ayaWsLt+yRWrI0ZY6o8pxPB6B/jyu+fbUllZ9efsbyFwrowDcpg==",
+      "path": "confluent.kafka/2.14.0",
+      "hashPath": "confluent.kafka.2.14.0.nupkg.sha512"
+    },
     "Fractions/7.3.0": {
       "type": "package",
       "serviceable": true,
@@ -1364,6 +1566,13 @@
       "sha512": "sha512-0m8FuzCDBygaXMbsb7qVapNZzTm4ftM7ECp/waTRh/XOUQziRF2rKJCRmsvYbBXgJkQvU+FBbkoa40hexzDC+g==",
       "path": "kubernetesclient/19.0.2",
       "hashPath": "kubernetesclient.19.0.2.nupkg.sha512"
+    },
+    "librdkafka.redist/2.14.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-jqmYswYUiW9So5lce1Upo/zm5V7p/kWaqnUqkP5Lar1Ekq2yLrORoDCJ1JIiVLD3xdVkavwqW9iFKHBfkTsS7w==",
+      "path": "librdkafka.redist/2.14.0",
+      "hashPath": "librdkafka.redist.2.14.0.nupkg.sha512"
     },
     "MessagePack/2.5.302": {
       "type": "package",

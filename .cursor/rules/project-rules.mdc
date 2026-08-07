@@ -9,15 +9,18 @@ alwaysApply: true
 - Keep agent changes small, safe, and consistent with current architecture.
 
 ## Project context
-- Runtime flow: `frontend -> infrastructure nginx -> gateway -> auth|team` (auth also uses postgres).
-- Services wired in repo: `infrastructure/nginx`, `team-hub-gateway`, `team-hub-auth`, `team-hub-organization`, `team-hub-notification`, `postgres`.
+- Runtime flow: `ui-web -> gw-nginx -> gw-api -> srv-auth|srv-organization|srv-notification` (auth also uses `db-postgres` + `cache-redis`; org→notification via Kafka `msg-kafka`).
+- Compose/Aspire service names follow `[type]-[module]` (`srv-*`, `gw-*`, `ui-*`, `db-*`, `cache-*`, `msg-*`, `mon-*`, `blob-storage`).
+- Code folders stay as `services/team-hub-*` / `frontend/team-hub-web`; runtime DNS names use the convention above.
 
 ## Source of truth
 - `docker-compose.yml`
 - `docker-compose.dev.yml`
 - `infrastructure/nginx/nginx.conf`
 - `infrastructure/redis/docker-compose.redis.yml`
+- `infrastructure/kafka/docker-compose.kafka.yml`
 - `building-blocks/TeamHub.Redis/*`
+- `building-blocks/TeamHub.Kafka/*`
 - `services/team-hub-gateway/team-hub-gateway/reverseproxy.json`
 - `services/team-hub-gateway/team-hub-gateway/appsettings.*.json`
 - `services/team-hub-auth/team-hub-auth/Controllers/AuthController*.cs`
@@ -30,10 +33,11 @@ alwaysApply: true
 ## Do
 - Route auth API through gateway path `/api/auth/{**catch-all}`.
 - Route organization API through gateway path `/api/organizations/{**catch-all}`.
+- Route notification API through gateway path `/api/notifications/{**catch-all}`.
 - Keep auth endpoints aligned with controllers: `register`, `login`, `refresh`, `logout`.
 - Docker compose is for Production-like pre-deployment builds (`ASPNETCORE_ENVIRONMENT=Production`, per-service `.env` files).
-- Local dev database: `docker compose -f docker-compose.dev.yml up -d` (`team-hub-dev`, database `auth_db`, volume `postgres_data_dev`).
-- Use documented ports/env from config (`8080`, `5000`, `5001`, `5002`, `4200`, `5433`) and verify before edits.
+- Local dev database: `docker compose -f docker-compose.dev.yml up -d` (`team-hub-dev`, service `db-postgres`, databases `auth_db` / `organization_db` / `notification_db`, volume `postgres_data_dev`).
+- Use documented ports/env from config (`8080`, `5000`, `5001`, `5002`, `5004`, `4200`, `5433`) and verify before edits.
 - Update docs in `docs/` and component `AGENT.md` when API contract, ports, or runtime flow changes.
 - Prefer minimal diffs and preserve existing naming/style in touched files.
 

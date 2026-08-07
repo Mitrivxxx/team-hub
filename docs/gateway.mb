@@ -15,7 +15,7 @@
   - Cluster: `auth-cluster`
 - Keep destination per environment:
   - Development: `http://localhost:5001/`
-  - Production/container: `http://auth:8080/`
+  - Production/container: `http://srv-auth:8080/`
 - Keep HTTP endpoint on gateway (TLS terminates at infrastructure nginx):
   - local dev: `http://localhost:5000`
   - container: `http://+:8080` (mapped to host `5000` for debug)

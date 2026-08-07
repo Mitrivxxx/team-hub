@@ -15,7 +15,7 @@
 ## Do
 - Use `environment.apiUrl = '/api/auth/v0.0'` for auth calls.
 - In Angular dev server, keep proxy `/api` -> `https://localhost:8080` (infrastructure nginx HTTPS).
-- In docker, frontend nginx on port `4200` proxies `/api` -> `http://nginx:80` (internal HTTP to infrastructure nginx).
+- In docker, frontend nginx on port `4200` proxies `/api` -> `http://gw-nginx:80` (internal HTTP to infrastructure nginx).
 - Keep `withCredentials: true` on login/refresh/logout to support refresh cookie flow.
 - Send `rememberMe` in login payload to control persistent session.
 - Keep session restore via `refresh()` on app start (`restoreSession()` logic).

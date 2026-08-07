@@ -26,7 +26,7 @@
 - Local dev database and Redis (manual workflow, separate from prod-like data):
   - `docker compose -f docker-compose.dev.yml up -d`
   - compose project `team-hub-dev` (isolated from compose project `team-hub`)
-  - containers `postgres-dev` (postgres on `localhost:5433`, databases `auth_db` + `organization_db`) and `team-hub-redis-dev` (`localhost:6379`)
+  - containers `db-postgres-dev` (postgres on `localhost:5433`, databases `auth_db` + `organization_db`) and `cache-redis-dev` (`localhost:6379`)
   - then `dotnet run` / `npm start` with Development config (auth auto-migrates on start)
 - Production-like full stack via docker compose project `team-hub` (ready build before deployment):
   - `./scripts/setup-certs.sh` (mkcert = trusted HTTPS in browser; otherwise self-signed with warning)
@@ -34,24 +34,24 @@
   - set `Jwt__Key` to at least 32 characters (same values in auth and gateway)
   - `docker compose up --build` (project `team-hub`)
 - Docker runs with `ASPNETCORE_ENVIRONMENT=Production` and `appsettings.Production.json`.
-- TLS certs are shared from `./certs` into `web` and `nginx` containers.
+- TLS certs are shared from `./certs` into `ui-web` and `gw-nginx` containers.
 - Use `https://localhost:4200`, `https://localhost:8080` (API edge), and `http://localhost:5000` (gateway debug).
 - Each microservice keeps its own `.env` (not in repo root).
 - Expected host ports after start:
-  - frontend `https://localhost:4200` (`team-hub-web-prod`)
-  - infrastructure nginx `https://localhost:8080` (`team-hub-nginx-prod`, API entry)
-  - gateway `http://localhost:5000` (`team-hub-gateway-prod`, debug only)
-  - auth (direct) `http://localhost:5001` (`team-hub-auth-prod`); health `GET http://localhost:5001/health`
-  - redis `localhost:6379` (`team-hub-redis-dev` / `team-hub-redis-prod`)
-  - postgres `localhost:5433` (`postgres-prod`, databases `authdb` + `organizationdb`)
-  - monitoring Grafana `http://localhost:3000` (`team-hub-grafana-prod` / `team-hub-grafana-dev`)
-  - monitoring Loki `http://localhost:3100` (`team-hub-loki-prod` / `team-hub-loki-dev`)
-  - monitoring Tempo `http://localhost:3200` (`team-hub-tempo-prod` / `team-hub-tempo-dev`)
-  - monitoring Prometheus `http://localhost:9090` (`team-hub-prometheus-prod` / `team-hub-prometheus-dev`)
+  - frontend `https://localhost:4200` (`ui-web-prod`)
+  - infrastructure nginx `https://localhost:8080` (`gw-nginx-prod`, API entry)
+  - gateway `http://localhost:5000` (`gw-api-prod`, debug only)
+  - auth (direct) `http://localhost:5001` (`srv-auth-prod`); health `GET http://localhost:5001/health`
+  - redis `localhost:6379` (`cache-redis-dev` / `cache-redis-prod`)
+  - postgres `localhost:5433` (`db-postgres-prod`, databases `authdb` + `organizationdb`)
+  - monitoring Grafana `http://localhost:3000` (`mon-grafana-prod` / `mon-grafana-dev`)
+  - monitoring Loki `http://localhost:3100` (`mon-loki-prod` / `mon-loki-dev`)
+  - monitoring Tempo `http://localhost:3200` (`mon-tempo-prod` / `mon-tempo-dev`)
+  - monitoring Prometheus `http://localhost:9090` (`mon-prometheus-prod` / `mon-prometheus-dev`)
   - monitoring OTel Collector OTLP gRPC `localhost:4317`, HTTP `localhost:4318`
 - Frontend local dev (from `frontend/team-hub-web`):
   - `npm install`
-  - start infrastructure nginx + gateway + auth + postgres (e.g. `docker compose up nginx gateway auth postgres`)
+  - start infrastructure nginx + gateway + auth + postgres (e.g. `docker compose up gw-nginx gw-api srv-auth db-postgres`)
   - `npm start` (uses proxy to infrastructure nginx on `https://localhost:8080`)
 - Optional standalone Redis (without root compose):
   - `cp infrastructure/redis/.env.example infrastructure/redis/.env`
@@ -62,7 +62,7 @@
   - Grafana: `http://localhost:3000` (default user `admin`, password from env file)
   - Loki ready check: `GET http://localhost:3100/ready`
 - First telemetry in Grafana (OTLP via collector):
-  - start stack: `docker compose up -d otel-collector loki tempo prometheus grafana auth gateway`
+  - start stack: `docker compose up -d mon-otel mon-loki mon-tempo mon-prometheus mon-grafana srv-auth gw-api`
   - generate traffic: `curl http://localhost:5000/health` (gateway) or `curl http://localhost:5001/health` (auth)
   - metrics scrape check: `curl http://localhost:5001/metrics | head`
   - open Grafana `http://localhost:3000` (credentials from `infrastructure/monitoring/compose.prod.env`)
@@ -88,7 +88,7 @@
   - open Grafana `http://localhost:3000` -> Explore -> Loki
   - query both services: `{service_name=~"team-hub-gateway|team-hub-auth"} | json | CorrelationId="<trace-id>"`
   - gateway proxy lines include `CorrelationId` in structured log; auth request logs include the same field
-  - if log lines look like `[09:14:47 INF] team_hub_auth...` (plain text), the container is not using Production Serilog JSON — rebuild with `docker compose up --build auth gateway` and confirm `ASPNETCORE_ENVIRONMENT=Production`
+  - if log lines look like `[09:14:47 INF] team_hub_auth...` (plain text), the container is not using Production Serilog JSON — rebuild with `docker compose up --build srv-auth gw-api` and confirm `ASPNETCORE_ENVIRONMENT=Production`
   - in Grafana, use `| json` to extract `CorrelationId`; plain-text log lines do not show structured fields in the message body
   - after deploy, a prod log line should start with `{"@t":` (compact JSON); search `{service="auth", env="prod"} |= "\"CorrelationId\""` to confirm the field exists
   - register flow uses one Correlation ID for both `/register` and auto-login `/login`; query `{service=~"gateway|auth", env="prod"} | json | CorrelationId="<uuid>" | RequestPath=~"/api/auth/(register|login)"`
@@ -99,7 +99,7 @@
   - auth Docker healthcheck interval is `120s` (`docker-compose.yml` + auth `Dockerfile`)
   - `/health` and `/metrics` requests are excluded from Serilog request logging in gateway and auth
   - gateway logs `/health` only when unhealthy
-  - after `docker compose up --build -d auth gateway`, Loki should not show `/health` spam every few seconds
+  - after `docker compose up --build -d srv-auth gw-api`, Loki should not show `/health` spam every few seconds
 
 ## Don't
 - Do not keep secrets in repo root `.env` or `.env.production`.
@@ -110,6 +110,6 @@
 - Do not run AppHost and `docker compose` on the same host ports at once.
 
 ## Checklist
-- Containers healthy (`postgres-prod`, `team-hub-auth-prod`, `team-hub-organization-prod`, `team-hub-gateway-prod`, `team-hub-nginx-prod`, `team-hub-web-prod`).
+- Containers healthy (`db-postgres-prod`, `srv-auth-prod`, `srv-organization-prod`, `gw-api-prod`, `gw-nginx-prod`, `ui-web-prod`).
 - Gateway route `/api/auth/*` reaches auth service.
 - Frontend can authenticate with cookie-based refresh flow.

@@ -21,7 +21,7 @@
 
 ### Connection strings
 - local dev (`dotnet run`, `docker-compose.dev.yml`): `Host=localhost;Port=5433;Database=organization_db;Username=matsma`
-- docker production (`ASPNETCORE_ENVIRONMENT=Production`): `Host=postgres;Port=5432;Database=organizationdb;Username=matsma`
+- docker production (`ASPNETCORE_ENVIRONMENT=Production`): `Host=db-postgres;Port=5432;Database=organizationdb;Username=matsma`
 
 ### DB startup
 - `docker compose -f docker-compose.dev.yml up -d`, then `dotnet run` — Postgres init script creates `organization_db`; EF `Database.Migrate()` applies schema on startup.
@@ -40,9 +40,9 @@ See `docs/organization.mb` for `/api/organizations` contract.
 - Create schema changes through EF Core migrations in `Migrations/`.
 - Keep connection string environment-aware:
   - local dev (`dotnet run`, `appsettings.Development.json`): `Host=localhost;Port=5433;Database=auth_db;Username=matsma`
-  - docker auth container (`appsettings.Production.json`): `Host=postgres;Port=5432;Database=authdb;Username=matsma`
-- Run dev database via `docker compose -f docker-compose.dev.yml up -d` (`postgres-dev`, `team-hub-redis-dev`, volume `postgres_data_dev`); init script creates both `auth_db` and `organization_db`.
-- Run prod-like database via `docker compose up` (`postgres-prod`, volume `postgres_data_prod`); init script creates both `authdb` and `organizationdb`.
+  - docker auth container (`appsettings.Production.json`): `Host=db-postgres;Port=5432;Database=authdb;Username=matsma`
+- Run dev database via `docker compose -f docker-compose.dev.yml up -d` (`db-postgres-dev`, `cache-redis-dev`, volume `postgres_data_dev`); init script creates both `auth_db` and `organization_db`.
+- Run prod-like database via `docker compose up` (`db-postgres-prod`, volume `postgres_data_prod`); init script creates both `authdb` and `organizationdb`.
 
 ## Don't
 - Do not edit migration history manually unless fixing broken migration state.

@@ -32,7 +32,7 @@
 ## Telemetry ingestion
 - **Logs**: services push OTLP logs (Serilog `OpenTelemetry` sink) -> OTel Collector -> Loki native `/otlp` endpoint.
 - **Traces**: services push OTLP traces -> OTel Collector -> Tempo.
-- **Metrics**: Prometheus scrapes `auth:8080/metrics` and `gateway:8080/metrics` (OpenTelemetry Prometheus exporter).
+- **Metrics**: Prometheus scrapes `srv-auth:8080/metrics` and `gw-api:8080/metrics` (OpenTelemetry Prometheus exporter).
 - Grafana datasources provisioned: Loki (default), Prometheus, Tempo (with `tracesToLogsV2` -> Loki).
 - Query cross-service logs by `CorrelationId` or `TraceId` JSON field:
   - `{service_name="team-hub-gateway"} | json | CorrelationId="<trace-id>"`
@@ -44,7 +44,7 @@
 - W3C `traceparent` propagates trace context between gateway and auth automatically.
 
 ## First telemetry in Grafana
-- Start monitoring + app services: `docker compose up -d otel-collector loki tempo prometheus grafana auth gateway`
+- Start monitoring + app services: `docker compose up -d mon-otel mon-loki mon-tempo mon-prometheus mon-grafana srv-auth gw-api`
 - Generate traffic: `curl http://localhost:5000/health` or `curl http://localhost:5001/health`
 - Open Grafana `http://localhost:3000` (user/password from env file).
 - Explore:

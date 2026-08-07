@@ -35,8 +35,8 @@
 - Docker compose runs `ASPNETCORE_ENVIRONMENT=Production` with `appsettings.Production.json` (pre-deployment build).
 - Read gateway destinations per environment:
   - Development (manual): auth `http://localhost:5001/`, team `http://localhost:5002/`, bff `http://localhost:5003/`
-  - Development (Aspire): `http://team-hub-auth` / `http://team-hub-organization` / `http://team-hub-bff` via service discovery (env override from AppHost)
-  - Production/container: auth `http://auth:8080/`, team `http://team:8080/`, bff `http://bff:8080/`
+  - Development (Aspire): `http://srv-auth` / `http://srv-organization` / `http://srv-bff` via service discovery (env override from AppHost)
+  - Production/container: auth `http://srv-auth:8080/`, team `http://srv-organization:8080/`, bff `http://srv-bff:8080/`
 - Internal gRPC (not through nginx/gateway):
   - auth `5101` (dev) / `8081` (docker): `GetUsersByIds`
   - organization `5102` (dev) / `8081` (docker): `ListMembers`
@@ -45,7 +45,7 @@
   - local/dev (`docker-compose.dev.yml` / Aspire): database `auth_db`
   - docker prod compose: database `authdb`
   - local dotnet run: `localhost:5433`
-  - docker auth container: `postgres:5432`
+  - docker auth container: `db-postgres:5432`
 
 - Keep organization DB host context-aware:
   - local/dev (`docker-compose.dev.yml` / Aspire): database `organization_db`

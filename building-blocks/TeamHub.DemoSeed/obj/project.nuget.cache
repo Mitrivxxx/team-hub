@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "VYLzUOIhURc=",
+  "success": true,
+  "projectFilePath": "/home/matsma/project/team-hub/building-blocks/TeamHub.DemoSeed/TeamHub.DemoSeed.csproj",
+  "expectedPackageFiles": [
+    "/tmp/cursor-sandbox-cache/4da3f7a31408809ae45a06eaed401d4e/nuget/bogus/35.6.3/bogus.35.6.3.nupkg.sha512"
+  ],
+  "logs": []
+}

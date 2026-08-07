@@ -1,0 +1,33 @@
+# Notifications API
+
+## Route
+- Gateway: `/api/notifications/{**catch-all}` → `srv-notification`
+- Base path: `/api/notifications/v1`
+
+## Endpoints
+- `GET /api/notifications/v1/me` → `200 OK`; JWT required
+  - Response: array of `{ id, type, title, body, organizationId, createdAt, isRead }`
+  - Filtered by JWT `sub` (user id)
+
+## Kafka events consumed
+- Topic: `organization.events`
+- Consumer group: `srv-notification`
+- Event: `organization.member.added`
+
+```json
+{
+  "eventId": "guid",
+  "eventType": "organization.member.added",
+  "occurredAt": "2026-08-07T10:15:00Z",
+  "organizationId": "guid",
+  "userId": "guid",
+  "addedByUserId": "guid",
+  "roleIds": ["guid"]
+}
+```
+
+- Idempotency: unique `eventId` on `user_notifications`
+- Storage: PostgreSQL `notification_db`
+
+## Don't
+- Do not call organization HTTP from notification for this flow (event-driven only).

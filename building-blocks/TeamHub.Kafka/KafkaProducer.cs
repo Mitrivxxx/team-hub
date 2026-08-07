@@ -1,0 +1,55 @@
+using System.Text.Json;
+using Confluent.Kafka;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+
+namespace TeamHub.Kafka;
+
+public sealed class KafkaProducer : IKafkaProducer, IDisposable
+{
+    static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    };
+
+    readonly IProducer<string, string> _producer;
+    readonly ILogger<KafkaProducer> _logger;
+
+    public KafkaProducer(IOptions<KafkaOptions> options, ILogger<KafkaProducer> logger)
+    {
+        _logger = logger;
+        var kafka = options.Value;
+        _producer = new ProducerBuilder<string, string>(new ProducerConfig
+        {
+            BootstrapServers = kafka.BootstrapServers,
+            ClientId = kafka.ClientId,
+            Acks = Acks.All,
+            EnableIdempotence = true
+        }).Build();
+    }
+
+    public async Task ProduceAsync<T>(
+        string topic,
+        T message,
+        string? key = null,
+        CancellationToken cancellationToken = default)
+    {
+        var payload = JsonSerializer.Serialize(message, JsonOptions);
+        var result = await _producer.ProduceAsync(
+            topic,
+            new Message<string, string>
+            {
+                Key = key ?? string.Empty,
+                Value = payload
+            },
+            cancellationToken);
+
+        _logger.LogInformation(
+            "Produced Kafka message to {Topic} partition {Partition} offset {Offset}",
+            result.Topic,
+            result.Partition.Value,
+            result.Offset.Value);
+    }
+
+    public void Dispose() => _producer.Dispose();
+}

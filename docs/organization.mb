@@ -24,12 +24,16 @@
   - `GET /api/organizations/v1` -> `200 OK` with organizations for current user (non-deleted)
   - `GET /api/organizations/v1/{orgId}` -> `200 OK` for members; `403 Forbidden` for non-members; `404 Not Found` when missing or soft-deleted
   - `GET /api/organizations/v1/by-slug/{slug}` -> same rules as by id
-  - `PATCH /api/organizations/v1/{orgId}` -> `200 OK`; updates `name`, `description`, `nip`, and/or `address`; requires `org.manage`; slug and email unchanged
+  - `PATCH /api/organizations/v1/{orgId}` -> `200 OK`; updates `name`, `description`, `nip`, and/or `address`; requires `org.manage`; slug and email unchanged; blocked when status is `suspended` or `archived` (`409`)
+  - `PATCH /api/organizations/v1/{orgId}/status` -> `200 OK`; body `{ status: active|suspended|archived }`; requires `org.manage`; live orgs only; `suspended`/`archived` are read-only for other mutations
   - `PUT /api/organizations/v1/{orgId}/avatar` -> `200 OK`; multipart field `file` (JPEG/PNG/WebP, max 2 MB); requires `org.manage`; stores blob path in DB; response `avatarUrl` is read-only SAS URL
   - `DELETE /api/organizations/v1/{orgId}/avatar` -> `200 OK`; requires `org.manage`; removes blob and clears avatar
-  - `DELETE /api/organizations/v1/{orgId}` -> `204 No Content` for Owner (`org.delete`); soft delete via `DeletedAt`
+  - `DELETE /api/organizations/v1/{orgId}` -> `204 No Content` for Owner (`org.delete`); requires a `Completed` export job within last `OrganizationLifecycle:RetentionDays` (default 30) else `409`; soft delete sets `DeletedAt` + `Status=Archived`; notifies via `IOrganizationLifecycleNotifier` (NoOp until notification service exists)
+  - `POST /api/organizations/v1/{orgId}/restore` -> `200 OK`; Owner (`org.delete`); clears `DeletedAt`, sets `Status=Active` within retention window; `410 Gone` after retention; `409` on slug/email conflict with another live org
+  - Retention purge: `OrganizationPurgeBackgroundService` hard-deletes soft-deleted orgs (and related rows + blobs) after `RetentionDays`; also sweeps stale activities, import artifacts, idempotency keys
   - `POST /api/organizations/v1/{orgId}/transfer-ownership` -> `200 OK`; body `{ newOwnerUserId }`; Owner only; moves Owner role to target; previous Owner keeps/gains Admin
-  - `POST /api/organizations/v1/{orgId}/leave` -> `204 No Content`; self-remove; Owner cannot leave without transfer (`409`)
+  - `POST /api/organizations/v1/{orgId}/leave` -> `204 No Content`; self-remove; Owner cannot leave without transfer (`409`); blocked when org is read-only (`409`)
+  - `OrganizationResponse.status`: `active` | `suspended` | `archived`
 
 ### Members
   - `GET /api/organizations/v1/{orgId}/members` -> `200 OK`; member-only; response includes `roles[]`; optional query `roleId`, `teamId` (AND); unknown/deleted team → empty list
@@ -54,7 +58,7 @@
   - `POST /api/organizations/v1/{orgId}/teams` -> `201 Created`; body `{ name, description? }`; requires `org.teams.manage`
   - `GET /api/organizations/v1/{orgId}/teams/{teamId}` -> `200 OK`; includes `memberCount`
   - `PATCH /api/organizations/v1/{orgId}/teams/{teamId}` -> `200 OK`; body `{ name?, description? }`; requires `org.teams.manage`
-  - `DELETE /api/organizations/v1/{orgId}/teams/{teamId}` -> `204 No Content`; soft delete; requires `org.teams.manage`
+  - `DELETE /api/organizations/v1/{orgId}/teams/{teamId}` -> `204 No Content`; soft delete; removes `team_members`; requires `org.teams.manage`
   - `PUT /api/organizations/v1/{orgId}/teams/{teamId}/avatar` -> `200 OK`; same file rules as org avatar; requires `org.teams.manage`
   - `DELETE /api/organizations/v1/{orgId}/teams/{teamId}/avatar` -> `200 OK`; requires `org.teams.manage`
   - `GET /api/organizations/v1/{orgId}/teams/{teamId}/members` -> `200 OK`
@@ -109,15 +113,21 @@
   - `GET /api/organizations/v1/{orgId}/me` -> `200 OK`; membership, `roles[]`, union of permission codes, teams
   - `GET /api/organizations/v1/me/invitations` -> `200 OK`; pending invites matching JWT email claim; empty when email claim absent
 
-### Domain events (future — documented only; not emitted yet)
-  - `RoleCreated` / `RoleUpdated` / `RoleDeleted` — `organizationId`, `roleId`, `name`, `scope`, `actorUserId`, `occurredAt`
-  - `RolePermissionsChanged` — `organizationId`, `roleId`, `permissionIds`, `changeType` (`Added`|`Removed`|`Replaced`), `actorUserId`
-  - `MemberRoleAssigned` / `MemberRoleRevoked` — `organizationId`, `roleId`, `userId`, `actorUserId`
-  - `PermissionCreated` / `PermissionUpdated` / `PermissionDeleted` — `organizationId`, `permissionId`, `code`, `actorUserId`
+### Domain events (Kafka)
+  - Topic: `organization.events` via `TeamHub.Kafka`
+  - Emitted after successful member add (`MemberService.AddAsync` → after `SaveChangesAsync`):
+    - `organization.member.added` — `eventId`, `occurredAt`, `organizationId`, `userId`, `addedByUserId`, `roleIds[]`
+  - Publish failures are logged and do not fail the HTTP add (outbox not yet introduced)
+  - Future (not emitted yet):
+    - `RoleCreated` / `RoleUpdated` / `RoleDeleted` — `organizationId`, `roleId`, `name`, `scope`, `actorUserId`, `occurredAt`
+    - `RolePermissionsChanged` — `organizationId`, `roleId`, `permissionIds`, `changeType` (`Added`|`Removed`|`Replaced`), `actorUserId`
+    - `MemberRoleAssigned` / `MemberRoleRevoked` — `organizationId`, `roleId`, `userId`, `actorUserId`
+    - `PermissionCreated` / `PermissionUpdated` / `PermissionDeleted` — `organizationId`, `permissionId`, `code`, `actorUserId`
 
 - Avatar upload/delete returns `503` when `BlobStorage:ConnectionString` is not configured.
 - Keep JWT: `Jwt:Issuer`/`Jwt:Audience` in appsettings; `Jwt__Key` from env (same key as auth).
 - Keep PostgreSQL connection: `ConnectionStrings__DefaultConnection` in organization `.env`.
+- Kafka: `Kafka__BootstrapServers` / `Kafka__ClientId` (Aspire wires bootstrap from `msg-kafka`).
 - Dev blob storage (Azurite): `BlobStorage__ConnectionString`, `BlobStorage__ContainerName`, `BlobStorage__PublicBlobEndpoint`, `BlobStorage__SasExpiryMinutes`.
 
 ## Don't
@@ -126,7 +136,6 @@
 - Do not introduce undocumented organization endpoints.
 - Do not grant permissions directly to users (use roles).
 - Do not delete or change `Code` on system permissions.
-- Do not emit domain events until an event bus is introduced.
 
 ## Checklist
 - Endpoint names and status codes match controller code/tests.

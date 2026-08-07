@@ -4,6 +4,9 @@ include:
   - path: infrastructure/redis/docker-compose.redis.yml
     env_file:
       - infrastructure/redis/compose.dev.env
+  - path: infrastructure/kafka/docker-compose.kafka.yml
+    env_file:
+      - infrastructure/kafka/compose.dev.env
   - path: infrastructure/azurite/docker-compose.azurite.yml
     env_file:
       - infrastructure/azurite/compose.dev.env
@@ -12,9 +15,10 @@ include:
       - infrastructure/monitoring/compose.dev.env
 
 services:
-  postgres:
+  # === DATABASES AND CACHE ===
+  db-postgres:
     image: postgres:16
-    container_name: postgres-dev
+    container_name: db-postgres-dev
     environment:
       POSTGRES_USER: matsma
       POSTGRES_HOST_AUTH_METHOD: trust

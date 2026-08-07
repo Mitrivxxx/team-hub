@@ -1,16 +1,17 @@
 services:
-  loki:
+  # === MONITORING ===
+  mon-loki:
     image: grafana/loki:3.0.0
-    container_name: ${LOKI_CONTAINER_NAME:-team-hub-loki}
+    container_name: ${LOKI_CONTAINER_NAME:-mon-loki}
     ports:
       - "${LOKI_PORT:-3100}:3100"
     command: -config.file=/etc/loki/local-config.yaml
     volumes:
       - loki_data:/loki
 
-  tempo:
+  mon-tempo:
     image: grafana/tempo:2.4.1
-    container_name: ${TEMPO_CONTAINER_NAME:-team-hub-tempo}
+    container_name: ${TEMPO_CONTAINER_NAME:-mon-tempo}
     command: ["-config.file=/etc/tempo.yaml"]
     volumes:
       - ./tempo.yaml:/etc/tempo.yaml:ro
@@ -18,9 +19,9 @@ services:
     ports:
       - "${TEMPO_PORT:-3200}:3200"
 
-  prometheus:
+  mon-prometheus:
     image: prom/prometheus:v2.53.0
-    container_name: ${PROMETHEUS_CONTAINER_NAME:-team-hub-prometheus}
+    container_name: ${PROMETHEUS_CONTAINER_NAME:-mon-prometheus}
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       - --storage.tsdb.path=/prometheus
@@ -31,9 +32,9 @@ services:
     ports:
       - "${PROMETHEUS_PORT:-9090}:9090"
 
-  otel-collector:
+  mon-otel:
     image: otel/opentelemetry-collector-contrib:0.106.1
-    container_name: ${OTEL_COLLECTOR_CONTAINER_NAME:-team-hub-otel-collector}
+    container_name: ${OTEL_COLLECTOR_CONTAINER_NAME:-mon-otel}
     command: ["--config=/etc/otel-collector-config.yaml"]
     volumes:
       - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml:ro
@@ -41,16 +42,16 @@ services:
       - "${OTEL_COLLECTOR_GRPC_PORT:-4317}:4317"
       - "${OTEL_COLLECTOR_HTTP_PORT:-4318}:4318"
     depends_on:
-      - loki
-      - tempo
+      - mon-loki
+      - mon-tempo
 
-  grafana:
+  mon-grafana:
     image: grafana/grafana:11.0.0
-    container_name: ${GRAFANA_CONTAINER_NAME:-team-hub-grafana}
+    container_name: ${GRAFANA_CONTAINER_NAME:-mon-grafana}
     depends_on:
-      - loki
-      - tempo
-      - prometheus
+      - mon-loki
+      - mon-tempo
+      - mon-prometheus
     ports:
       - "${GRAFANA_PORT:-3000}:3000"
     environment:

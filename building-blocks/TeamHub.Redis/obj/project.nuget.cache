@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "JyeOeD+qMNY=",
+  "dgSpecHash": "Bxy2WHP2JWY=",
   "success": true,
   "projectFilePath": "/home/matsma/project/team-hub/building-blocks/TeamHub.Redis/TeamHub.Redis.csproj",
   "expectedPackageFiles": [
-    "/tmp/cursor-sandbox-cache/d8c3649f218053ba288d135b214ada96/nuget/respite/3.0.11/respite.3.0.11.nupkg.sha512",
-    "/tmp/cursor-sandbox-cache/d8c3649f218053ba288d135b214ada96/nuget/stackexchange.redis/3.0.11/stackexchange.redis.3.0.11.nupkg.sha512",
-    "/tmp/cursor-sandbox-cache/d8c3649f218053ba288d135b214ada96/nuget/system.io.hashing/10.0.5/system.io.hashing.10.0.5.nupkg.sha512"
+    "/tmp/cursor-sandbox-cache/4da3f7a31408809ae45a06eaed401d4e/nuget/respite/3.0.11/respite.3.0.11.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/4da3f7a31408809ae45a06eaed401d4e/nuget/stackexchange.redis/3.0.11/stackexchange.redis.3.0.11.nupkg.sha512",
+    "/tmp/cursor-sandbox-cache/4da3f7a31408809ae45a06eaed401d4e/nuget/system.io.hashing/10.0.5/system.io.hashing.10.0.5.nupkg.sha512"
   ],
   "logs": []
 }

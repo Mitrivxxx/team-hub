@@ -4,14 +4,18 @@ include:
   - path: infrastructure/redis/docker-compose.redis.yml
     env_file:
       - infrastructure/redis/compose.prod.env
+  - path: infrastructure/kafka/docker-compose.kafka.yml
+    env_file:
+      - infrastructure/kafka/compose.prod.env
   - path: infrastructure/monitoring/docker-compose.monitoring.yml
     env_file:
       - infrastructure/monitoring/compose.prod.env
 
 services:
-  postgres:
+  # === DATABASES AND CACHE ===
+  db-postgres:
     image: postgres:16
-    container_name: postgres-prod
+    container_name: db-postgres-prod
     environment:
       POSTGRES_USER: matsma
       POSTGRES_HOST_AUTH_METHOD: trust
@@ -26,25 +30,26 @@ services:
       timeout: 5s
       retries: 5
 
-  auth:
+  # === BACKEND SERVICES ===
+  srv-auth:
     build:
       context: .
       dockerfile: services/team-hub-auth/Dockerfile
-    container_name: team-hub-auth-prod
+    container_name: srv-auth-prod
     depends_on:
-      postgres:
+      db-postgres:
         condition: service_healthy
-      redis:
+      cache-redis:
         condition: service_healthy
-      otel-collector:
+      mon-otel:
         condition: service_started
     env_file:
       - ./services/team-hub-auth/team-hub-auth/.env
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-      Redis__ConnectionString: redis:6379
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
-      Observability__OtlpEndpoint: http://otel-collector:4317
+      Redis__ConnectionString: cache-redis:6379
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://mon-otel:4317
+      Observability__OtlpEndpoint: http://mon-otel:4317
     ports:
       - "5001:8080"
     expose:
@@ -56,22 +61,22 @@ services:
       retries: 5
       start_period: 15s
 
-  team:
+  srv-organization:
     build:
       context: .
       dockerfile: services/team-hub-organization/Dockerfile
-    container_name: team-hub-organization-prod
+    container_name: srv-organization-prod
     depends_on:
-      postgres:
+      db-postgres:
         condition: service_healthy
-      otel-collector:
+      mon-otel:
         condition: service_started
     env_file:
       - ./services/team-hub-organization/team-hub-organization/.env
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
-      Observability__OtlpEndpoint: http://otel-collector:4317
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://mon-otel:4317
+      Observability__OtlpEndpoint: http://mon-otel:4317
     ports:
       - "5002:8080"
     expose:
@@ -83,26 +88,26 @@ services:
       retries: 5
       start_period: 45s
 
-  bff:
+  srv-bff:
     build:
       context: .
       dockerfile: services/team-hub-bff/Dockerfile
-    container_name: team-hub-bff-prod
+    container_name: srv-bff-prod
     depends_on:
-      auth:
+      srv-auth:
         condition: service_healthy
-      team:
+      srv-organization:
         condition: service_healthy
-      otel-collector:
+      mon-otel:
         condition: service_started
     env_file:
       - ./services/team-hub-bff/team-hub-bff/.env
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
-      Observability__OtlpEndpoint: http://otel-collector:4317
-      Grpc__Auth: http://auth:8081
-      Grpc__Organization: http://team:8081
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://mon-otel:4317
+      Observability__OtlpEndpoint: http://mon-otel:4317
+      Grpc__Auth: http://srv-auth:8081
+      Grpc__Organization: http://srv-organization:8081
     ports:
       - "5003:8080"
     healthcheck:
@@ -112,50 +117,52 @@ services:
       retries: 5
       start_period: 15s
 
-  gateway:
+  # === GATEWAYS / PROXY ===
+  gw-api:
     build:
       context: .
       dockerfile: services/team-hub-gateway/Dockerfile
-    container_name: team-hub-gateway-prod
+    container_name: gw-api-prod
     depends_on:
-      auth:
+      srv-auth:
         condition: service_healthy
-      team:
+      srv-organization:
         condition: service_healthy
-      bff:
+      srv-bff:
         condition: service_healthy
-      otel-collector:
+      mon-otel:
         condition: service_started
     env_file:
       - ./services/team-hub-gateway/team-hub-gateway/.env
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
-      Observability__OtlpEndpoint: http://otel-collector:4317
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://mon-otel:4317
+      Observability__OtlpEndpoint: http://mon-otel:4317
     ports:
       - "5000:8080"
 
-  nginx:
+  gw-nginx:
     build:
       context: .
       dockerfile: infrastructure/nginx/Dockerfile
-    container_name: team-hub-nginx-prod
+    container_name: gw-nginx-prod
     depends_on:
-      gateway:
+      gw-api:
         condition: service_started
     ports:
       - "8080:443"
     volumes:
       - ./certs:/etc/nginx/certs
 
-  web:
+  # === FRONTEND ===
+  ui-web:
     build:
       context: .
       dockerfile: frontend/team-hub-web/Dockerfile
-    container_name: team-hub-web-prod
+    container_name: ui-web-prod
     depends_on:
-      - gateway
-      - nginx
+      - gw-api
+      - gw-nginx
     ports:
       - "4200:4200"
     volumes:

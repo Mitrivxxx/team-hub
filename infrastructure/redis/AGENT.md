@@ -23,7 +23,7 @@
 - Keep connection string template in `infrastructure/redis/.env.example` (`Redis__ConnectionString`).
 - Use `building-blocks/TeamHub.Redis` (`TeamHub.Redis`) for `IConnectionMultiplexer` registration in services.
 - Use key prefixes per domain (e.g. auth: `auth:session:*`).
-- Mount dev/prod container names from root compose overrides (`team-hub-redis-dev`, `team-hub-redis-prod`).
+- Mount dev/prod container names from root compose overrides (`cache-redis-dev`, `cache-redis-prod`).
 
 ## Don't
 - Do not add per-service Redis instances.
@@ -32,4 +32,4 @@
 
 ## Connection strings
 - Local dev (`dotnet run`): `localhost:6379`
-- Docker network: `redis:6379`
+- Docker network: `cache-redis:6379`
