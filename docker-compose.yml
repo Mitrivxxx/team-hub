@@ -188,6 +188,7 @@ services:
       - "8080:443"
     volumes:
       - ./certs:/etc/nginx/certs
+      - nginx_edge_logs:/var/log/nginx-edge
 
   # === FRONTEND ===
   ui-web:
@@ -205,3 +206,4 @@ services:
 
 volumes:
   postgres_data_prod:
+  nginx_edge_logs:

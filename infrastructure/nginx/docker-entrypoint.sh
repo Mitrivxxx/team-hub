@@ -4,6 +4,10 @@ set -e
 CERT_DIR=/etc/nginx/certs
 CERT_FILE="$CERT_DIR/localhost.pem"
 KEY_FILE="$CERT_DIR/localhost-key.pem"
+LOG_DIR=/var/log/nginx-edge
+
+mkdir -p "$LOG_DIR"
+touch "$LOG_DIR/access.log" "$LOG_DIR/error.log"
 
 if [ -n "$GATEWAY_UPSTREAM" ]; then
   echo "upstream gw-api { server ${GATEWAY_UPSTREAM}; }" > /etc/nginx/conf.d/upstream.conf

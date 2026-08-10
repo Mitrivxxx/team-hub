@@ -6,8 +6,23 @@ receivers:
       http:
         endpoint: 0.0.0.0:4318
 
+  # Edge access logs (JSON lines from gw-nginx). Body stays raw JSON for LogQL `| json`.
+  filelog/nginx:
+    include:
+      - /var/log/nginx-edge/access.log
+    start_at: end
+    operators:
+      - type: add
+        field: resource["service.name"]
+        value: gw-nginx
+
 processors:
   batch:
+  resource/nginx:
+    attributes:
+      - key: service.name
+        value: gw-nginx
+        action: upsert
 
 exporters:
   otlphttp/logs:
@@ -28,4 +43,8 @@ service:
     logs:
       receivers: [otlp]
       processors: [batch]
+      exporters: [otlphttp/logs]
+    logs/nginx:
+      receivers: [filelog/nginx]
+      processors: [resource/nginx, batch]
       exporters: [otlphttp/logs]

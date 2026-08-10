@@ -16,3 +16,9 @@ scrape_configs:
       - targets: ["gw-api:8080"]
         labels:
           service: gw-api
+
+  - job_name: gw-nginx
+    static_configs:
+      - targets: ["mon-nginx-exporter:9113"]
+        labels:
+          service: gw-nginx

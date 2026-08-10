@@ -8,5 +8,5 @@ COPY infrastructure/nginx/nginx.conf /etc/nginx/conf.d/team-hub.conf
 COPY infrastructure/nginx/snippets/ /etc/nginx/snippets/team-hub/
 RUN rm -f /etc/nginx/conf.d/default.conf && chmod +x /generate-certs.sh /docker-entrypoint.sh
 
-EXPOSE 80 443
+EXPOSE 80 443 8081
 ENTRYPOINT ["/docker-entrypoint.sh"]
