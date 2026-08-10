@@ -69,12 +69,16 @@ services:
     depends_on:
       db-postgres:
         condition: service_healthy
+      msg-kafka:
+        condition: service_healthy
       mon-otel:
         condition: service_started
     env_file:
       - ./services/team-hub-organization/team-hub-organization/.env
     environment:
       ASPNETCORE_ENVIRONMENT: Production
+      Kafka__BootstrapServers: msg-kafka:9092
+      Kafka__ClientId: srv-organization
       OTEL_EXPORTER_OTLP_ENDPOINT: http://mon-otel:4317
       Observability__OtlpEndpoint: http://mon-otel:4317
     ports:
@@ -87,6 +91,35 @@ services:
       timeout: 5s
       retries: 5
       start_period: 45s
+
+  srv-notification:
+    build:
+      context: .
+      dockerfile: services/team-hub-notification/Dockerfile
+    container_name: srv-notification-prod
+    depends_on:
+      db-postgres:
+        condition: service_healthy
+      msg-kafka:
+        condition: service_healthy
+      mon-otel:
+        condition: service_started
+    env_file:
+      - ./services/team-hub-notification/team-hub-notification/.env
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      Kafka__BootstrapServers: msg-kafka:9092
+      Kafka__ClientId: srv-notification
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://mon-otel:4317
+      Observability__OtlpEndpoint: http://mon-otel:4317
+    ports:
+      - "5004:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 120s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   srv-bff:
     build:
@@ -127,6 +160,8 @@ services:
       srv-auth:
         condition: service_healthy
       srv-organization:
+        condition: service_healthy
+      srv-notification:
         condition: service_healthy
       srv-bff:
         condition: service_healthy

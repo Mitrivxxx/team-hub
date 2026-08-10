@@ -113,11 +113,12 @@
   - `GET /api/organizations/v1/{orgId}/me` -> `200 OK`; membership, `roles[]`, union of permission codes, teams
   - `GET /api/organizations/v1/me/invitations` -> `200 OK`; pending invites matching JWT email claim; empty when email claim absent
 
-### Domain events (Kafka)
+### Domain events (Kafka + transactional outbox)
   - Topic: `organization.events` via `TeamHub.Kafka`
-  - Emitted after successful member add (`MemberService.AddAsync` → after `SaveChangesAsync`):
-    - `organization.member.added` — `eventId`, `occurredAt`, `organizationId`, `userId`, `addedByUserId`, `roleIds[]`
-  - Publish failures are logged and do not fail the HTTP add (outbox not yet introduced)
+  - Outbox table `outbox_messages` written in the same DB transaction as the domain change; `OutboxDispatcherBackgroundService` publishes to Kafka
+  - Emitted events:
+    - `organization.member.added` after `MemberService.AddAsync` and after `InvitationService.AcceptAsync`
+      — `eventId`, `occurredAt`, `organizationId`, `userId`, `addedByUserId`, `roleIds[]`
   - Future (not emitted yet):
     - `RoleCreated` / `RoleUpdated` / `RoleDeleted` — `organizationId`, `roleId`, `name`, `scope`, `actorUserId`, `occurredAt`
     - `RolePermissionsChanged` — `organizationId`, `roleId`, `permissionIds`, `changeType` (`Added`|`Removed`|`Replaced`), `actorUserId`

@@ -35,6 +35,15 @@ public sealed class KafkaProducer : IKafkaProducer, IDisposable
         CancellationToken cancellationToken = default)
     {
         var payload = JsonSerializer.Serialize(message, JsonOptions);
+        await ProduceRawAsync(topic, payload, key, cancellationToken);
+    }
+
+    public async Task ProduceRawAsync(
+        string topic,
+        string payload,
+        string? key = null,
+        CancellationToken cancellationToken = default)
+    {
         var result = await _producer.ProduceAsync(
             topic,
             new Message<string, string>

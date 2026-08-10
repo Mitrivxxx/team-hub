@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TeamHub.BlobStorage")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0324059da45cdafd2cec10670098120e02607656")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f81e96833bab556f30c34a943aa3a916fb6ea360")]
 [assembly: System.Reflection.AssemblyProductAttribute("TeamHub.BlobStorage")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TeamHub.BlobStorage")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

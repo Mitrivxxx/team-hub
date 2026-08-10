@@ -3,6 +3,8 @@
 
 ## Source of truth
 - `infrastructure/nginx/nginx.conf`
+- `infrastructure/nginx/snippets/proxy_params.conf`
+- `infrastructure/nginx/snippets/api_locations.conf`
 - `infrastructure/nginx/Dockerfile`
 - `infrastructure/nginx/docker-entrypoint.sh`
 - `infrastructure/redis/docker-compose.redis.yml`
@@ -23,6 +25,7 @@
 - Terminate HTTPS on container port `443` (host `8080`).
 - Serve internal HTTP on port `80` for docker network traffic (`ui-web` -> `http://gw-nginx:80`).
 - Proxy `/api/*` and `/health` to upstream `gw-api` (see `upstream.conf` generated at container start).
+- Keep shared proxy headers/timeouts in `snippets/proxy_params.conf`; keep route + rate-limit locations in `snippets/api_locations.conf` (included by both `:80` and `:443` servers).
 - When `GATEWAY_UPSTREAM` is set (Aspire dev), entrypoint writes `upstream gw-api { server $GATEWAY_UPSTREAM; }`.
 - When `GATEWAY_UPSTREAM` is unset (docker compose prod), default upstream is `gw-api:8080`.
 - Forward proxy headers: `Host`, `X-Real-IP`, `X-Forwarded-For`, `X-Forwarded-Proto`, `X-Forwarded-Host`.
