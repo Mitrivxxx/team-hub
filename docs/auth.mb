@@ -4,7 +4,8 @@
 ## Source of truth
 - `services/team-hub-auth/team-hub-auth/Controllers/AuthController*.cs`
 - `services/team-hub-auth/team-hub-auth/Configuration/JwtOptions.cs`
-- `services/team-hub-auth/team-hub-auth/.env.example`
+- `services/team-hub-auth/.env.example` (optional local `dotnet run`)
+- `.env.staging.example` (Compose staging)
 - `frontend/team-hub-web/src/app/core/auth/auth.service.ts`
 
 ## Do
@@ -23,8 +24,8 @@
 - Store refresh sessions in Redis (`auth:session:{refreshTokenHash}`) with TTL matching refresh token expiry.
 - Keep `withCredentials: true` for login/refresh/logout in frontend clients.
 - Keep JWT options from env/config: `Jwt__Key`, `Jwt__Issuer`, `Jwt__Audience`, `Jwt:ExpireMinutes`.
-- Keep Redis connection from infrastructure: `Redis__ConnectionString` (see `infrastructure/redis/.env.example`; docker compose sets `cache-redis:6379` for auth).
-- Keep PostgreSQL connection: `ConnectionStrings__DefaultConnection` in auth `.env` (docker compose prod: `Host=db-postgres;...;Database=authdb;...`; local `dotnet run`: `Host=localhost;Port=5433;Database=auth_db;...`).
+- Keep Redis connection from infrastructure: `Redis__ConnectionString` (Aspire injects; staging Compose sets `cache-redis:6379`).
+- Keep PostgreSQL connection: Aspire `auth_db`; staging Compose `Host=db-postgres;...;Database=authdb;...` from root `.env.staging`.
 - Keep auth health endpoint: `GET /health` checks PostgreSQL and Redis (`200` healthy, `503` unhealthy).
 
 ## Don't

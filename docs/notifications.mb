@@ -30,7 +30,7 @@
 
 - Sources: organization member add + invitation accept (via transactional outbox)
 - Idempotency: unique `eventId` on `user_notifications`
-- Storage: PostgreSQL `notification_db` (dev) / `notificationdb` (prod compose)
+- Storage: PostgreSQL `notification_db` (Aspire) / `notificationdb` (staging Compose)
 
 ## Frontend
 - `/app/notifications` loads inbox via `NotificationService` → `GET /me`

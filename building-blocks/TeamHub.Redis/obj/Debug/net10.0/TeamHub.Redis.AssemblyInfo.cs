@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TeamHub.Redis")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0324059da45cdafd2cec10670098120e02607656")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+87abca95f08c6e1e760574768014a3b0a36157c6")]
 [assembly: System.Reflection.AssemblyProductAttribute("TeamHub.Redis")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TeamHub.Redis")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

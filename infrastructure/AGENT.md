@@ -8,19 +8,19 @@
 - `infrastructure/nginx/snippets/error_pages.conf`
 - `infrastructure/nginx/Dockerfile`
 - `infrastructure/nginx/docker-entrypoint.sh`
+- `infrastructure/postgres/docker-compose.postgres.yml`
 - `infrastructure/redis/docker-compose.redis.yml`
 - `infrastructure/redis/.env.example`
 - `infrastructure/azurite/docker-compose.azurite.yml`
 - `infrastructure/azurite/.env.example`
+- `infrastructure/kafka/docker-compose.kafka.yml`
 - `infrastructure/monitoring/docker-compose.monitoring.yml`
-- `infrastructure/monitoring/otel-collector-config.yaml`
-- `infrastructure/monitoring/tempo.yaml`
-- `infrastructure/monitoring/prometheus.yml`
 - `infrastructure/monitoring/.env.example`
 - `building-blocks/TeamHub.Redis/*`
 - `building-blocks/TeamHub.BlobStorage/*`
 - `building-blocks/TeamHub.Observability/*`
-- `docker-compose.yml`
+- `docker-compose.yml` / `docker-compose.dev.yml` / `docker-compose.staging.yml`
+- `.env.dev.example` / `.env.staging.example`
 
 ## Do
 - Terminate HTTPS on container port `443` (host `8080`).
@@ -33,16 +33,17 @@
   - `limit_req_status 429` with JSON body + `Retry-After` (`snippets/error_pages.conf`); also JSON for edge `413` / `502` / `504` (no `proxy_intercept_errors` — backend ProblemDetails stay intact).
   - Internal `stub_status` on `:8081` scraped by `mon-nginx-exporter` (Prometheus job `gw-nginx`).
 - When `GATEWAY_UPSTREAM` is set (Aspire dev), entrypoint writes `upstream gw-api { server $GATEWAY_UPSTREAM; }`.
-- When `GATEWAY_UPSTREAM` is unset (docker compose prod), default upstream is `gw-api:8080`.
+- When `GATEWAY_UPSTREAM` is unset (Compose staging), default upstream is `gw-api:8080`.
 - Forward proxy headers: `Host`, `X-Real-IP`, `X-Forwarded-For`, `X-Forwarded-Proto`, `X-Forwarded-Host`, `X-Correlation-ID`.
 - Keep `client_max_body_size 10m`, HTTP/1.1 keep-alive to upstream, and proxy timeouts aligned with gateway.
 - On HTTPS listener (`443`): enable gzip, security headers, and rate limiting on `/api/`.
 - Mount TLS certs from `./certs` to `/etc/nginx/certs`.
 - Treat flow as: frontend -> infrastructure nginx (`gw-nginx`) -> gateway (`gw-api`, HTTP) -> auth (`srv-auth`).
-- Run one shared Redis instance via `infrastructure/redis/docker-compose.redis.yml` (included by root compose files; service `cache-redis`).
-- Use `building-blocks/TeamHub.Redis` (`TeamHub.Redis`) for service-side Redis connection bootstrap.
-- Use `building-blocks/TeamHub.BlobStorage` (`TeamHub.BlobStorage`) for dev Azurite/blob client bootstrap in organization service.
-- Use `building-blocks/TeamHub.Observability` (`TeamHub.Observability`) for OpenTelemetry and Serilog bootstrap.
+- Run shared Redis via `infrastructure/redis/docker-compose.redis.yml` (included by Compose base; service `cache-redis`).
+- Use `building-blocks/TeamHub.Redis` for service-side Redis connection bootstrap.
+- Use `building-blocks/TeamHub.BlobStorage` for Azurite/blob client bootstrap in organization service.
+- Use `building-blocks/TeamHub.Observability` for OpenTelemetry and Serilog bootstrap.
+- Root Compose env: `.env.dev` (monitoring companion) and `.env.staging` (full stack); never commit secrets.
 
 ## Don't
 - Do not add business logic or auth validation in nginx.
@@ -50,6 +51,7 @@
 - Do not terminate TLS on gateway; TLS ends at nginx (and frontend UI).
 - Do not add per-service Redis containers or connection bootstrap outside `building-blocks/TeamHub.Redis`.
 - Do not publish `:8081` stub_status to the host.
+- Do not commit Grafana passwords or JWT keys in compose fragment env files.
 
 ## Listeners
 - **Port 80 (internal):** HTTP proxy to gateway for `ui-web` container.
@@ -57,13 +59,14 @@
 - **Port 8081 (internal):** `stub_status` for Prometheus exporter only.
 
 ## Redis
-- Dev container: `cache-redis-dev` (`docker-compose.dev.yml`)
-- Prod container: `cache-redis-prod` (`docker-compose.yml`)
-- Host port: `6379`
+- Staging container: `cache-redis-staging` (Compose staging)
+- Aspire: resource `cache-redis` (dynamic host port)
+- Host port (Compose): `6379`
 - Docker network: `cache-redis:6379`
 
-## Azurite (dev only)
-- Dev container: `blob-storage-dev` (`docker-compose.dev.yml` only; service `blob-storage`)
+## Azurite
+- Aspire: resource `blob-storage` (dev)
+- Staging Compose: `blob-storage-staging` (emulator for pre-prod)
 - Host blob port: `10000`
 - Docker network: `blob-storage:10000`
 - Browser SAS URLs: `BlobStorage__PublicBlobEndpoint=http://127.0.0.1:10000/devstoreaccount1`

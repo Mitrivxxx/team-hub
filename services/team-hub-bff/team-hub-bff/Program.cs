@@ -2,7 +2,8 @@ using DotNetEnv;
 using TeamHub.Observability;
 using team_hub_bff.Configuration;
 
-Env.TraversePath().Load();
+// NoClobber: Aspire/Compose env must win over local .env.
+Env.NoClobber().TraversePath().Load();
 
 var builder = WebApplication.CreateBuilder(args);
 

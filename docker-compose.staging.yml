@@ -1,0 +1,92 @@
+# Staging overlay — full stack via base + this file.
+# Usage: docker compose -f docker-compose.yml -f docker-compose.staging.yml --env-file .env.staging up --build
+# Binds published ports to localhost only; apps restart unless stopped.
+
+name: team-hub-staging
+
+services:
+  db-postgres:
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5433}:5432"
+    restart: unless-stopped
+
+  cache-redis:
+    ports:
+      - "127.0.0.1:${REDIS_PORT:-6379}:6379"
+    restart: unless-stopped
+
+  msg-kafka:
+    ports:
+      - "127.0.0.1:${KAFKA_PORT:-9092}:9092"
+    restart: unless-stopped
+
+  blob-storage:
+    ports:
+      - "127.0.0.1:${AZURITE_BLOB_PORT:-10000}:10000"
+    restart: unless-stopped
+
+  srv-auth:
+    ports:
+      - "127.0.0.1:5001:8080"
+    restart: unless-stopped
+
+  srv-organization:
+    ports:
+      - "127.0.0.1:5002:8080"
+    restart: unless-stopped
+
+  srv-notification:
+    ports:
+      - "127.0.0.1:5004:8080"
+    restart: unless-stopped
+
+  srv-bff:
+    ports:
+      - "127.0.0.1:5003:8080"
+    restart: unless-stopped
+
+  gw-api:
+    ports:
+      - "127.0.0.1:5000:8080"
+    restart: unless-stopped
+
+  gw-nginx:
+    ports:
+      - "127.0.0.1:8080:443"
+    restart: unless-stopped
+
+  ui-web:
+    ports:
+      - "127.0.0.1:4200:4200"
+    restart: unless-stopped
+
+  mon-loki:
+    ports:
+      - "127.0.0.1:${LOKI_PORT:-3100}:3100"
+    restart: unless-stopped
+
+  mon-tempo:
+    ports:
+      - "127.0.0.1:${TEMPO_PORT:-3200}:3200"
+    restart: unless-stopped
+
+  mon-prometheus:
+    ports:
+      - "127.0.0.1:${PROMETHEUS_PORT:-9090}:9090"
+    restart: unless-stopped
+
+  mon-otel:
+    ports:
+      - "127.0.0.1:${OTEL_COLLECTOR_GRPC_PORT:-4317}:4317"
+      - "127.0.0.1:${OTEL_COLLECTOR_HTTP_PORT:-4318}:4318"
+    restart: unless-stopped
+
+  mon-nginx-exporter:
+    ports:
+      - "127.0.0.1:${NGINX_EXPORTER_PORT:-9113}:9113"
+    restart: unless-stopped
+
+  mon-grafana:
+    ports:
+      - "127.0.0.1:${GRAFANA_PORT:-3000}:3000"
+    restart: unless-stopped

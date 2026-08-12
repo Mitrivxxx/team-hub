@@ -14,18 +14,20 @@ alwaysApply: true
 - Code folders stay as `services/team-hub-*` / `frontend/team-hub-web`; runtime DNS names use the convention above.
 
 ## Source of truth
-- `docker-compose.yml`
-- `docker-compose.dev.yml`
+- `docker-compose.yml` (shared base)
+- `docker-compose.dev.yml` (Aspire companion overrides — monitoring only; `scripts/compose-dev.sh`)
+- `docker-compose.staging.yml` (full-stack staging overlay)
+- `.env.dev.example` / `.env.staging.example`
 - `infrastructure/nginx/nginx.conf`
+- `infrastructure/postgres/docker-compose.postgres.yml`
 - `infrastructure/redis/docker-compose.redis.yml`
 - `infrastructure/kafka/docker-compose.kafka.yml`
+- `infrastructure/azurite/docker-compose.azurite.yml`
 - `building-blocks/TeamHub.Redis/*`
 - `building-blocks/TeamHub.Kafka/*`
 - `services/team-hub-gateway/team-hub-gateway/reverseproxy.json`
 - `services/team-hub-gateway/team-hub-gateway/appsettings.*.json`
 - `services/team-hub-auth/team-hub-auth/Controllers/AuthController*.cs`
-- `services/team-hub-auth/team-hub-auth/.env.example` (local dev + docker compose)
-- `services/team-hub-gateway/team-hub-gateway/.env.example` (docker compose; JWT when AuthValidation enabled)
 - `services/team-hub-organization/team-hub-organization/Program.cs`
 - `docs/README.mb` and related `docs/*.mb`
 - Component `AGENT.md` files in each service and frontend
@@ -35,8 +37,9 @@ alwaysApply: true
 - Route organization API through gateway path `/api/organizations/{**catch-all}`.
 - Route notification API through gateway path `/api/notifications/{**catch-all}`.
 - Keep auth endpoints aligned with controllers: `register`, `login`, `refresh`, `logout`.
-- Docker compose is for Production-like pre-deployment builds (`ASPNETCORE_ENVIRONMENT=Production`, per-service `.env` files).
-- Local dev database: `docker compose -f docker-compose.dev.yml up -d` (`team-hub-dev`, service `db-postgres`, databases `auth_db` / `organization_db` / `notification_db`, volume `postgres_data_dev`).
+- Local daily dev: Aspire AppHost (`cd aspire/TeamHub.AppHost && dotnet run`).
+- Optional Aspire companion monitoring: `./scripts/compose-dev.sh up -d` (project `team-hub-dev`).
+- Staging full stack: `./scripts/compose-staging.sh up --build -d` (`ASPNETCORE_ENVIRONMENT=Production`, root `.env.staging`).
 - Use documented ports/env from config (`8080`, `5000`, `5001`, `5002`, `5004`, `4200`, `5433`) and verify before edits.
 - Update docs in `docs/` and component `AGENT.md` when API contract, ports, or runtime flow changes.
 - Prefer minimal diffs and preserve existing naming/style in touched files.
@@ -44,6 +47,7 @@ alwaysApply: true
 ## Don't
 - Do not bypass infrastructure nginx or gateway in frontend integration.
 - Do not invent routes, env vars, or services not present in config/code.
+- Do not commit secrets (`.env`, `.env.dev`, `.env.staging`).
 - Do not run destructive git commands (`reset --hard`, forced history rewrites).
 - Do not modify unrelated files outside the requested scope.
 

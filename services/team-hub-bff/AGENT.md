@@ -16,6 +16,7 @@
 - Call organization `ListMembers` / `ListActivity` gRPC with `actor_user_id` from JWT `sub`.
 - Keep gRPC targets in `Grpc:Auth` / `Grpc:Organization` (dev `5101`/`5102`, docker `auth:8081`/`team:8081`).
 - Dev HTTP port `5003`; docker host `5003:8080`.
+- DotNetEnv: `Env.NoClobber().TraversePath().Load()` so Aspire-injected Jwt/gRPC win over local `.env`.
 - Gateway route: `/api/graphql/{**catch-all}` -> `bff-cluster`.
 
 ## Don't

@@ -1,12 +1,14 @@
 ## Purpose
-- Capture DB ownership and migration workflow for auth service.
+- Capture DB ownership and migration workflow for auth and organization services.
 
 ## Source of truth
 - `services/team-hub-auth/team-hub-auth/Data/AuthDbContext.cs`
 - `services/team-hub-auth/team-hub-auth/Migrations/*.cs`
 - `services/team-hub-auth/team-hub-auth/appsettings*.json`
-- `docker-compose.yml` (prod-like stack)
-- `docker-compose.dev.yml` (local dev database only)
+- `docker-compose.yml` / `docker-compose.staging.yml` (staging stack)
+- `infrastructure/postgres/docker-compose.postgres.yml`
+- `infrastructure/postgres/init/01-create-dbs-prod.sql`
+- `aspire/TeamHub.AppHost/Program.cs` (local Aspire databases)
 
 ## Organization database
 
@@ -16,16 +18,16 @@
 ### Source of truth
 - `services/team-hub-organization/team-hub-organization/Data/OrganizationDbContext.cs`
 - `services/team-hub-organization/team-hub-organization/Migrations/*`
-- `services/team-hub-organization/team-hub-organization/.env.example`
-- `docker-compose.yml` / `docker-compose.dev.yml`
+- `services/team-hub-organization/.env.example` (optional local `dotnet run` only)
+- `.env.staging.example` (staging Compose)
 
 ### Connection strings
-- local dev (`dotnet run`, `docker-compose.dev.yml`): `Host=localhost;Port=5433;Database=organization_db;Username=matsma`
-- docker production (`ASPNETCORE_ENVIRONMENT=Production`): `Host=db-postgres;Port=5432;Database=organizationdb;Username=matsma`
+- Aspire: injected by AppHost (`organization_db`)
+- staging Compose (`ASPNETCORE_ENVIRONMENT=Production`): `Host=db-postgres;Port=5432;Database=organizationdb;Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}`
 
 ### DB startup
-- `docker compose -f docker-compose.dev.yml up -d`, then `dotnet run` — Postgres init script creates `organization_db`; EF `Database.Migrate()` applies schema on startup.
-- `docker compose up` — Postgres init script creates `organizationdb`; EF `Database.Migrate()` in organization container applies schema on startup.
+- Aspire AppHost creates `auth_db` / `organization_db` / `notification_db`; EF `Database.Migrate()` applies schema on service start.
+- `./scripts/compose-staging.sh up --build` — Postgres init script creates `authdb` / `organizationdb` / `notificationdb`; EF migrate in containers.
 - Activity feed table: `organization_activities` (append-only audit/activity log per org; indexes on `(OrganizationId, OccurredAt)` and `(OrganizationId, Type, OccurredAt)`).
 - Import/export jobs table: `import_export_jobs` (async CSV/JSON import and export history per org; blob paths for source/result/errors).
 
@@ -39,17 +41,18 @@ See `docs/organization.mb` for `/api/organizations` contract.
 - Treat `AuthDbContext` as schema contract (`users`, indexes).
 - Create schema changes through EF Core migrations in `Migrations/`.
 - Keep connection string environment-aware:
-  - local dev (`dotnet run`, `appsettings.Development.json`): `Host=localhost;Port=5433;Database=auth_db;Username=matsma`
-  - docker auth container (`appsettings.Production.json`): `Host=db-postgres;Port=5432;Database=authdb;Username=matsma`
-- Run dev database via `docker compose -f docker-compose.dev.yml up -d` (`db-postgres-dev`, `cache-redis-dev`, volume `postgres_data_dev`); init script creates both `auth_db` and `organization_db`.
-- Run prod-like database via `docker compose up` (`db-postgres-prod`, volume `postgres_data_prod`); init script creates both `authdb` and `organizationdb`.
+  - Aspire: `auth_db` (injected)
+  - staging auth container: `Host=db-postgres;Port=5432;Database=authdb;Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}`
+- Run local databases via Aspire AppHost (not Compose).
+- Run staging database via `./scripts/compose-staging.sh` (`db-postgres-staging`, volume `postgres_data_staging`); init script creates `authdb` / `organizationdb` / `notificationdb`.
 
 ## Don't
 - Do not edit migration history manually unless fixing broken migration state.
 - Do not use direct SQL schema changes outside migrations.
 - Do not assume postgres on host port `5432` for this project setup.
+- Do not expect `docker-compose.dev.yml` to start Postgres (monitoring only).
 
 ## Checklist
 - New/changed model has migration and snapshot update.
-- DB startup path still works with `docker-compose.dev.yml` and `docker-compose.yml` postgres services.
+- DB startup path works with Aspire and staging Compose postgres.
 - Unique constraints (username) remain intentional.

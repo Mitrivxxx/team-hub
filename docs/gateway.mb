@@ -6,7 +6,7 @@
 - `services/team-hub-gateway/team-hub-gateway/reverseproxy.json`
 - `services/team-hub-gateway/team-hub-gateway/appsettings.Development.json`
 - `services/team-hub-gateway/team-hub-gateway/appsettings.Production.json`
-- `docker-compose.yml`
+- `docker-compose.yml` / `docker-compose.staging.yml`
 
 ## Do
 - Treat gateway as YARP reverse proxy only.

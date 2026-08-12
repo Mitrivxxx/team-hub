@@ -3,18 +3,17 @@
 
 ## Source of truth
 - `aspire/TeamHub.AppHost/Program.cs`
-- `docker-compose.yml`
-- `docker-compose.dev.yml`
-- `services/team-hub-auth/team-hub-auth/.env.example`
-- `services/team-hub-gateway/team-hub-gateway/.env.example`
+- `docker-compose.yml` (shared base)
+- `docker-compose.dev.yml` (Aspire companion overrides — monitoring only; use `scripts/compose-dev.sh`)
+- `docker-compose.staging.yml` (full-stack staging overlay; localhost binds)
+- `.env.dev.example` / `.env.staging.example`
+- `scripts/compose-dev.sh` / `scripts/compose-staging.sh`
 - `frontend/team-hub-web/package.json`
-- `services/team-hub-auth/team-hub-auth/Properties/launchSettings.json`
-- `services/team-hub-gateway/team-hub-gateway/Properties/launchSettings.json`
 - `infrastructure/monitoring/docker-compose.monitoring.yml`
 - `infrastructure/monitoring/otel-collector-config.yaml`
 - `infrastructure/monitoring/tempo.yaml`
 - `infrastructure/monitoring/prometheus.yml`
-- `infrastructure/monitoring/.env.example`
+- `infrastructure/monitoring/prometheus.dev.yml`
 
 ## Do
 - **Preferred local dev (full stack, one command):**
@@ -23,53 +22,57 @@
   - opens Aspire Dashboard (URL in console); endpoints: frontend `https://localhost:4200`, nginx API `https://localhost:8080`, gateway `http://localhost:5000`
   - JWT dev config: `aspire/TeamHub.AppHost/appsettings.Development.json` (`Aspire:Jwt:*`)
   - stop with `Ctrl+C` in AppHost terminal
-- Local dev database and Redis (manual workflow, separate from prod-like data):
-  - `docker compose -f docker-compose.dev.yml up -d`
-  - compose project `team-hub-dev` (isolated from compose project `team-hub`)
-  - containers `db-postgres-dev` (postgres on `localhost:5433`, databases `auth_db` + `organization_db`) and `cache-redis-dev` (`localhost:6379`)
-  - then `dotnet run` / `npm start` with Development config (auth auto-migrates on start)
-- Production-like full stack via docker compose project `team-hub` (ready build before deployment):
+- **Optional monitoring next to Aspire:**
+  - `cp .env.dev.example .env.dev` (set `GRAFANA_ADMIN_PASSWORD`)
+  - `./scripts/compose-dev.sh up -d` (merges `infrastructure/monitoring/docker-compose.monitoring.yml` + `docker-compose.dev.yml`)
+  - project `team-hub-dev` — Grafana/Loki/Tempo/Prometheus/OTel only (Aspire owns Postgres/Redis/Kafka/Azurite/apps)
+  - Prometheus uses `prometheus.dev.yml` (`host.docker.internal:5000`–`5004`); nginx exporter scrapes `host.docker.internal:8081`
+  - AppHost OTLP → `http://127.0.0.1:4317`; edge logs shared via `infrastructure/monitoring/.nginx-edge-logs`
+- **Demo seed via Aspire** (Development; auth then organization):
+  - `cd aspire/TeamHub.AppHost && dotnet run -- --seed` (or `dotnet run --launch-profile seed`)
+  - when dashboard shows `org-seed` Finished: login `JanWilk123` / `janwilk123`; Ctrl+C to stop
+  - details: `aspire/AGENT.md`
+- **Staging full stack (Docker):**
   - `./scripts/setup-certs.sh` (mkcert = trusted HTTPS in browser; otherwise self-signed with warning)
-  - copy each `.env.example` to `.env` in auth and gateway service directories
-  - set `Jwt__Key` to at least 32 characters (same values in auth and gateway)
-  - `docker compose up --build` (project `team-hub`)
-- Docker runs with `ASPNETCORE_ENVIRONMENT=Production` and `appsettings.Production.json`.
+  - `cp .env.staging.example .env.staging` and replace every `CHANGE_ME` (JWT ≥ 32 chars, Postgres password, Grafana password)
+  - `./scripts/compose-staging.sh up --build -d`
+  - equivalent: `docker compose -f docker-compose.yml -f docker-compose.staging.yml --env-file .env.staging up --build -d`
+  - project `team-hub-staging`; containers use `ASPNETCORE_ENVIRONMENT=Production`
+  - published ports bind to `127.0.0.1` only (see `docker-compose.staging.yml`); apps use `restart: unless-stopped`
+  - `gw-api` healthcheck required before `gw-nginx` starts (`service_healthy`)
 - TLS certs are shared from `./certs` into `ui-web` and `gw-nginx` containers.
 - Use `https://localhost:4200`, `https://localhost:8080` (API edge), and `http://localhost:5000` (gateway debug).
-- Each microservice keeps its own `.env` (not in repo root).
-- Expected host ports after start:
-  - frontend `https://localhost:4200` (`ui-web-prod`)
-  - infrastructure nginx `https://localhost:8080` (`gw-nginx-prod`, API entry)
-  - gateway `http://localhost:5000` (`gw-api-prod`, debug only)
-  - auth (direct) `http://localhost:5001` (`srv-auth-prod`); health `GET http://localhost:5001/health`
-  - redis `localhost:6379` (`cache-redis-dev` / `cache-redis-prod`)
-  - postgres `localhost:5433` (`db-postgres-prod`, databases `authdb` + `organizationdb`)
-  - monitoring Grafana `http://localhost:3000` (`mon-grafana-prod` / `mon-grafana-dev`)
-  - monitoring Loki `http://localhost:3100` (`mon-loki-prod` / `mon-loki-dev`)
-  - monitoring Tempo `http://localhost:3200` (`mon-tempo-prod` / `mon-tempo-dev`)
-  - monitoring Prometheus `http://localhost:9090` (`mon-prometheus-prod` / `mon-prometheus-dev`)
+- Compose secrets live in root `.env.dev` / `.env.staging` (gitignored); never commit them.
+- Expected host ports after staging start (all on loopback):
+  - frontend `https://localhost:4200` (`ui-web-staging`)
+  - infrastructure nginx `https://localhost:8080` (`gw-nginx-staging`, API entry)
+  - gateway `http://localhost:5000` (`gw-api-staging`, debug only)
+  - auth (direct) `http://localhost:5001` (`srv-auth-staging`); health `GET http://localhost:5001/health`
+  - redis `localhost:6379` (`cache-redis-staging`)
+  - postgres `localhost:5433` (`db-postgres-staging`, databases `authdb` + `organizationdb` + `notificationdb`)
+  - Azurite blob `localhost:10000` (`blob-storage-staging`)
+  - monitoring Grafana `http://localhost:3000`
+  - monitoring Loki `http://localhost:3100`
+  - monitoring Tempo `http://localhost:3200`
+  - monitoring Prometheus `http://localhost:9090`
   - monitoring OTel Collector OTLP gRPC `localhost:4317`, HTTP `localhost:4318`
-- Frontend local dev (from `frontend/team-hub-web`):
-  - `npm install`
-  - start infrastructure nginx + gateway + auth + postgres (e.g. `docker compose up gw-nginx gw-api srv-auth db-postgres`)
-  - `npm start` (uses proxy to infrastructure nginx on `https://localhost:8080`)
 - Optional standalone Redis (without root compose):
   - `cp infrastructure/redis/.env.example infrastructure/redis/.env`
   - `docker compose -f infrastructure/redis/docker-compose.redis.yml --env-file infrastructure/redis/.env up -d`
 - Optional standalone monitoring (without root compose):
   - `cp infrastructure/monitoring/.env.example infrastructure/monitoring/.env`
   - `docker compose -f infrastructure/monitoring/docker-compose.monitoring.yml --env-file infrastructure/monitoring/.env up -d`
-  - Grafana: `http://localhost:3000` (default user `admin`, password from env file)
+  - Grafana: `http://localhost:3000` (credentials from env file)
   - Loki ready check: `GET http://localhost:3100/ready`
 - First telemetry in Grafana (OTLP via collector):
-  - start stack: `docker compose up -d mon-otel mon-loki mon-tempo mon-prometheus mon-grafana srv-auth gw-api`
+  - start staging stack (or Aspire + `./scripts/compose-dev.sh up -d`)
   - generate traffic: `curl http://localhost:5000/health` (gateway) or `curl http://localhost:5001/health` (auth)
   - metrics scrape check: `curl http://localhost:5001/metrics | head`
-  - open Grafana `http://localhost:3000` (credentials from `infrastructure/monitoring/compose.prod.env`)
+  - open Grafana `http://localhost:3000` (credentials from `.env.dev` / `.env.staging`)
   - Explore -> **Loki** -> `{service_name="team-hub-auth"}` or `{service_name="team-hub-gateway"}`
   - Explore -> **Tempo** -> search by TraceId from `X-Correlation-ID` response header
   - Explore -> **Prometheus** -> `http_server_request_duration_seconds_count`
-  - note: prod logs are pushed via OTLP (not Docker stdout scraping); `dotnet run` logs stay local unless OTLP endpoint is reachable
+  - note: staging logs are pushed via OTLP (not Docker stdout scraping); Aspire/`dotnet run` logs stay local unless OTLP endpoint is reachable
 - Quick auth smoke through infrastructure nginx:
   - `POST https://localhost:8080/api/auth/register`
   - `POST https://localhost:8080/api/auth/login`
@@ -82,34 +85,29 @@
   - `POST http://localhost:5000/api/auth/logout`
 - Quick auth smoke through frontend nginx proxy:
   - `POST https://localhost:4200/api/auth/register`
-- Debug prod request by Correlation ID:
+- Debug staging request by Correlation ID:
   - reproduce in UI and copy `X-Correlation-ID` from browser DevTools (Network tab, request or response headers)
   - or call API directly and read response header: `curl -s -D - -o /dev/null -H "X-Correlation-ID: test-id" http://localhost:5000/health`
   - open Grafana `http://localhost:3000` -> Explore -> Loki
   - query both services: `{service_name=~"team-hub-gateway|team-hub-auth"} | json | CorrelationId="<trace-id>"`
   - gateway proxy lines include `CorrelationId` in structured log; auth request logs include the same field
-  - if log lines look like `[09:14:47 INF] team_hub_auth...` (plain text), the container is not using Production Serilog JSON — rebuild with `docker compose up --build srv-auth gw-api` and confirm `ASPNETCORE_ENVIRONMENT=Production`
+  - if log lines look like `[09:14:47 INF] team_hub_auth...` (plain text), the container is not using Production Serilog JSON — rebuild with `./scripts/compose-staging.sh up --build srv-auth gw-api` and confirm `ASPNETCORE_ENVIRONMENT=Production`
   - in Grafana, use `| json` to extract `CorrelationId`; plain-text log lines do not show structured fields in the message body
-  - after deploy, a prod log line should start with `{"@t":` (compact JSON); search `{service="auth", env="prod"} |= "\"CorrelationId\""` to confirm the field exists
-  - register flow uses one Correlation ID for both `/register` and auto-login `/login`; query `{service=~"gateway|auth", env="prod"} | json | CorrelationId="<uuid>" | RequestPath=~"/api/auth/(register|login)"`
-  - filter auth logs by user: `{service="auth", env="prod"} | json | UserId="019f5fe8-2b37-749d-8680-009f8cc5e67f"` (requires Bearer JWT on request; cookie-only login/register have empty `UserId`)
-  - filter auth logs by visit: `{service="auth", env="prod"} | json | SessionId="<session-id>"` (copy `X-Session-ID` from DevTools; same value for all requests in one tab visit)
-  - debug unhandled errors: copy `correlationId` from API error response (`application/problem+json`) and query `{service="auth", env="prod"} | json | CorrelationId="<id>" | @l="Error"`
 - Health checks (reduce Grafana/console noise):
-  - auth Docker healthcheck interval is `120s` (`docker-compose.yml` + auth `Dockerfile`)
+  - auth / organization / notification / bff / gateway Docker healthcheck interval is `120s` (`docker-compose.yml` + Dockerfiles)
+  - `gw-nginx` waits for `gw-api` `service_healthy`
   - `/health` and `/metrics` requests are excluded from Serilog request logging in gateway and auth
   - gateway logs `/health` only when unhealthy
-  - after `docker compose up --build -d srv-auth gw-api`, Loki should not show `/health` spam every few seconds
 
 ## Don't
-- Do not keep secrets in repo root `.env` or `.env.production`.
-- Do not use full `docker compose` for daily local dev when Aspire AppHost is available; use AppHost or `docker-compose.dev.yml` for DB plus `dotnet run` / `npm start`.
-- Do not start compose project `team-hub-dev` and compose project `team-hub` at the same time (both bind postgres to `5433`).
+- Do not keep secrets in committed `.env*.example` files or repo root tracked env files.
+- Do not use staging Compose for daily local dev when Aspire AppHost is available.
+- Do not start Aspire AppHost and staging Compose on the same host ports at once.
+- Do not expect `docker-compose.dev.yml` alone to start monitoring or Postgres/Redis/Kafka — use `./scripts/compose-dev.sh`; Aspire owns app infra for local dev.
 - Do not run heavy builds/tests for docs-only updates.
 - Do not verify auth flow by bypassing gateway when checking end-to-end.
-- Do not run AppHost and `docker compose` on the same host ports at once.
 
 ## Checklist
-- Containers healthy (`db-postgres-prod`, `srv-auth-prod`, `srv-organization-prod`, `gw-api-prod`, `gw-nginx-prod`, `ui-web-prod`).
+- Containers healthy (`db-postgres-staging`, `srv-auth-staging`, `srv-organization-staging`, `gw-api-staging`, `gw-nginx-staging`, `ui-web-staging`).
 - Gateway route `/api/auth/*` reaches auth service.
 - Frontend can authenticate with cookie-based refresh flow.

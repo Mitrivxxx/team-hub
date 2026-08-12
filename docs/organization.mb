@@ -4,7 +4,8 @@
 ## Source of truth
 - `services/team-hub-organization/team-hub-organization/Controllers/*.cs`
 - `services/team-hub-organization/team-hub-organization/Configuration/Options/JwtOptions.cs`
-- `services/team-hub-organization/team-hub-organization/.env.example`
+- `services/team-hub-organization/.env.example` (optional local `dotnet run`)
+- `.env.staging.example` (Compose staging)
 - `services/team-hub-organization/team-hub-organization/Data/OrganizationDbContext.cs`
 
 ## Do

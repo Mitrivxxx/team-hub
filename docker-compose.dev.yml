@@ -1,37 +1,27 @@
+# Dev companion overrides for Aspire — monitoring only.
+# Merged with infrastructure/monitoring/docker-compose.monitoring.yml via compose-dev.sh.
+# Paths below are relative to infrastructure/monitoring/ (first -f file directory).
+# Aspire AppHost starts Postgres, Redis, Kafka, Azurite, apps, nginx, and UI.
+# Usage: ./scripts/compose-dev.sh up -d
+# Metrics scrape Aspire host ports via host.docker.internal (prometheus.dev.yml).
+
 name: team-hub-dev
 
-include:
-  - path: infrastructure/redis/docker-compose.redis.yml
-    env_file:
-      - infrastructure/redis/compose.dev.env
-  - path: infrastructure/kafka/docker-compose.kafka.yml
-    env_file:
-      - infrastructure/kafka/compose.dev.env
-  - path: infrastructure/azurite/docker-compose.azurite.yml
-    env_file:
-      - infrastructure/azurite/compose.dev.env
-  - path: infrastructure/monitoring/docker-compose.monitoring.yml
-    env_file:
-      - infrastructure/monitoring/compose.dev.env
-
 services:
-  # === DATABASES AND CACHE ===
-  db-postgres:
-    image: postgres:16
-    container_name: db-postgres-dev
-    environment:
-      POSTGRES_USER: matsma
-      POSTGRES_HOST_AUTH_METHOD: trust
-    ports:
-      - "5433:5432"
+  mon-prometheus:
     volumes:
-      - postgres_data_dev:/var/lib/postgresql/data
-      - ./infrastructure/postgres/init/01-create-dbs-dev.sql:/docker-entrypoint-initdb.d/01-create-dbs.sql:ro
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U matsma"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      - ./prometheus.dev.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
-volumes:
-  postgres_data_dev:
+  mon-nginx-exporter:
+    command:
+      - --nginx.scrape-uri=http://host.docker.internal:8081/nginx_status
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  mon-otel:
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml:ro
+      - ./.nginx-edge-logs:/var/log/nginx-edge:ro

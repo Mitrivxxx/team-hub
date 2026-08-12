@@ -22,7 +22,10 @@
 - `building-blocks/TeamHub.DemoSeed` - shared deterministic demo user identity factory (auth/organization seed).
 - `building-blocks/TeamHub.Observability` - shared OTEL/Serilog + Exception/CorrelationId/UserIdLogging middleware.
 - `building-blocks/TeamHub.GrpcContracts` - shared gRPC protobuf contracts.
-- `docker-compose.yml` - prod/pre-prod runtime (nginx, gateway, auth, organization, notification, bff, postgres, kafka).
+- `docker-compose.yml` - shared Compose base (infra + apps).
+- `docker-compose.dev.yml` - Aspire companion overrides (monitoring only; use `scripts/compose-dev.sh`).
+- `docker-compose.staging.yml` - full-stack staging overlay.
+- `.env.dev.example` / `.env.staging.example` - Compose env templates (secrets stay local).
 - `TeamHub.sln` - solution file; prefer `aspire/TeamHub.AppHost` for local full-stack dev.
 
 ## Zasady glowna

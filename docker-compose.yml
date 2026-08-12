@@ -1,41 +1,21 @@
-name: team-hub
+# Team Hub — shared Compose base (infra + apps).
+# Staging: docker compose -f docker-compose.yml -f docker-compose.staging.yml --env-file .env.staging up --build
+# Dev monitoring only: ./scripts/compose-dev.sh (Aspire runs the rest).
 
 include:
+  - path: infrastructure/postgres/docker-compose.postgres.yml
   - path: infrastructure/redis/docker-compose.redis.yml
-    env_file:
-      - infrastructure/redis/compose.prod.env
   - path: infrastructure/kafka/docker-compose.kafka.yml
-    env_file:
-      - infrastructure/kafka/compose.prod.env
+  - path: infrastructure/azurite/docker-compose.azurite.yml
   - path: infrastructure/monitoring/docker-compose.monitoring.yml
-    env_file:
-      - infrastructure/monitoring/compose.prod.env
 
 services:
-  # === DATABASES AND CACHE ===
-  db-postgres:
-    image: postgres:16
-    container_name: db-postgres-prod
-    environment:
-      POSTGRES_USER: matsma
-      POSTGRES_HOST_AUTH_METHOD: trust
-    ports:
-      - "5433:5432"
-    volumes:
-      - postgres_data_prod:/var/lib/postgresql/data
-      - ./infrastructure/postgres/init/01-create-dbs-prod.sql:/docker-entrypoint-initdb.d/01-create-dbs.sql:ro
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U matsma"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
   # === BACKEND SERVICES ===
   srv-auth:
     build:
       context: .
       dockerfile: services/team-hub-auth/Dockerfile
-    container_name: srv-auth-prod
+    container_name: ${AUTH_CONTAINER_NAME}
     depends_on:
       db-postgres:
         condition: service_healthy
@@ -43,10 +23,12 @@ services:
         condition: service_healthy
       mon-otel:
         condition: service_started
-    env_file:
-      - ./services/team-hub-auth/team-hub-auth/.env
     environment:
       ASPNETCORE_ENVIRONMENT: Production
+      Jwt__Key: ${Jwt__Key}
+      Jwt__Issuer: ${Jwt__Issuer}
+      Jwt__Audience: ${Jwt__Audience}
+      ConnectionStrings__DefaultConnection: Host=db-postgres;Port=5432;Database=authdb;Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
       Redis__ConnectionString: cache-redis:6379
       OTEL_EXPORTER_OTLP_ENDPOINT: http://mon-otel:4317
       Observability__OtlpEndpoint: http://mon-otel:4317
@@ -65,20 +47,28 @@ services:
     build:
       context: .
       dockerfile: services/team-hub-organization/Dockerfile
-    container_name: srv-organization-prod
+    container_name: ${ORG_CONTAINER_NAME}
     depends_on:
       db-postgres:
         condition: service_healthy
       msg-kafka:
         condition: service_healthy
+      blob-storage:
+        condition: service_healthy
       mon-otel:
         condition: service_started
-    env_file:
-      - ./services/team-hub-organization/team-hub-organization/.env
     environment:
       ASPNETCORE_ENVIRONMENT: Production
+      Jwt__Key: ${Jwt__Key}
+      Jwt__Issuer: ${Jwt__Issuer}
+      Jwt__Audience: ${Jwt__Audience}
+      ConnectionStrings__DefaultConnection: Host=db-postgres;Port=5432;Database=organizationdb;Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
       Kafka__BootstrapServers: msg-kafka:9092
       Kafka__ClientId: srv-organization
+      BlobStorage__ConnectionString: ${BlobStorage__ConnectionString}
+      BlobStorage__ContainerName: ${BlobStorage__ContainerName:-avatars}
+      BlobStorage__PublicBlobEndpoint: ${BlobStorage__PublicBlobEndpoint}
+      BlobStorage__SasExpiryMinutes: ${BlobStorage__SasExpiryMinutes:-60}
       OTEL_EXPORTER_OTLP_ENDPOINT: http://mon-otel:4317
       Observability__OtlpEndpoint: http://mon-otel:4317
     ports:
@@ -96,7 +86,7 @@ services:
     build:
       context: .
       dockerfile: services/team-hub-notification/Dockerfile
-    container_name: srv-notification-prod
+    container_name: ${NOTIFICATION_CONTAINER_NAME}
     depends_on:
       db-postgres:
         condition: service_healthy
@@ -104,10 +94,12 @@ services:
         condition: service_healthy
       mon-otel:
         condition: service_started
-    env_file:
-      - ./services/team-hub-notification/team-hub-notification/.env
     environment:
       ASPNETCORE_ENVIRONMENT: Production
+      Jwt__Key: ${Jwt__Key}
+      Jwt__Issuer: ${Jwt__Issuer}
+      Jwt__Audience: ${Jwt__Audience}
+      ConnectionStrings__DefaultConnection: Host=db-postgres;Port=5432;Database=notificationdb;Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
       Kafka__BootstrapServers: msg-kafka:9092
       Kafka__ClientId: srv-notification
       OTEL_EXPORTER_OTLP_ENDPOINT: http://mon-otel:4317
@@ -125,7 +117,7 @@ services:
     build:
       context: .
       dockerfile: services/team-hub-bff/Dockerfile
-    container_name: srv-bff-prod
+    container_name: ${BFF_CONTAINER_NAME}
     depends_on:
       srv-auth:
         condition: service_healthy
@@ -133,10 +125,11 @@ services:
         condition: service_healthy
       mon-otel:
         condition: service_started
-    env_file:
-      - ./services/team-hub-bff/team-hub-bff/.env
     environment:
       ASPNETCORE_ENVIRONMENT: Production
+      Jwt__Key: ${Jwt__Key}
+      Jwt__Issuer: ${Jwt__Issuer}
+      Jwt__Audience: ${Jwt__Audience}
       OTEL_EXPORTER_OTLP_ENDPOINT: http://mon-otel:4317
       Observability__OtlpEndpoint: http://mon-otel:4317
       Grpc__Auth: http://srv-auth:8081
@@ -155,7 +148,7 @@ services:
     build:
       context: .
       dockerfile: services/team-hub-gateway/Dockerfile
-    container_name: gw-api-prod
+    container_name: ${GATEWAY_CONTAINER_NAME}
     depends_on:
       srv-auth:
         condition: service_healthy
@@ -167,23 +160,30 @@ services:
         condition: service_healthy
       mon-otel:
         condition: service_started
-    env_file:
-      - ./services/team-hub-gateway/team-hub-gateway/.env
     environment:
       ASPNETCORE_ENVIRONMENT: Production
+      Jwt__Key: ${Jwt__Key}
+      Jwt__Issuer: ${Jwt__Issuer}
+      Jwt__Audience: ${Jwt__Audience}
       OTEL_EXPORTER_OTLP_ENDPOINT: http://mon-otel:4317
       Observability__OtlpEndpoint: http://mon-otel:4317
     ports:
       - "5000:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 120s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
 
   gw-nginx:
     build:
       context: .
       dockerfile: infrastructure/nginx/Dockerfile
-    container_name: gw-nginx-prod
+    container_name: ${NGINX_CONTAINER_NAME}
     depends_on:
       gw-api:
-        condition: service_started
+        condition: service_healthy
     ports:
       - "8080:443"
     volumes:
@@ -195,7 +195,7 @@ services:
     build:
       context: .
       dockerfile: frontend/team-hub-web/Dockerfile
-    container_name: ui-web-prod
+    container_name: ${WEB_CONTAINER_NAME}
     depends_on:
       - gw-api
       - gw-nginx
@@ -203,7 +203,3 @@ services:
       - "4200:4200"
     volumes:
       - ./certs:/etc/nginx/certs
-
-volumes:
-  postgres_data_prod:
-  nginx_edge_logs:
