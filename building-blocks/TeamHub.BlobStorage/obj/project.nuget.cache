@@ -1,16 +1,16 @@
 {
   "version": 2,
-  "dgSpecHash": "ejnwGb9JbaU=",
+  "dgSpecHash": "EcFep1G4inQ=",
   "success": true,
   "projectFilePath": "/home/matsma/project/team-hub/building-blocks/TeamHub.BlobStorage/TeamHub.BlobStorage.csproj",
   "expectedPackageFiles": [
-    "/tmp/cursor-sandbox-cache/63b97c58bae9de44a5414099ba6e2af4/nuget/azure.core/1.44.1/azure.core.1.44.1.nupkg.sha512",
-    "/tmp/cursor-sandbox-cache/63b97c58bae9de44a5414099ba6e2af4/nuget/azure.storage.blobs/12.22.2/azure.storage.blobs.12.22.2.nupkg.sha512",
-    "/tmp/cursor-sandbox-cache/63b97c58bae9de44a5414099ba6e2af4/nuget/azure.storage.common/12.21.1/azure.storage.common.12.21.1.nupkg.sha512",
-    "/tmp/cursor-sandbox-cache/63b97c58bae9de44a5414099ba6e2af4/nuget/microsoft.bcl.asyncinterfaces/6.0.0/microsoft.bcl.asyncinterfaces.6.0.0.nupkg.sha512",
-    "/tmp/cursor-sandbox-cache/63b97c58bae9de44a5414099ba6e2af4/nuget/system.clientmodel/1.1.0/system.clientmodel.1.1.0.nupkg.sha512",
-    "/tmp/cursor-sandbox-cache/63b97c58bae9de44a5414099ba6e2af4/nuget/system.io.hashing/6.0.0/system.io.hashing.6.0.0.nupkg.sha512",
-    "/tmp/cursor-sandbox-cache/63b97c58bae9de44a5414099ba6e2af4/nuget/system.memory.data/6.0.0/system.memory.data.6.0.0.nupkg.sha512"
+    "/home/matsma/.nuget/packages/azure.core/1.44.1/azure.core.1.44.1.nupkg.sha512",
+    "/home/matsma/.nuget/packages/azure.storage.blobs/12.22.2/azure.storage.blobs.12.22.2.nupkg.sha512",
+    "/home/matsma/.nuget/packages/azure.storage.common/12.21.1/azure.storage.common.12.21.1.nupkg.sha512",
+    "/home/matsma/.nuget/packages/microsoft.bcl.asyncinterfaces/6.0.0/microsoft.bcl.asyncinterfaces.6.0.0.nupkg.sha512",
+    "/home/matsma/.nuget/packages/system.clientmodel/1.1.0/system.clientmodel.1.1.0.nupkg.sha512",
+    "/home/matsma/.nuget/packages/system.io.hashing/6.0.0/system.io.hashing.6.0.0.nupkg.sha512",
+    "/home/matsma/.nuget/packages/system.memory.data/6.0.0/system.memory.data.6.0.0.nupkg.sha512"
   ],
   "logs": []
 }

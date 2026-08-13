@@ -2,16 +2,17 @@
 - Shared OpenTelemetry, Serilog bootstrap, and cross-service ASP.NET Core observability middleware for Team Hub microservices.
 
 ## Source of truth
-- `ObservabilityOptions.cs` — `ServiceName`, `OtlpEndpoint` (`Observability` config section).
-- `ServiceCollectionExtensions.cs` — `AddTeamHubOpenTelemetry`.
-- `HostBuilderExtensions.cs` — `AddTeamHubSerilog` (Span enricher, config-driven sinks).
-- `WebApplicationExtensions.cs` — `MapTeamHubObservabilityEndpoints` (`/metrics`).
-- `ApplicationBuilderExtensions.cs` — `UseTeamHubExceptionHandling`, `UseTeamHubCorrelationId`, `UseTeamHubUserIdLogging`.
-- `SerilogRequestLoggingExtensions.cs` — `UseSerilogRequestLoggingExcludingHealth`.
-- `ServiceCollectionExceptionExtensions.cs` — `AddTeamHubExceptionMapper<TMapper>`, `AddTeamHubProblemDetails`.
-- `ProblemTypes.cs` — RFC 9457 `type` URI base (`https://teamhub.dev/problems/{suffix}`).
-- `TeamHubProblemDetailsFactory.cs` — builds `ProblemDetails` / `ValidationProblemDetails` with `correlationId`.
-- `Middleware/` — `ExceptionMiddleware`, `CorrelationIdMiddleware`, `UserIdLoggingMiddleware`, `IExceptionProblemDetailsMapper`, `ExceptionMapping`.
+- `OpenTelemetry/ObservabilityOptions.cs` — `ServiceName`, `OtlpEndpoint` (`Observability` config section).
+- `OpenTelemetry/ServiceCollectionExtensions.cs` — `AddTeamHubOpenTelemetry`.
+- `OpenTelemetry/WebApplicationExtensions.cs` — `MapTeamHubObservabilityEndpoints` (`/metrics`).
+- `Logging/HostBuilderExtensions.cs` — `AddTeamHubSerilog` (Span enricher, config-driven sinks).
+- `Logging/SerilogRequestLoggingExtensions.cs` — `UseSerilogRequestLoggingExcludingHealth`.
+- `Problems/ServiceCollectionExceptionExtensions.cs` — `AddTeamHubExceptionMapper<TMapper>`, `AddTeamHubProblemDetails`.
+- `Problems/ProblemTypes.cs` — RFC 9457 `type` URI base (`https://teamhub.dev/problems/{suffix}`).
+- `Problems/TeamHubProblemDetailsFactory.cs` — builds `ProblemDetails` / `ValidationProblemDetails` with `correlationId`.
+- `Problems/IExceptionProblemDetailsMapper.cs`, `Problems/ExceptionMapping.cs` — service-specific exception → ProblemDetails mapping (namespace `TeamHub.Observability.Middleware`).
+- `Middleware/` — `ExceptionMiddleware`, `CorrelationIdMiddleware`, `UserIdLoggingMiddleware`.
+- `Middleware/ApplicationBuilderExtensions.cs` — `UseTeamHubExceptionHandling`, `UseTeamHubCorrelationId`, `UseTeamHubUserIdLogging`.
 
 ## Do
 - Register via `AddTeamHubOpenTelemetry(configuration, serviceName, includeEntityFrameworkCore)`.

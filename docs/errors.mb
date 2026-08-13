@@ -2,8 +2,8 @@
 - Pin Team Hub HTTP error contract to RFC 9457 Problem Details.
 
 ## Source of truth
-- `building-blocks/TeamHub.Observability/ProblemTypes.cs`
-- `building-blocks/TeamHub.Observability/TeamHubProblemDetailsFactory.cs`
+- `building-blocks/TeamHub.Observability/Problems/ProblemTypes.cs`
+- `building-blocks/TeamHub.Observability/Problems/TeamHubProblemDetailsFactory.cs`
 - `building-blocks/TeamHub.Observability/Middleware/ExceptionMiddleware.cs`
 - Service mappers: `OrganizationExceptionMapper`, `RedisUnavailableExceptionMapper`
 

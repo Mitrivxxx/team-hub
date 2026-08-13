@@ -607,7 +607,7 @@
     ]
   },
   "packageFolders": {
-    "/tmp/cursor-sandbox-cache/63b97c58bae9de44a5414099ba6e2af4/nuget": {}
+    "/home/matsma/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
@@ -615,7 +615,7 @@
       "projectUniqueName": "/home/matsma/project/team-hub/aspire/TeamHub.ServiceDefaults/TeamHub.ServiceDefaults.csproj",
       "projectName": "TeamHub.ServiceDefaults",
       "projectPath": "/home/matsma/project/team-hub/aspire/TeamHub.ServiceDefaults/TeamHub.ServiceDefaults.csproj",
-      "packagesPath": "/tmp/cursor-sandbox-cache/63b97c58bae9de44a5414099ba6e2af4/nuget",
+      "packagesPath": "/home/matsma/.nuget/packages/",
       "outputPath": "/home/matsma/project/team-hub/aspire/TeamHub.ServiceDefaults/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [

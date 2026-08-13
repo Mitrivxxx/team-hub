@@ -11,19 +11,19 @@ using System;
 using System.Reflection;
 
 [assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("f98c26cd-161c-4215-9994-01bf3984cb6b")]
-[assembly: System.Reflection.AssemblyMetadata("dcpclipath", ("/tmp/cursor-sandbox-cache/63b97c58bae9de44a5414099ba6e2af4/nuget/aspire.hosting.o" +
-    "rchestration.linux-x64/13.4.6/tools/dcp"))]
-[assembly: System.Reflection.AssemblyMetadata("dcpextensionpaths", ("/tmp/cursor-sandbox-cache/63b97c58bae9de44a5414099ba6e2af4/nuget/aspire.hosting.o" +
-    "rchestration.linux-x64/13.4.6/tools/ext/"))]
+[assembly: System.Reflection.AssemblyMetadata("dcpclipath", ("/home/matsma/.nuget/packages/aspire.hosting.orchestration.linux-x64/13.4.6/tools/" +
+    "dcp"))]
+[assembly: System.Reflection.AssemblyMetadata("dcpextensionpaths", ("/home/matsma/.nuget/packages/aspire.hosting.orchestration.linux-x64/13.4.6/tools/" +
+    "ext/"))]
 [assembly: System.Reflection.AssemblyMetadata("apphostprojectpath", "/home/matsma/project/team-hub/aspire/TeamHub.AppHost")]
 [assembly: System.Reflection.AssemblyMetadata("apphostprojectname", "TeamHub.AppHost.csproj")]
-[assembly: System.Reflection.AssemblyMetadata("aspiredashboardpath", ("/tmp/cursor-sandbox-cache/63b97c58bae9de44a5414099ba6e2af4/nuget/aspire.dashboard" +
-    ".sdk.linux-x64/13.4.6/tools/Aspire.Dashboard"))]
+[assembly: System.Reflection.AssemblyMetadata("aspiredashboardpath", ("/home/matsma/.nuget/packages/aspire.dashboard.sdk.linux-x64/13.4.6/tools/Aspire.D" +
+    "ashboard"))]
 [assembly: System.Reflection.AssemblyMetadataAttribute("apphostprojectbaseintermediateoutputpath", "/home/matsma/project/team-hub/aspire/TeamHub.AppHost/obj/")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("TeamHub.AppHost")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+87abca95f08c6e1e760574768014a3b0a36157c6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d462c737fc4babd9544199a3e4a56f4de5e0ed19")]
 [assembly: System.Reflection.AssemblyProductAttribute("TeamHub.AppHost")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TeamHub.AppHost")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

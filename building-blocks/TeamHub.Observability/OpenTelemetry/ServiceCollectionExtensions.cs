@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry.Metrics;
@@ -31,7 +30,7 @@ public static class ServiceCollectionExtensions
                     .AddAspNetCoreInstrumentation(aspNetCoreOptions =>
                     {
                         aspNetCoreOptions.RecordException = true;
-                        aspNetCoreOptions.Filter = context => !IsExcludedPath(context.Request.Path);
+                        aspNetCoreOptions.Filter = context => !ObservabilityPaths.IsExcluded(context.Request.Path);
                     })
                     .AddHttpClientInstrumentation()
                     .AddOtlpExporter(otlp => otlp.Endpoint = new Uri(options.OtlpEndpoint));
@@ -53,7 +52,4 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
-
-    static bool IsExcludedPath(PathString path) =>
-        path.StartsWithSegments("/health") || path.StartsWithSegments("/metrics");
 }

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TeamHub.Kafka")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+87abca95f08c6e1e760574768014a3b0a36157c6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d462c737fc4babd9544199a3e4a56f4de5e0ed19")]
 [assembly: System.Reflection.AssemblyProductAttribute("TeamHub.Kafka")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TeamHub.Kafka")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -4076,7 +4076,7 @@
     ]
   },
   "packageFolders": {
-    "/tmp/cursor-sandbox-cache/63b97c58bae9de44a5414099ba6e2af4/nuget": {}
+    "/home/matsma/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
@@ -4084,7 +4084,7 @@
       "projectUniqueName": "/home/matsma/project/team-hub/services/team-hub-bff/team-hub-bff/team-hub-bff.csproj",
       "projectName": "team-hub-bff",
       "projectPath": "/home/matsma/project/team-hub/services/team-hub-bff/team-hub-bff/team-hub-bff.csproj",
-      "packagesPath": "/tmp/cursor-sandbox-cache/63b97c58bae9de44a5414099ba6e2af4/nuget",
+      "packagesPath": "/home/matsma/.nuget/packages/",
       "outputPath": "/home/matsma/project/team-hub/services/team-hub-bff/team-hub-bff/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [

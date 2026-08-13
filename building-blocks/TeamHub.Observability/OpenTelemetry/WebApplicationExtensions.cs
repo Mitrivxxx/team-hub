@@ -7,7 +7,7 @@ public static class WebApplicationExtensions
 {
     public static WebApplication MapTeamHubObservabilityEndpoints(this WebApplication app)
     {
-        app.MapPrometheusScrapingEndpoint("/metrics");
+        app.MapPrometheusScrapingEndpoint(ObservabilityPaths.Metrics);
         return app;
     }
 }
