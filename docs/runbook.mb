@@ -28,9 +28,10 @@
   - project `team-hub-dev` — Grafana/Loki/Tempo/Prometheus/OTel only (Aspire owns Postgres/Redis/Kafka/Azurite/apps)
   - Prometheus uses `prometheus.dev.yml` (`host.docker.internal:5000`–`5004`); nginx exporter scrapes `host.docker.internal:8081`
   - AppHost OTLP → `http://127.0.0.1:4317`; edge logs shared via `infrastructure/monitoring/.nginx-edge-logs`
-- **Demo seed via Aspire** (Development; auth then organization):
+- **Demo seed via Aspire** (Development; auth → org → notification inbox for JanWilk):
   - `cd aspire/TeamHub.AppHost && dotnet run -- --seed` (or `dotnet run --launch-profile seed`)
-  - when dashboard shows `org-seed` Finished: login `JanWilk123` / `janwilk123`; Ctrl+C to stop
+  - AppHost exits when `seed-notification` Finished; login `JanWilk123` / `janwilk123` (Owner of `demo-org-1`)
+  - re-seed: remove Aspire Postgres named volume, then run `--seed` again
   - details: `aspire/AGENT.md`
 - **Staging full stack (Docker):**
   - `./scripts/setup-certs.sh` (mkcert = trusted HTTPS in browser; otherwise self-signed with warning)

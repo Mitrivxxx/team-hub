@@ -1,0 +1,46 @@
+{"sessionId":"7ab408","timestamp":1786625703498,"hypothesisId":"G","location":"AppHost/Program.cs:entry","message":"AppHost started","data":{"seedMode":true,"args":["--seed"]}}
+{"sessionId":"7ab408","timestamp":1786625703498,"hypothesisId":"G","location":"AppHost/Program.cs:entry","message":"AppHost started","data":{"seedMode":true,"args":["--seed"]}}
+{"sessionId":"7ab408","timestamp":1786625712299,"hypothesisId":"G","location":"auth/Program.cs:entry","message":"auth process entry","data":{"isSeed":true,"aspnetEnv":"Development"}}
+{"sessionId":"7ab408","timestamp":1786625712299,"hypothesisId":"G","location":"auth/Program.cs:entry","message":"auth process entry","data":{"isSeed":true,"aspnetEnv":"Development"}}
+{"sessionId":"7ab408","timestamp":1786625712865,"hypothesisId":"G","location":"auth/Program.cs:seed","message":"auth --seed running","data":{"environment":"Development"}}
+{"sessionId":"7ab408","timestamp":1786625712865,"hypothesisId":"G","location":"auth/Program.cs:seed","message":"auth --seed running","data":{"environment":"Development"}}
+{"sessionId":"7ab408","timestamp":1786625714686,"hypothesisId":"G","location":"auth/Program.cs:seedDone","message":"auth --seed finished","data":null}
+{"sessionId":"7ab408","timestamp":1786625714686,"hypothesisId":"G","location":"auth/Program.cs:seedDone","message":"auth --seed finished","data":null}
+{"sessionId":"7ab408","timestamp":1786625716613,"hypothesisId":"G","location":"auth/Program.cs:entry","message":"auth process entry","data":{"isSeed":false,"aspnetEnv":"Development"}}
+{"sessionId":"7ab408","timestamp":1786625716613,"hypothesisId":"G","location":"auth/Program.cs:entry","message":"auth process entry","data":{"isSeed":false,"aspnetEnv":"Development"}}
+{"sessionId":"7ab408","timestamp":1786625717192,"hypothesisId":"G","location":"auth/Program.cs:host","message":"auth hosting HTTP/gRPC (srv-auth)","data":null}
+{"sessionId":"7ab408","timestamp":1786625717192,"hypothesisId":"G","location":"auth/Program.cs:host","message":"auth hosting HTTP/gRPC (srv-auth)","data":null}
+{"sessionId":"7ab408","timestamp":1786626076742,"hypothesisId":"G","location":"AppHost/Program.cs:entry","message":"AppHost started","data":{"seedMode":true,"args":["--seed"]}}
+{"sessionId":"7ab408","timestamp":1786626076742,"hypothesisId":"G","location":"AppHost/Program.cs:entry","message":"AppHost started","data":{"seedMode":true,"args":["--seed"]}}
+{"sessionId":"7ab408","timestamp":1786626091329,"hypothesisId":"G","location":"auth/Program.cs:entry","message":"auth process entry","data":{"isSeed":true,"aspnetEnv":"Development"}}
+{"sessionId":"7ab408","timestamp":1786626091329,"hypothesisId":"G","location":"auth/Program.cs:entry","message":"auth process entry","data":{"isSeed":true,"aspnetEnv":"Development"}}
+{"sessionId":"7ab408","timestamp":1786626091853,"hypothesisId":"G","location":"auth/Program.cs:seed","message":"auth --seed running","data":{"environment":"Development"}}
+{"sessionId":"7ab408","timestamp":1786626091853,"hypothesisId":"G","location":"auth/Program.cs:seed","message":"auth --seed running","data":{"environment":"Development"}}
+{"sessionId":"7ab408","timestamp":1786626127553,"hypothesisId":"G","location":"auth/Program.cs:seedDone","message":"auth --seed finished","data":null}
+{"sessionId":"7ab408","timestamp":1786626127553,"hypothesisId":"G","location":"auth/Program.cs:seedDone","message":"auth --seed finished","data":null}
+{"sessionId":"7ab408","timestamp":1786626129454,"hypothesisId":"G","location":"auth/Program.cs:entry","message":"auth process entry","data":{"isSeed":false,"aspnetEnv":"Development"}}
+{"sessionId":"7ab408","timestamp":1786626129454,"hypothesisId":"G","location":"auth/Program.cs:entry","message":"auth process entry","data":{"isSeed":false,"aspnetEnv":"Development"}}
+{"sessionId":"7ab408","timestamp":1786626129536,"hypothesisId":"G","location":"Program.cs:entry","message":"organization process entry","data":{"isSeed":true,"aspnetEnv":"Development"}}
+{"sessionId":"7ab408","timestamp":1786626129536,"hypothesisId":"G","location":"Program.cs:entry","message":"organization process entry","data":{"isSeed":true,"aspnetEnv":"Development"}}
+{"sessionId":"7ab408","timestamp":1786626129925,"hypothesisId":"G","location":"auth/Program.cs:host","message":"auth hosting HTTP/gRPC (srv-auth)","data":null}
+{"sessionId":"7ab408","timestamp":1786626129925,"hypothesisId":"G","location":"auth/Program.cs:host","message":"auth hosting HTTP/gRPC (srv-auth)","data":null}
+{"sessionId":"7ab408","timestamp":1786626130031,"hypothesisId":"H","location":"Program.cs:afterBuild","message":"organization Build succeeded","data":{"isSeed":true,"environment":"Development"}}
+{"sessionId":"7ab408","timestamp":1786626130031,"hypothesisId":"H","location":"Program.cs:afterBuild","message":"organization Build succeeded","data":{"isSeed":true,"environment":"Development"}}
+{"sessionId":"7ab408","timestamp":1786626130045,"hypothesisId":"A","location":"WebApplicationExtensions.cs:RunSeedAndExitAsync","message":"seed gate","data":{"canRun":true,"environment":"Development","seedEnabled":true,"organizationCount":1,"ownerUsername":"JanWilk123","grpcAuth":"http://127.0.0.1:5101"}}
+{"sessionId":"7ab408","timestamp":1786626130045,"hypothesisId":"A","location":"WebApplicationExtensions.cs:RunSeedAndExitAsync","message":"seed gate","data":{"canRun":true,"environment":"Development","seedEnabled":true,"organizationCount":1,"ownerUsername":"JanWilk123","grpcAuth":"http://127.0.0.1:5101"}}
+{"sessionId":"7ab408","timestamp":1786626131962,"hypothesisId":"E","location":"WebApplicationExtensions.cs:RunSeedAndExitAsync","message":"migrated, starting seeder","data":{"databaseName":"organization_db","seeder":"DevelopmentDataSeeder"}}
+{"sessionId":"7ab408","timestamp":1786626131962,"hypothesisId":"E","location":"WebApplicationExtensions.cs:RunSeedAndExitAsync","message":"migrated, starting seeder","data":{"databaseName":"organization_db","seeder":"DevelopmentDataSeeder"}}
+{"sessionId":"7ab408","timestamp":1786626131975,"hypothesisId":"A","location":"OrganizationDemoBuilder.cs:SeedAsync","message":"builder start","data":{"OrganizationCount":1,"MembersPerOrganization":15,"OwnerUsername":"JanWilk123","Enabled":true,"databaseName":"organization_db"}}
+{"sessionId":"7ab408","timestamp":1786626131975,"hypothesisId":"A","location":"OrganizationDemoBuilder.cs:SeedAsync","message":"builder start","data":{"OrganizationCount":1,"MembersPerOrganization":15,"OwnerUsername":"JanWilk123","Enabled":true,"databaseName":"organization_db"}}
+{"sessionId":"7ab408","timestamp":1786626144313,"hypothesisId":"G","location":"AppHost/Program.cs:entry","message":"AppHost started","data":{"seedMode":false,"args":[]}}
+{"sessionId":"7ab408","timestamp":1786626144313,"hypothesisId":"G","location":"AppHost/Program.cs:entry","message":"AppHost started","data":{"seedMode":false,"args":[]}}
+{"sessionId":"7ab408","timestamp":1786626157064,"hypothesisId":"G","location":"auth/Program.cs:entry","message":"auth process entry","data":{"isSeed":false,"aspnetEnv":"Development"}}
+{"sessionId":"7ab408","timestamp":1786626157064,"hypothesisId":"G","location":"auth/Program.cs:entry","message":"auth process entry","data":{"isSeed":false,"aspnetEnv":"Development"}}
+{"sessionId":"7ab408","timestamp":1786626157670,"hypothesisId":"G","location":"auth/Program.cs:host","message":"auth hosting HTTP/gRPC (srv-auth)","data":null}
+{"sessionId":"7ab408","timestamp":1786626157670,"hypothesisId":"G","location":"auth/Program.cs:host","message":"auth hosting HTTP/gRPC (srv-auth)","data":null}
+{"sessionId":"7ab408","timestamp":1786626168966,"hypothesisId":"G","location":"Program.cs:entry","message":"organization process entry","data":{"isSeed":false,"aspnetEnv":"Development"}}
+{"sessionId":"7ab408","timestamp":1786626168966,"hypothesisId":"G","location":"Program.cs:entry","message":"organization process entry","data":{"isSeed":false,"aspnetEnv":"Development"}}
+{"sessionId":"7ab408","timestamp":1786626169547,"hypothesisId":"H","location":"Program.cs:afterBuild","message":"organization Build succeeded","data":{"isSeed":false,"environment":"Development"}}
+{"sessionId":"7ab408","timestamp":1786626169547,"hypothesisId":"H","location":"Program.cs:afterBuild","message":"organization Build succeeded","data":{"isSeed":false,"environment":"Development"}}
+{"sessionId":"7ab408","timestamp":1786626170500,"hypothesisId":"F","location":"WebApplicationExtensions.cs:ApplyStartupSchemaAsync","message":"normal startup migrate (no demo seed)","data":{"databaseName":"organization_db","environment":"Development"}}
+{"sessionId":"7ab408","timestamp":1786626170500,"hypothesisId":"F","location":"WebApplicationExtensions.cs:ApplyStartupSchemaAsync","message":"normal startup migrate (no demo seed)","data":{"databaseName":"organization_db","environment":"Development"}}

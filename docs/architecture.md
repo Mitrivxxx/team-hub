@@ -50,6 +50,7 @@
 - Keep notification DB host context-aware:
   - Aspire: database `notification_db`
   - staging Compose: database `notificationdb` on `db-postgres:5432`
+- Keep blob storage (Azurite in Aspire/staging) for organization/team/user avatars: Aspire `blobs` referenced by `srv-organization` and `srv-auth`; staging Compose `BlobStorage__*` on both.
 
 ## Don't
 - Do not bypass gateway for frontend API calls.

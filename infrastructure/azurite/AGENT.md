@@ -6,6 +6,7 @@
 - `infrastructure/azurite/.env.example`
 - Root `.env.staging.example` (`AZURITE_*`, `BlobStorage__*`)
 - Root `docker-compose.yml` (includes Azurite for staging)
+- `aspire/TeamHub.AppHost/Program.cs` (dev emulator + data volume)
 - `building-blocks/TeamHub.BlobStorage/*`
 
 ## Why compose fragment, not Dockerfile
@@ -23,7 +24,7 @@
 - Keep connection string templates in `infrastructure/azurite/.env.example`.
 - Use `building-blocks/TeamHub.BlobStorage` for blob client bootstrap in services.
 - Set `BlobStorage__PublicBlobEndpoint` to a host-reachable URL for browser SAS links (`http://127.0.0.1:10000/devstoreaccount1`).
-- Persist blobs via Docker volume named by `AZURITE_VOLUME_NAME`.
+- Persist blobs: staging Compose volume `AZURITE_VOLUME_NAME`; Aspire dev `RunAsEmulator(...WithDataVolume())` (named Docker volume, typically `teamhub.apphost-blob-storage-data`).
 
 ## Don't
 - Do not add per-service Azurite instances.

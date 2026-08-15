@@ -21,7 +21,8 @@
 - Keep session restore via `refresh()` on app start (`restoreSession()` logic).
 - After successful register, auto-login via `/login` and redirect to `/app`.
 - Treat auth response shape as source contract for UI state:
-  - `accessToken`, `expiresInSeconds`, `user`.
+  - `accessToken`, `expiresInSeconds`, `user` (`id`, `username`, `email`, `name`, `surname`, `avatarUrl`).
+- Profile page (`/app/profile`) uses JWT `GET/PATCH /me`, `POST /me/change-password`, `PUT|DELETE /me/avatar`.
 - Set `X-Correlation-ID` on every outbound API request via `correlationIdInterceptor` (new UUID per request).
 - Set `X-Session-ID` on every outbound API request via `sessionIdInterceptor` (one ID per visit in `sessionStorage`).
 - Reuse one `X-Correlation-ID` for the full register flow (`POST /register` + auto `POST /login`) via `CorrelationContextService`.
@@ -35,7 +36,7 @@
 - Do not add frontend assumptions about endpoints outside `/api/auth/*`.
 
 ## Checklist
-- Frontend calls still align with auth endpoints (`register`, `login`, `refresh`, `logout`, `change-password`, `users`).
+- Frontend calls still align with auth endpoints (`register`, `login`, `refresh`, `logout`, `change-password`, `users`, `me`, `me/change-password`, `me/avatar`).
 - Local dev proxy target points to infrastructure nginx HTTPS port `8080`.
 - Docker web container serves HTTPS on host port `4200`.
 - Credentials mode is enabled where cookie is required.

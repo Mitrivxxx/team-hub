@@ -40,9 +40,9 @@
 |--------|------|------|------------|
 | `invalid-credentials` | 401 | bad login | `code=AUTH_INVALID_CREDENTIALS`, `remainingAttempts`, `lockoutSeconds` |
 | `account-locked` | 423 | login lockout | `code=AUTH_LOCKED`, `remainingAttempts`, `lockoutSeconds` |
-| `unauthorized` | 401 | refresh / change-password identity failure | |
-| `conflict` | 409 | register duplicate username/email | `errors` (ValidationProblemDetails) |
-| `service-unavailable` | 503 | Redis unavailable | |
+| `unauthorized` | 401 | refresh / change-password identity failure / invalid current password on `/me/change-password` | |
+| `conflict` | 409 | register duplicate username/email; `PATCH /me` duplicate email | `errors` (ValidationProblemDetails) |
+| `service-unavailable` | 503 | Redis unavailable; blob storage not configured for `/me/avatar` | |
 
 ### Validation
 - Format / ModelState → `ValidationProblemDetails` with `type=…/validation-failed` and `errors`.

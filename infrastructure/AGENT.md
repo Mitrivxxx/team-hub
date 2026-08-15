@@ -65,8 +65,8 @@
 - Docker network: `cache-redis:6379`
 
 ## Azurite
-- Aspire: resource `blob-storage` (dev)
-- Staging Compose: `blob-storage-staging` (emulator for pre-prod)
+- Aspire: resource `blob-storage` (dev; `WithDataVolume`)
+- Staging Compose: `blob-storage-staging` (emulator for pre-prod; volume `AZURITE_VOLUME_NAME`)
 - Host blob port: `10000`
 - Docker network: `blob-storage:10000`
 - Browser SAS URLs: `BlobStorage__PublicBlobEndpoint=http://127.0.0.1:10000/devstoreaccount1`

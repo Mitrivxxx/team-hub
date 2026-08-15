@@ -21,6 +21,8 @@ services:
         condition: service_healthy
       cache-redis:
         condition: service_healthy
+      blob-storage:
+        condition: service_healthy
       mon-otel:
         condition: service_started
     environment:
@@ -30,6 +32,10 @@ services:
       Jwt__Audience: ${Jwt__Audience}
       ConnectionStrings__DefaultConnection: Host=db-postgres;Port=5432;Database=authdb;Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
       Redis__ConnectionString: cache-redis:6379
+      BlobStorage__ConnectionString: ${BlobStorage__ConnectionString}
+      BlobStorage__ContainerName: ${BlobStorage__ContainerName:-avatars}
+      BlobStorage__PublicBlobEndpoint: ${BlobStorage__PublicBlobEndpoint}
+      BlobStorage__SasExpiryMinutes: ${BlobStorage__SasExpiryMinutes:-60}
       OTEL_EXPORTER_OTLP_ENDPOINT: http://mon-otel:4317
       Observability__OtlpEndpoint: http://mon-otel:4317
     ports:

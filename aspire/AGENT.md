@@ -14,12 +14,13 @@
 - Demo seed (Development only; orchestrates existing per-service `--seed` runners — does not live in `TeamHub.DemoSeed`):
   - `cd aspire/TeamHub.AppHost && dotnet run -- --seed`
   - or `dotnet run --launch-profile seed`
-  - Order: `auth-seed` (migrate + users) → `srv-auth` (gRPC `:5101`) → `org-seed` (orgs/members/teams via auth gRPC).
-  - Infra for seed mode: `db-postgres` (`auth_db` / `organization_db`), `cache-redis`, `msg-kafka`. No gateway/nginx/web/notification/bff/blobs.
-  - Idempotent (same as service seeders). Login after seed: `JanWilk123` / `janwilk123`. When `org-seed` is Finished, stop AppHost with Ctrl+C (or keep `srv-auth` up to smoke-test).
+  - Order: `seed-auth` → `seed-auth-api` (gRPC `:15101`, HTTP `:15001` — not the live stack `:5001`/`:5101`) → `seed-organization` (1 org, JanWilk Owner) → `seed-notification` (demo inbox for JanWilk).
+  - Infra for seed mode: `db-postgres` (`auth_db` / `organization_db` / `notification_db`, `WithDataVolume`), `cache-redis`, `msg-kafka`. No gateway/nginx/web/bff/blobs.
+  - Idempotent (same as service seeders). Login: `JanWilk123` / `janwilk123` (Owner of `demo-org-1` / Wilk Technologies).
+  - AppHost waits for `seed-notification` Finished then exits (no Ctrl+C). Re-seed: remove Aspire Postgres named volume, then run `--seed` again.
 - Prerequisites: .NET 10 SDK (`dotnet --version` should report 10.x), Aspire 13 (`Aspire.AppHost.Sdk` via NuGet — no Aspire workload), Docker, Node.js/npm, TLS certs in `certs/` (`./scripts/setup-certs.sh`).
   - If `dotnet --list-sdks` only shows 8.x, install SDK 10 (`https://aka.ms/dotnet/download` or `curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 10.0`) and put `$HOME/.dotnet` first on `PATH` (`export DOTNET_ROOT=$HOME/.dotnet; export PATH=$HOME/.dotnet:$PATH`). Repo `global.json` pins SDK 10.0.x.
-- AppHost runs: Postgres (Aspire resource `db-postgres` + `auth-db` / `organization-db` / `notification-db`), Redis (`cache-redis`), Kafka (`msg-kafka` host `:9092`), Azurite blob storage (`blob-storage` blob host `:10000` + `blobs`), `srv-auth`, `srv-organization`, `srv-notification`, `srv-bff`, `gw-api`, infrastructure nginx (`gw-nginx`), Angular (`ui-web` / `npm start`).
+- AppHost runs: Postgres (Aspire resource `db-postgres` + `auth-db` / `organization-db` / `notification-db`, `WithDataVolume`), Redis (`cache-redis`), Kafka (`msg-kafka` host `:9092`), Azurite blob storage (`blob-storage` blob host `:10000` + `blobs`, `WithDataVolume`), `srv-auth`, `srv-organization`, `srv-notification`, `srv-bff`, `gw-api`, infrastructure nginx (`gw-nginx`), Angular (`ui-web` / `npm start`).
 - Organization waits for Kafka + Azurite; notification waits for Kafka (`WaitFor`).
 - Aspire resource names: only ASCII letters, digits, hyphens (no underscores).
 - Keep staging/pre-prod on Compose (`docker-compose.yml` + `docker-compose.staging.yml`) — Aspire is dev-only.

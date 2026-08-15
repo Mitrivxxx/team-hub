@@ -38,7 +38,7 @@ See `docs/organization.mb` for `/api/organizations` contract.
 ## Do
 - Use PostgreSQL for auth data only (users).
 - Use Redis for refresh-token sessions (`auth:session:*`); Redis is shared infrastructure (`infrastructure/redis/`).
-- Treat `AuthDbContext` as schema contract (`users`, indexes).
+- Treat `AuthDbContext` as schema contract (`users`, indexes, optional `AvatarUrl` blob path).
 - Create schema changes through EF Core migrations in `Migrations/`.
 - Keep connection string environment-aware:
   - Aspire: `auth_db` (injected)

@@ -8,6 +8,9 @@ public static class BlobStoragePaths
     public static string TeamAvatar(Guid organizationId, Guid teamId, string extension) =>
         $"organizations/{organizationId}/teams/{teamId}/avatar.{extension.TrimStart('.')}";
 
+    public static string UserAvatar(Guid userId, string extension) =>
+        $"users/{userId}/avatar.{extension.TrimStart('.')}";
+
     public static string ImportExportSource(Guid organizationId, Guid jobId, string extension) =>
         $"organizations/{organizationId}/import-export/{jobId}/source.{extension.TrimStart('.')}";
 
@@ -36,4 +39,8 @@ public static class BlobStoragePaths
         !string.IsNullOrWhiteSpace(blobName)
         && blobName.Contains("/teams/", StringComparison.Ordinal)
         && blobName.StartsWith("organizations/", StringComparison.Ordinal);
+
+    public static bool IsUserAvatarPath(string? blobName) =>
+        !string.IsNullOrWhiteSpace(blobName)
+        && blobName.StartsWith("users/", StringComparison.Ordinal);
 }

@@ -5,6 +5,7 @@
 - `services/team-hub-auth/team-hub-auth/Program.cs`
 - `services/team-hub-auth/team-hub-auth/Configuration/*.cs`
 - `services/team-hub-auth/team-hub-auth/Controllers/AuthController*.cs`
+- `services/team-hub-auth/team-hub-auth/Controllers/MeController.cs`
 - `services/team-hub-auth/team-hub-auth/Data/AuthDbContext.cs`
 - `services/team-hub-auth/team-hub-auth.Tests/Controllers/*.cs`
 - `services/team-hub-auth/team-hub-auth.Tests/Services/*.cs`

@@ -3,6 +3,7 @@
 
 ## Source of truth
 - `services/team-hub-auth/team-hub-auth/Controllers/AuthController*.cs`
+- `services/team-hub-auth/team-hub-auth/Controllers/MeController.cs`
 - `services/team-hub-auth/team-hub-auth/Configuration/JwtOptions.cs`
 - `services/team-hub-auth/.env.example` (optional local `dotnet run`)
 - `.env.staging.example` (Compose staging)
@@ -16,6 +17,11 @@
   - `POST /api/auth/v0.0/refresh` -> `200 OK` with rotated refresh token cookie, `401 Unauthorized` ProblemDetails if invalid/missing; `503 Service Unavailable` when Redis session store is down.
   - `POST /api/auth/v0.0/logout` -> `204 No Content` and cookie cleanup.
   - `POST /api/auth/v0.0/change-password` -> `204 No Content` after username + name + surname verification; `400 Bad Request` on format validation errors; `401 Unauthorized` ProblemDetails when identity verification fails.
+  - `GET /api/auth/v0.0/me` -> `200 OK` current user (`id`, `username`, `email`, `name`, `surname`, `avatarUrl`); JWT required; `401` when missing/invalid.
+  - `PATCH /api/auth/v0.0/me` -> `200 OK`; body `{ name?, surname?, email? }` (at least one field); username is not editable; `400` format; `409 conflict` on duplicate email (`errors.email`); JWT required.
+  - `POST /api/auth/v0.0/me/change-password` -> `204 No Content`; body `{ currentPassword, newPassword }`; JWT required; `401` when current password is wrong.
+  - `PUT /api/auth/v0.0/me/avatar` -> `200 OK`; multipart `file` (JPEG/PNG/WebP, max 2 MB); JWT required; `400` validation; `503` when blob storage is not configured.
+  - `DELETE /api/auth/v0.0/me/avatar` -> `200 OK`; JWT required; `503` when blob storage is not configured.
   - `GET /api/auth/v0.0/users` -> `200 OK` with all user profiles (`id`, `username`, `name`, `surname`) ordered by username; requires JWT Bearer; `401 Unauthorized` when missing/invalid.
 - Keep register validation:
   - format (`400`): `name`, `surname`, `username`, `password` field rules.
@@ -26,6 +32,7 @@
 - Keep JWT options from env/config: `Jwt__Key`, `Jwt__Issuer`, `Jwt__Audience`, `Jwt:ExpireMinutes`.
 - Keep Redis connection from infrastructure: `Redis__ConnectionString` (Aspire injects; staging Compose sets `cache-redis:6379`).
 - Keep PostgreSQL connection: Aspire `auth_db`; staging Compose `Host=db-postgres;...;Database=authdb;...` from root `.env.staging`.
+- Keep blob storage from infrastructure Azurite / Azure (`BlobStorage__*` / Aspire `blobs`); user avatars live at `users/{userId}/avatar.{ext}`. Response `avatarUrl` is a read-only SAS URL.
 - Keep auth health endpoint: `GET /health` checks PostgreSQL and Redis (`200` healthy, `503` unhealthy).
 
 ## Don't
