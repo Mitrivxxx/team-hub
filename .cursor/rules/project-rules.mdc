@@ -9,7 +9,7 @@ alwaysApply: true
 - Keep agent changes small, safe, and consistent with current architecture.
 
 ## Project context
-- Runtime flow: `ui-web -> gw-nginx -> gw-api -> srv-auth|srv-organization|srv-notification` (auth also uses `db-postgres` + `cache-redis`; org→notification via Kafka `msg-kafka`).
+- Runtime flow: `ui-web -> gw-nginx -> gw-api -> srv-auth|srv-organization|srv-notification|srv-chat` (auth also uses `db-postgres` + `cache-redis`; org→notification via Kafka `msg-kafka`).
 - Compose/Aspire service names follow `[type]-[module]` (`srv-*`, `gw-*`, `ui-*`, `db-*`, `cache-*`, `msg-*`, `mon-*`, `blob-storage`).
 - Code folders stay as `services/team-hub-*` / `frontend/team-hub-web`; runtime DNS names use the convention above.
 
@@ -27,7 +27,8 @@ alwaysApply: true
 - `building-blocks/TeamHub.Kafka/*`
 - `services/team-hub-gateway/team-hub-gateway/reverseproxy.json`
 - `services/team-hub-gateway/team-hub-gateway/appsettings.*.json`
-- `services/team-hub-auth/team-hub-auth/Controllers/AuthController*.cs`
+- `services/team-hub-auth/team-hub-auth/Controllers/Auth/`
+- `services/team-hub-auth/team-hub-auth/Controllers/Me/`
 - `services/team-hub-organization/team-hub-organization/Program.cs`
 - `docs/README.mb` and related `docs/*.mb`
 - Component `AGENT.md` files in each service and frontend
@@ -36,11 +37,12 @@ alwaysApply: true
 - Route auth API through gateway path `/api/auth/{**catch-all}`.
 - Route organization API through gateway path `/api/organizations/{**catch-all}`.
 - Route notification API through gateway path `/api/notifications/{**catch-all}`.
+- Route chat API through gateway path `/api/chat/{**catch-all}`.
 - Keep auth endpoints aligned with controllers: `register`, `login`, `refresh`, `logout`.
 - Local daily dev: Aspire AppHost (`cd aspire/TeamHub.AppHost && dotnet run`).
 - Optional Aspire companion monitoring: `./scripts/compose-dev.sh up -d` (project `team-hub-dev`).
 - Staging full stack: `./scripts/compose-staging.sh up --build -d` (`ASPNETCORE_ENVIRONMENT=Production`, root `.env.staging`).
-- Use documented ports/env from config (`8080`, `5000`, `5001`, `5002`, `5004`, `4200`, `5433`) and verify before edits.
+- Use documented ports/env from config (`8080`, `5000`, `5001`, `5002`, `5003`, `5004`, `5005`, `4200`, `5433`) and verify before edits.
 - Update docs in `docs/` and component `AGENT.md` when API contract, ports, or runtime flow changes.
 - Prefer minimal diffs and preserve existing naming/style in touched files.
 

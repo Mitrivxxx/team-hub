@@ -74,6 +74,18 @@
       "problemMatcher": []
     },
     {
+      "label": "dev-local:chat",
+      "type": "shell",
+      "command": "bash -lc 'cd \"${workspaceFolder}/services/team-hub-chat\" && exec bash -i'",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "dev-local-chat",
+        "clear": false
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "dev-local",
       "dependsOrder": "parallel",
       "dependsOn": [
@@ -82,7 +94,8 @@
         "dev-local:auth",
         "dev-local:team",
         "dev-local:aspire",
-        "dev-local:notification"
+        "dev-local:notification",
+        "dev-local:chat"
       ],
       "problemMatcher": []
     }

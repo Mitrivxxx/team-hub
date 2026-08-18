@@ -20,6 +20,7 @@
     <ProjectReference Include="..\..\services\team-hub-gateway\team-hub-gateway\team-hub-gateway.csproj" />
     <ProjectReference Include="..\..\services\team-hub-organization\team-hub-organization\team-hub-organization.csproj" />
     <ProjectReference Include="..\..\services\team-hub-notification\team-hub-notification\team-hub-notification.csproj" />
+    <ProjectReference Include="..\..\services\team-hub-chat\team-hub-chat\team-hub-chat.csproj" />
     <ProjectReference Include="..\..\services\team-hub-bff\team-hub-bff\team-hub-bff.csproj" />
   </ItemGroup>
 

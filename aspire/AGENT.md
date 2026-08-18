@@ -20,13 +20,13 @@
   - AppHost waits for `seed-notification` Finished then exits (no Ctrl+C). Re-seed: remove Aspire Postgres named volume, then run `--seed` again.
 - Prerequisites: .NET 10 SDK (`dotnet --version` should report 10.x), Aspire 13 (`Aspire.AppHost.Sdk` via NuGet — no Aspire workload), Docker, Node.js/npm, TLS certs in `certs/` (`./scripts/setup-certs.sh`).
   - If `dotnet --list-sdks` only shows 8.x, install SDK 10 (`https://aka.ms/dotnet/download` or `curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 10.0`) and put `$HOME/.dotnet` first on `PATH` (`export DOTNET_ROOT=$HOME/.dotnet; export PATH=$HOME/.dotnet:$PATH`). Repo `global.json` pins SDK 10.0.x.
-- AppHost runs: Postgres (Aspire resource `db-postgres` + `auth-db` / `organization-db` / `notification-db`, `WithDataVolume`), Redis (`cache-redis`), Kafka (`msg-kafka` host `:9092`), Azurite blob storage (`blob-storage` blob host `:10000` + `blobs`, `WithDataVolume`), `srv-auth`, `srv-organization`, `srv-notification`, `srv-bff`, `gw-api`, infrastructure nginx (`gw-nginx`), Angular (`ui-web` / `npm start`).
+- AppHost runs: Postgres (Aspire resource `db-postgres` + `auth-db` / `organization-db` / `notification-db`, `WithDataVolume`), Redis (`cache-redis`), Kafka (`msg-kafka` host `:9092`), Azurite blob storage (`blob-storage` blob host `:10000` + `blobs`, `WithDataVolume`), `srv-auth`, `srv-organization`, `srv-notification`, `srv-chat`, `srv-bff`, `gw-api`, infrastructure nginx (`gw-nginx`), Angular (`ui-web` / `npm start`).
 - Organization waits for Kafka + Azurite; notification waits for Kafka (`WaitFor`).
 - Aspire resource names: only ASCII letters, digits, hyphens (no underscores).
 - Keep staging/pre-prod on Compose (`docker-compose.yml` + `docker-compose.staging.yml`) — Aspire is dev-only.
 - JWT dev secrets live in `aspire/TeamHub.AppHost/appsettings.Development.json` (`Aspire:Jwt:*`).
-- Gateway destinations under Aspire: auth `http://srv-auth`, team `http://srv-organization`, notification `http://srv-notification`, bff `http://srv-bff` (YARP service discovery).
-- HTTP ports pinned for companion Prometheus scrapes: auth `5001`, organization `5002`, notification `5004`, bff `5003`, gateway `5000`.
+- Gateway destinations under Aspire: auth `http://srv-auth`, team `http://srv-organization`, notification `http://srv-notification`, chat `http://srv-chat`, bff `http://srv-bff` (YARP service discovery).
+- HTTP ports pinned for companion Prometheus scrapes: auth `5001`, organization `5002`, notification `5004`, chat `5005`, bff `5003`, gateway `5000`.
 - Internal gRPC ports under Aspire: auth `5101`, organization `5102`; BFF `Grpc__Auth`/`Grpc__Organization` point at `127.0.0.1:5101/5102`.
 - Kafka bootstrap is injected as `Kafka__BootstrapServers` on organization (producer) and notification (consumer).
 - Aspire Dashboard is one UI for the whole AppHost run (all resources at once: logs, endpoints, traces).
@@ -52,6 +52,7 @@
 | Auth (`srv-auth`) | REST `http://localhost:5001` / gRPC `http://localhost:5101` |
 | Organization (`srv-organization`) | REST `http://localhost:5002` / gRPC `http://localhost:5102` |
 | Notification (`srv-notification`) | `http://localhost:5004` |
+| Chat (`srv-chat`) | `http://localhost:5005` |
 | Postgres (`db-postgres`) | dynamic (see dashboard; databases `auth_db`, `organization_db`, `notification_db`) |
 | Redis (`cache-redis`) | dynamic (see dashboard) |
 | Kafka (`msg-kafka`) | `localhost:9092` (pinned host port) |
@@ -63,6 +64,7 @@
 - Frontend `/api/auth/*` -> nginx `8080` -> gateway `5000` -> auth (service discovery) -> postgres + redis.
 - Frontend `/api/organizations/*` -> nginx `8080` -> gateway `5000` -> team (service discovery) -> postgres + Azurite (avatars).
 - Frontend `/api/notifications/*` -> nginx `8080` -> gateway `5000` -> notification (service discovery) -> postgres.
+- Frontend `/api/chat/*` -> nginx `8080` -> gateway `5000` -> chat (service discovery).
 - Async: organization member add -> Kafka `organization.events` -> notification consumer -> `notification_db`.
 
 ## Troubleshooting

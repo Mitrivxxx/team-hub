@@ -12,6 +12,8 @@ public sealed class OrganizationMemberAddedEvent
 
     public Guid OrganizationId { get; init; }
 
+    public string OrganizationName { get; init; } = string.Empty;
+
     public Guid UserId { get; init; }
 
     public Guid AddedByUserId { get; init; }

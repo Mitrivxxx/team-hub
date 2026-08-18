@@ -10,7 +10,7 @@
         "projectUniqueName": "/home/matsma/project/team-hub/aspire/TeamHub.ServiceDefaults/TeamHub.ServiceDefaults.csproj",
         "projectName": "TeamHub.ServiceDefaults",
         "projectPath": "/home/matsma/project/team-hub/aspire/TeamHub.ServiceDefaults/TeamHub.ServiceDefaults.csproj",
-        "packagesPath": "/home/matsma/.nuget/packages/",
+        "packagesPath": "/tmp/cursor-sandbox-cache/eb75461cbe043fd26cf6b6cca929ec59/nuget",
         "outputPath": "/home/matsma/project/team-hub/aspire/TeamHub.ServiceDefaults/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [

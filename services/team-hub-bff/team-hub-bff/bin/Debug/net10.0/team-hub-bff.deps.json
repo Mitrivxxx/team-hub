@@ -826,6 +826,17 @@
           }
         }
       },
+      "OpenTelemetry.Instrumentation.GrpcNetClient/1.17.0-beta.1": {
+        "dependencies": {
+          "OpenTelemetry": "1.17.0"
+        },
+        "runtime": {
+          "lib/net10.0/OpenTelemetry.Instrumentation.GrpcNetClient.dll": {
+            "assemblyVersion": "1.17.0.1208",
+            "fileVersion": "1.17.0.1208"
+          }
+        }
+      },
       "OpenTelemetry.Instrumentation.Http/1.17.0": {
         "dependencies": {
           "OpenTelemetry.Api.ProviderBuilderExtensions": "1.17.0"
@@ -856,6 +867,26 @@
           "lib/net10.0/OpenTelemetry.Instrumentation.Runtime.dll": {
             "assemblyVersion": "1.17.0.1215",
             "fileVersion": "1.17.0.1215"
+          }
+        }
+      },
+      "OpenTelemetry.Instrumentation.StackExchangeRedis/1.17.0-beta.1": {
+        "dependencies": {
+          "OpenTelemetry.Api.ProviderBuilderExtensions": "1.17.0",
+          "StackExchange.Redis": "2.6.122"
+        },
+        "runtime": {
+          "lib/net10.0/OpenTelemetry.Instrumentation.StackExchangeRedis.dll": {
+            "assemblyVersion": "1.17.0.1217",
+            "fileVersion": "1.17.0.1217"
+          }
+        }
+      },
+      "Pipelines.Sockets.Unofficial/2.2.8": {
+        "runtime": {
+          "lib/net5.0/Pipelines.Sockets.Unofficial.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "2.2.8.1080"
           }
         }
       },
@@ -1025,6 +1056,17 @@
           }
         }
       },
+      "StackExchange.Redis/2.6.122": {
+        "dependencies": {
+          "Pipelines.Sockets.Unofficial": "2.2.8"
+        },
+        "runtime": {
+          "lib/net6.0/StackExchange.Redis.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.6.122.38350"
+          }
+        }
+      },
       "System.IdentityModel.Tokens.Jwt/8.19.2": {
         "dependencies": {
           "Microsoft.IdentityModel.JsonWebTokens": "8.19.2",
@@ -1076,9 +1118,11 @@
           "OpenTelemetry.Extensions.Hosting": "1.17.0",
           "OpenTelemetry.Instrumentation.AspNetCore": "1.17.0",
           "OpenTelemetry.Instrumentation.EntityFrameworkCore": "1.17.0-beta.1",
+          "OpenTelemetry.Instrumentation.GrpcNetClient": "1.17.0-beta.1",
           "OpenTelemetry.Instrumentation.Http": "1.17.0",
           "OpenTelemetry.Instrumentation.Process": "1.17.0-rc.1",
           "OpenTelemetry.Instrumentation.Runtime": "1.17.0",
+          "OpenTelemetry.Instrumentation.StackExchangeRedis": "1.17.0-beta.1",
           "Serilog.AspNetCore": "10.0.0",
           "Serilog.Enrichers.Span": "3.1.0",
           "Serilog.Formatting.Compact": "3.0.0",
@@ -1630,6 +1674,13 @@
       "path": "opentelemetry.instrumentation.entityframeworkcore/1.17.0-beta.1",
       "hashPath": "opentelemetry.instrumentation.entityframeworkcore.1.17.0-beta.1.nupkg.sha512"
     },
+    "OpenTelemetry.Instrumentation.GrpcNetClient/1.17.0-beta.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-1aaOEiKjTR84rqQd6Q8Ef685wJQJr5s6kfzOhFICxhybhnptyMGTy36qYCyuW0IvFjFWRF6T/BE5bWlZhSLHBQ==",
+      "path": "opentelemetry.instrumentation.grpcnetclient/1.17.0-beta.1",
+      "hashPath": "opentelemetry.instrumentation.grpcnetclient.1.17.0-beta.1.nupkg.sha512"
+    },
     "OpenTelemetry.Instrumentation.Http/1.17.0": {
       "type": "package",
       "serviceable": true,
@@ -1650,6 +1701,20 @@
       "sha512": "sha512-HyYenisDn/xdtyVXdjImsCl+RNC2gq01N0rvSR7tsYAylXR2sxX/YgMsyTajMXA27+r1vB7lNU8cWRhV0fwL+Q==",
       "path": "opentelemetry.instrumentation.runtime/1.17.0",
       "hashPath": "opentelemetry.instrumentation.runtime.1.17.0.nupkg.sha512"
+    },
+    "OpenTelemetry.Instrumentation.StackExchangeRedis/1.17.0-beta.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ZRRKG1yNfLf2N3+CvZ3zQqcdpYLB8/D+srrpvIhIoAOaqq931SDc5lVjHjfKwsBr49ozEorYfDbLf3Jm64VxOQ==",
+      "path": "opentelemetry.instrumentation.stackexchangeredis/1.17.0-beta.1",
+      "hashPath": "opentelemetry.instrumentation.stackexchangeredis.1.17.0-beta.1.nupkg.sha512"
+    },
+    "Pipelines.Sockets.Unofficial/2.2.8": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-zG2FApP5zxSx6OcdJQLbZDk2AVlN2BNQD6MorwIfV6gVj0RRxWPEp2LXAxqDGZqeNV1Zp0BNPcNaey/GXmTdvQ==",
+      "path": "pipelines.sockets.unofficial/2.2.8",
+      "hashPath": "pipelines.sockets.unofficial.2.2.8.nupkg.sha512"
     },
     "Polly.Core/8.4.2": {
       "type": "package",
@@ -1755,6 +1820,13 @@
       "sha512": "sha512-Q+mXeiTxiUYG3lKYF6TS82/SyB4F2613Q1yXTMwg4jWGHEEVC3yrzHtNcI4B3qnDI0+eJsezGJ0V+cToUytHWw==",
       "path": "sprache/2.3.1",
       "hashPath": "sprache.2.3.1.nupkg.sha512"
+    },
+    "StackExchange.Redis/2.6.122": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-wp7mvGpFXaevfZ07/SDeh/6YHUJEgwJIGyjbDWKBYbPwKMJQYFz9zFEmBptqtVzqvSgft5nlewwutoaMaG0LPA==",
+      "path": "stackexchange.redis/2.6.122",
+      "hashPath": "stackexchange.redis.2.6.122.nupkg.sha512"
     },
     "System.IdentityModel.Tokens.Jwt/8.19.2": {
       "type": "package",

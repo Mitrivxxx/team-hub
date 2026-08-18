@@ -8,38 +8,45 @@ scrape_configs:
     static_configs:
       - targets: ["srv-auth:8080"]
         labels:
-          service: srv-auth
+          service_name: team-hub-auth
 
   - job_name: srv-organization
     metrics_path: /metrics
     static_configs:
       - targets: ["srv-organization:8080"]
         labels:
-          service: srv-organization
+          service_name: team-hub-organization
 
   - job_name: srv-notification
     metrics_path: /metrics
     static_configs:
       - targets: ["srv-notification:8080"]
         labels:
-          service: srv-notification
+          service_name: team-hub-notification
+
+  - job_name: srv-chat
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["srv-chat:8080"]
+        labels:
+          service_name: team-hub-chat
 
   - job_name: srv-bff
     metrics_path: /metrics
     static_configs:
       - targets: ["srv-bff:8080"]
         labels:
-          service: srv-bff
+          service_name: team-hub-bff
 
   - job_name: gw-api
     metrics_path: /metrics
     static_configs:
       - targets: ["gw-api:8080"]
         labels:
-          service: gw-api
+          service_name: team-hub-gateway
 
   - job_name: gw-nginx
     static_configs:
       - targets: ["mon-nginx-exporter:9113"]
         labels:
-          service: gw-nginx
+          service_name: gw-nginx

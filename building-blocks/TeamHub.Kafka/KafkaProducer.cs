@@ -44,20 +44,32 @@ public sealed class KafkaProducer : IKafkaProducer, IDisposable
         string? key = null,
         CancellationToken cancellationToken = default)
     {
-        var result = await _producer.ProduceAsync(
-            topic,
-            new Message<string, string>
-            {
-                Key = key ?? string.Empty,
-                Value = payload
-            },
-            cancellationToken);
+        using var activity = KafkaActivity.StartProduce(topic);
+        try
+        {
+            var result = await _producer.ProduceAsync(
+                topic,
+                new Message<string, string>
+                {
+                    Key = key ?? string.Empty,
+                    Value = payload
+                },
+                cancellationToken);
 
-        _logger.LogInformation(
-            "Produced Kafka message to {Topic} partition {Partition} offset {Offset}",
-            result.Topic,
-            result.Partition.Value,
-            result.Offset.Value);
+            activity?.SetTag("messaging.destination.partition.id", result.Partition.Value);
+            activity?.SetTag("messaging.kafka.offset", result.Offset.Value);
+
+            _logger.LogInformation(
+                "Produced Kafka message to {Topic} partition {Partition} offset {Offset}",
+                result.Topic,
+                result.Partition.Value,
+                result.Offset.Value);
+        }
+        catch (Exception ex)
+        {
+            KafkaActivity.SetError(activity, ex);
+            throw;
+        }
     }
 
     public void Dispose() => _producer.Dispose();

@@ -13,3 +13,6 @@
 [submodule "services/team-hub-notification"]
 	path = services/team-hub-notification
 	url = https://github.com/Mitrivxxx/team-hub-notification.git
+[submodule "services/team-hub-chat"]
+	path = services/team-hub-chat
+	url = https://github.com/Mitrivxxx/team-hub-chat.git

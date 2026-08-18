@@ -10,12 +10,13 @@
 
 ## Do
 - Treat gateway as YARP reverse proxy only.
-- Keep `reverseproxy.json` route:
-  - Path match: `/api/auth/{**catch-all}`
-  - Cluster: `auth-cluster`
-- Keep destination per environment:
-  - Development: `http://localhost:5001/`
-  - Production/container: `http://srv-auth:8080/`
+- Keep `reverseproxy.json` routes:
+  - `/api/auth/{**catch-all}` → `auth-cluster`
+  - `/api/organizations/{**catch-all}` → `team-cluster`
+  - `/api/notifications/{**catch-all}` → `notification-cluster`
+  - `/api/chat/{**catch-all}` → `chat-cluster`
+  - `/api/graphql/{**catch-all}` → `bff-cluster`
+- Keep destinations per environment (see gateway `appsettings.*.json` / Aspire overrides).
 - Keep HTTP endpoint on gateway (TLS terminates at infrastructure nginx):
   - local dev: `http://localhost:5000`
   - container: `http://+:8080` (mapped to host `5000` for debug)

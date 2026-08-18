@@ -1,0 +1,18 @@
+# Chat API
+
+## Route
+- Gateway: `/api/chat/{**catch-all}` → `srv-chat`
+- Base path: `/api/chat/v1` (scaffold; no business endpoints yet)
+
+## Runtime
+- Aspire / local: `http://localhost:5005`
+- Docker: host `5005` → container `8080`
+- Health: `GET /health`
+- Metrics: `GET /metrics`
+
+## Status
+- Empty .NET 10 service with Observability, JWT auth wiring, Asp.Versioning + Swagger (Development).
+- Add domain controllers under `ChatApiController` when implementing chat features.
+
+## Don't
+- Do not call chat HTTP from the frontend without going through nginx → gateway.

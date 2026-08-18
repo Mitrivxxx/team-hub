@@ -18,6 +18,9 @@
 - Dev HTTP port `5003`; docker host `5003:8080`.
 - DotNetEnv: `Env.NoClobber().TraversePath().Load()` so Aspire-injected Jwt/gRPC win over local `.env`.
 - Gateway route: `/api/graphql/{**catch-all}` -> `bff-cluster`.
+- Observability via `TeamHub.Observability`: Exception → CorrelationId → SessionId → Auth → UserIdLogging → Serilog request logging; OTLP traces/logs; `/metrics`.
+- Exclude `/health` and `/metrics` from Serilog request logging.
+- Health at `/health`.
 
 ## Don't
 - Do not add GraphQL mutations for members (REST remains for add/update/remove).

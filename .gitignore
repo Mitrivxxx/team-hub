@@ -10,3 +10,6 @@ certs/*.key
 .cursor/mcp.json
 infrastructure/monitoring/.nginx-edge-logs/*
 !infrastructure/monitoring/.nginx-edge-logs/.gitkeep
+.cursor
+.vscode
+

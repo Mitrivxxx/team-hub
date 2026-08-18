@@ -10,7 +10,7 @@
         "projectUniqueName": "/home/matsma/project/team-hub/building-blocks/TeamHub.Observability/TeamHub.Observability.csproj",
         "projectName": "TeamHub.Observability",
         "projectPath": "/home/matsma/project/team-hub/building-blocks/TeamHub.Observability/TeamHub.Observability.csproj",
-        "packagesPath": "/home/matsma/.nuget/packages/",
+        "packagesPath": "/tmp/cursor-sandbox-cache/eb75461cbe043fd26cf6b6cca929ec59/nuget",
         "outputPath": "/home/matsma/project/team-hub/building-blocks/TeamHub.Observability/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
@@ -67,6 +67,10 @@
               "target": "Package",
               "version": "[1.17.0-beta.1, )"
             },
+            "OpenTelemetry.Instrumentation.GrpcNetClient": {
+              "target": "Package",
+              "version": "[1.17.0-beta.1, )"
+            },
             "OpenTelemetry.Instrumentation.Http": {
               "target": "Package",
               "version": "[1.17.0, )"
@@ -78,6 +82,10 @@
             "OpenTelemetry.Instrumentation.Runtime": {
               "target": "Package",
               "version": "[1.17.0, )"
+            },
+            "OpenTelemetry.Instrumentation.StackExchangeRedis": {
+              "target": "Package",
+              "version": "[1.17.0-beta.1, )"
             },
             "Serilog.AspNetCore": {
               "target": "Package",

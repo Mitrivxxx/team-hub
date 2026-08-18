@@ -8,6 +8,8 @@
 - `infrastructure/monitoring/prometheus.yml` (staging / full Compose stack)
 - `infrastructure/monitoring/prometheus.dev.yml` (Aspire companion scrapes via `host.docker.internal`)
 - `infrastructure/monitoring/grafana/provisioning/datasources/*.yml`
+- `infrastructure/monitoring/grafana/provisioning/dashboards/provider.yml`
+- `infrastructure/monitoring/grafana/provisioning/dashboards/json/*.json`
 - `infrastructure/monitoring/.env.example`
 - `infrastructure/monitoring/.nginx-edge-logs/` (Aspire + compose-dev shared edge access logs; gitignored except `.gitkeep`)
 - Root `.env.dev.example` / `.env.staging.example`
@@ -39,28 +41,33 @@
 - **Edge logs (staging)**: `gw-nginx` writes JSON access lines to volume `nginx_edge_logs`; OTel Collector `filelog/nginx` tails that file -> Loki (`service.name` / `service_name` = `gw-nginx`). Keep body as raw JSON for LogQL `| json`.
 - **Edge logs (Aspire companion)**: AppHost and `mon-otel` share bind mount `infrastructure/monitoring/.nginx-edge-logs`.
 - **Traces**: services push OTLP traces -> OTel Collector -> Tempo.
-- **Metrics (staging)**: Prometheus (`prometheus.yml`) scrapes Docker DNS: `srv-auth`, `srv-organization`, `srv-notification`, `srv-bff`, `gw-api` on `:8080/metrics`, plus `mon-nginx-exporter:9113`.
-- **Metrics (Aspire companion)**: Prometheus (`prometheus.dev.yml`) scrapes `host.docker.internal` on pinned host ports `5000`–`5004`, plus nginx exporter.
+- **Metrics (staging)**: Prometheus (`prometheus.yml`) scrapes Docker DNS: `srv-auth`, `srv-organization`, `srv-notification`, `srv-chat`, `srv-bff`, `gw-api` on `:8080/metrics`, plus `mon-nginx-exporter:9113`.
+- **Metrics (Aspire companion)**: Prometheus (`prometheus.dev.yml`) scrapes `host.docker.internal` on pinned host ports `5000`–`5005`, plus nginx exporter.
 - Grafana datasources provisioned: Loki (default), Prometheus, Tempo (with `tracesToLogsV2` -> Loki).
+- Grafana dashboards provisioned (folder **Team Hub**): Overview, Auth, Edge Nginx, Runtime.
+- Prometheus scrape labels use `service_name` matching OTEL (`team-hub-auth`, `team-hub-gateway`, `gw-nginx`, …).
 - Query cross-service logs by `CorrelationId` or `TraceId` JSON field:
-  - `{service_name="gw-nginx"} | json | CorrelationId="<id>"`
+  - `{service_name="gw-nginx"} | json | CorrelationId="<frontend-uuid>"` (inbound UUID / `$request_id`)
+  - `{service_name="gw-nginx"} | json | TraceId="<trace-id>"` (upstream `X-Correlation-ID`)
   - `{service_name="team-hub-gateway"} | json | CorrelationId="<trace-id>"`
   - `{service_name="team-hub-auth"} | json | TraceId="<trace-id>"`
 
 ## Correlation ID workflow
 - `CorrelationId` in app logs equals OpenTelemetry `TraceId` (32 hex chars) when tracing is active.
-- Edge (`gw-nginx`): prefer inbound `X-Correlation-ID`, else nginx `$request_id`; forward upstream and echo on the response.
-- `X-Correlation-ID` response header echoes the id for browser/API debugging.
+- Edge (`gw-nginx`): prefer inbound `X-Correlation-ID`, else nginx `$request_id`; forward upstream. Success responses pass through upstream `X-Correlation-ID` (TraceId). Edge error pages echo `$corr_id`.
+- Access log JSON: `CorrelationId` (inbound), `TraceId` (`$upstream_http_x_correlation_id`), `SessionId` (`$http_x_session_id`).
+- Copy **response** `X-Correlation-ID` from gateway/auth for Tempo and app Loki. Nginx Loki can join on inbound UUID **or** `TraceId`.
 - W3C `traceparent` propagates trace context between gateway and auth automatically.
 
 ## First telemetry in Grafana
 - Aspire + monitoring: `./scripts/compose-dev.sh up -d` then generate traffic via Aspire endpoints.
 - Staging: `./scripts/compose-staging.sh up --build -d` then `curl -k https://localhost:8080/health` or `curl http://localhost:5001/health`.
 - Open Grafana `http://localhost:3000` (user/password from `.env.dev` / `.env.staging`).
+- Dashboards (folder **Team Hub**): Overview, Auth, Edge Nginx, Runtime.
 - Explore:
   - **Loki** — `{service_name="gw-nginx"}` or `{service_name="team-hub-auth"}`
-  - **Tempo** — search by TraceId from `X-Correlation-ID` header (app services)
-  - **Prometheus** — `http_server_request_duration_seconds_count`, `nginx_connections_active`
+  - **Tempo** — search by TraceId from **response** `X-Correlation-ID` header (app services)
+  - **Prometheus** — `http_server_request_duration_seconds_count`, `nginx_connections_active`, `auth_login_failures_total`
 
 ## Persistence
 - Grafana data stored in volume `grafana_data`.

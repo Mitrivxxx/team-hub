@@ -29,12 +29,13 @@
 - Keep shared proxy headers/timeouts in `snippets/proxy_params.conf`; keep route + rate-limit locations in `snippets/api_locations.conf` (included by both `:80` and `:443` servers).
 - Edge MVP observability/errors:
   - JSON access log + error log under `/var/log/nginx-edge` (volume `nginx_edge_logs`; OTel Collector `filelog/nginx` -> Loki).
-  - `X-Correlation-ID`: use inbound header or nginx `$request_id`; forward to upstream; echo on responses.
+  - `X-Correlation-ID`: use inbound header or nginx `$request_id`; forward to upstream. Pass through upstream `X-Correlation-ID` (OTEL TraceId) on success responses; edge error pages still echo `$corr_id`.
+  - Access log JSON: `CorrelationId` (inbound UUID / `$request_id`), `TraceId` (`$upstream_http_x_correlation_id`), `SessionId` (`$http_x_session_id`).
   - `limit_req_status 429` with JSON body + `Retry-After` (`snippets/error_pages.conf`); also JSON for edge `413` / `502` / `504` (no `proxy_intercept_errors` — backend ProblemDetails stay intact).
   - Internal `stub_status` on `:8081` scraped by `mon-nginx-exporter` (Prometheus job `gw-nginx`).
 - When `GATEWAY_UPSTREAM` is set (Aspire dev), entrypoint writes `upstream gw-api { server $GATEWAY_UPSTREAM; }`.
 - When `GATEWAY_UPSTREAM` is unset (Compose staging), default upstream is `gw-api:8080`.
-- Forward proxy headers: `Host`, `X-Real-IP`, `X-Forwarded-For`, `X-Forwarded-Proto`, `X-Forwarded-Host`, `X-Correlation-ID`.
+- Forward proxy headers: `Host`, `X-Real-IP`, `X-Forwarded-For`, `X-Forwarded-Proto`, `X-Forwarded-Host`, `X-Correlation-ID`, `X-Session-ID`.
 - Keep `client_max_body_size 10m`, HTTP/1.1 keep-alive to upstream, and proxy timeouts aligned with gateway.
 - On HTTPS listener (`443`): enable gzip, security headers, and rate limiting on `/api/`.
 - Mount TLS certs from `./certs` to `/etc/nginx/certs`.

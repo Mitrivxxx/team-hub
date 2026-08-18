@@ -26,7 +26,7 @@
   - `cp .env.dev.example .env.dev` (set `GRAFANA_ADMIN_PASSWORD`)
   - `./scripts/compose-dev.sh up -d` (merges `infrastructure/monitoring/docker-compose.monitoring.yml` + `docker-compose.dev.yml`)
   - project `team-hub-dev` — Grafana/Loki/Tempo/Prometheus/OTel only (Aspire owns Postgres/Redis/Kafka/Azurite/apps)
-  - Prometheus uses `prometheus.dev.yml` (`host.docker.internal:5000`–`5004`); nginx exporter scrapes `host.docker.internal:8081`
+  - Prometheus uses `prometheus.dev.yml` (`host.docker.internal:5000`–`5005`); nginx exporter scrapes `host.docker.internal:8081`
   - AppHost OTLP → `http://127.0.0.1:4317`; edge logs shared via `infrastructure/monitoring/.nginx-edge-logs`
 - **Demo seed via Aspire** (Development; auth → org → notification inbox for JanWilk):
   - `cd aspire/TeamHub.AppHost && dotnet run -- --seed` (or `dotnet run --launch-profile seed`)
@@ -49,6 +49,7 @@
   - infrastructure nginx `https://localhost:8080` (`gw-nginx-staging`, API entry)
   - gateway `http://localhost:5000` (`gw-api-staging`, debug only)
   - auth (direct) `http://localhost:5001` (`srv-auth-staging`); health `GET http://localhost:5001/health`
+  - chat (direct) `http://localhost:5005` (`srv-chat-staging`); health `GET http://localhost:5005/health`
   - redis `localhost:6379` (`cache-redis-staging`)
   - postgres `localhost:5433` (`db-postgres-staging`, databases `authdb` + `organizationdb` + `notificationdb`)
   - Azurite blob `localhost:10000` (`blob-storage-staging`)
@@ -70,10 +71,11 @@
   - generate traffic: `curl http://localhost:5000/health` (gateway) or `curl http://localhost:5001/health` (auth)
   - metrics scrape check: `curl http://localhost:5001/metrics | head`
   - open Grafana `http://localhost:3000` (credentials from `.env.dev` / `.env.staging`)
+  - Dashboards folder **Team Hub**: Overview, Auth, Edge Nginx, Runtime
   - Explore -> **Loki** -> `{service_name="team-hub-auth"}` or `{service_name="team-hub-gateway"}`
-  - Explore -> **Tempo** -> search by TraceId from `X-Correlation-ID` response header
+  - Explore -> **Tempo** -> search by TraceId from **response** `X-Correlation-ID` header
   - Explore -> **Prometheus** -> `http_server_request_duration_seconds_count`
-  - note: staging logs are pushed via OTLP (not Docker stdout scraping); Aspire/`dotnet run` logs stay local unless OTLP endpoint is reachable
+  - Aspire + compose-dev: apps also push OTLP logs to `localhost:4317` (same collector)
 - Quick auth smoke through infrastructure nginx:
   - `POST https://localhost:8080/api/auth/register`
   - `POST https://localhost:8080/api/auth/login`
@@ -87,15 +89,16 @@
 - Quick auth smoke through frontend nginx proxy:
   - `POST https://localhost:4200/api/auth/register`
 - Debug staging request by Correlation ID:
-  - reproduce in UI and copy `X-Correlation-ID` from browser DevTools (Network tab, request or response headers)
-  - or call API directly and read response header: `curl -s -D - -o /dev/null -H "X-Correlation-ID: test-id" http://localhost:5000/health`
+  - reproduce in UI and copy **response** `X-Correlation-ID` from browser DevTools (TraceId from gateway/auth). Request UUID is only in nginx access logs (`CorrelationId`).
+  - or call API directly and read response header: `curl -s -D - -o /dev/null http://localhost:5000/api/auth/v1/login -H "Content-Type: application/json" -d '{"username":"x","password":"y"}'`
   - open Grafana `http://localhost:3000` -> Explore -> Loki
-  - query both services: `{service_name=~"team-hub-gateway|team-hub-auth"} | json | CorrelationId="<trace-id>"`
+  - query apps: `{service_name=~"team-hub-gateway|team-hub-auth"} | json | CorrelationId="<trace-id>"`
+  - query nginx: `{service_name="gw-nginx"} | json | TraceId="<trace-id>"` or `| CorrelationId="<frontend-uuid>"`
   - gateway proxy lines include `CorrelationId` in structured log; auth request logs include the same field
   - if log lines look like `[09:14:47 INF] team_hub_auth...` (plain text), the container is not using Production Serilog JSON — rebuild with `./scripts/compose-staging.sh up --build srv-auth gw-api` and confirm `ASPNETCORE_ENVIRONMENT=Production`
   - in Grafana, use `| json` to extract `CorrelationId`; plain-text log lines do not show structured fields in the message body
 - Health checks (reduce Grafana/console noise):
-  - auth / organization / notification / bff / gateway Docker healthcheck interval is `120s` (`docker-compose.yml` + Dockerfiles)
+  - auth / organization / notification / chat / bff / gateway Docker healthcheck interval is `120s` (`docker-compose.yml` + Dockerfiles)
   - `gw-nginx` waits for `gw-api` `service_healthy`
   - `/health` and `/metrics` requests are excluded from Serilog request logging in gateway and auth
   - gateway logs `/health` only when unhealthy

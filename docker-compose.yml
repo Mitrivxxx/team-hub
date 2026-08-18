@@ -119,6 +119,30 @@ services:
       retries: 5
       start_period: 30s
 
+  srv-chat:
+    build:
+      context: .
+      dockerfile: services/team-hub-chat/Dockerfile
+    container_name: ${CHAT_CONTAINER_NAME}
+    depends_on:
+      mon-otel:
+        condition: service_started
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      Jwt__Key: ${Jwt__Key}
+      Jwt__Issuer: ${Jwt__Issuer}
+      Jwt__Audience: ${Jwt__Audience}
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://mon-otel:4317
+      Observability__OtlpEndpoint: http://mon-otel:4317
+    ports:
+      - "5005:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 120s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
   srv-bff:
     build:
       context: .
@@ -161,6 +185,8 @@ services:
       srv-organization:
         condition: service_healthy
       srv-notification:
+        condition: service_healthy
+      srv-chat:
         condition: service_healthy
       srv-bff:
         condition: service_healthy

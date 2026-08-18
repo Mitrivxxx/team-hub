@@ -15,9 +15,14 @@ builder.Services.AddBffServices(builder.Configuration);
 
 var app = builder.Build();
 
+app.UseTeamHubExceptionHandling();
+app.UseTeamHubCorrelationId();
+app.UseTeamHubSessionId();
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseTeamHubUserIdLogging();
+app.UseSerilogRequestLoggingExcludingHealth();
 
 app.MapHealthChecks("/health");
 app.MapGraphQL("/api/graphql");

@@ -5,7 +5,7 @@
 - `building-blocks/TeamHub.Observability/Problems/ProblemTypes.cs`
 - `building-blocks/TeamHub.Observability/Problems/TeamHubProblemDetailsFactory.cs`
 - `building-blocks/TeamHub.Observability/Middleware/ExceptionMiddleware.cs`
-- Service mappers: `OrganizationExceptionMapper`, `RedisUnavailableExceptionMapper`
+- Service mappers: `OrganizationExceptionMapper`, `RedisUnavailableExceptionMapper`, `NotificationExceptionMapper`
 
 ## Do
 - Content-Type: `application/problem+json`.
@@ -43,6 +43,11 @@
 | `unauthorized` | 401 | refresh / change-password identity failure / invalid current password on `/me/change-password` | |
 | `conflict` | 409 | register duplicate username/email; `PATCH /me` duplicate email | `errors` (ValidationProblemDetails) |
 | `service-unavailable` | 503 | Redis unavailable; blob storage not configured for `/me/avatar` | |
+
+### Notification
+| suffix | HTTP | when |
+|--------|------|------|
+| `unauthorized` | 401 | missing/invalid JWT `sub` when resolving current user |
 
 ### Validation
 - Format / ModelState → `ValidationProblemDetails` with `type=…/validation-failed` and `errors`.

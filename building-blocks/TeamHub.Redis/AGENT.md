@@ -14,7 +14,7 @@
 - Use `RedisDataSegments.AuthLoginAttempts/AuthLoginLockout` for auth login lockout counters.
 - Add future segments via `RedisDataSegments.Create("segment-name")`.
 - Keep domain-specific stores (e.g. session store) in consuming services.
-- Reference this project from microservices via `ProjectReference`.
+- After `IConnectionMultiplexer` connect, attach OpenTelemetry Redis instrumentation when `StackExchangeRedisInstrumentation` is registered (`includeStackExchangeRedis` on `AddTeamHubOpenTelemetry`).
 
 ## Don't
 - Do not add business logic or key naming conventions here.

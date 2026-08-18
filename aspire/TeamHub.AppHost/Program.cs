@@ -183,6 +183,16 @@ var notification = builder.AddProject<Projects.team_hub_notification>("srv-notif
     .WaitFor(notificationDatabase)
     .WaitFor(kafka);
 
+var chat = builder.AddProject<Projects.team_hub_chat>("srv-chat")
+    .WithTeamHubJwt(jwtKey, jwtIssuer, jwtAudience)
+    .WithEnvironment("ASPNETCORE_ENVIRONMENT", "Development")
+    .WithTeamHubOtlp(otlpEndpoint)
+    .WithEndpoint("http", endpoint =>
+    {
+        endpoint.Port = 5005;
+        endpoint.IsProxied = false;
+    });
+
 var bff = builder.AddProject<Projects.team_hub_bff>("srv-bff")
     .WithReference(auth)
     .WithReference(organization)
@@ -202,12 +212,14 @@ builder.AddProject<Projects.team_hub_gateway>("gw-api")
     .WithReference(auth)
     .WithReference(organization)
     .WithReference(notification)
+    .WithReference(chat)
     .WithReference(bff)
     .WithEnvironment("ASPNETCORE_ENVIRONMENT", "Development")
     .WithTeamHubOtlp(otlpEndpoint)
     .WithEnvironment("ReverseProxy__Clusters__auth-cluster__Destinations__auth__Address", "http://srv-auth")
     .WithEnvironment("ReverseProxy__Clusters__team-cluster__Destinations__team__Address", "http://srv-organization")
     .WithEnvironment("ReverseProxy__Clusters__notification-cluster__Destinations__notification__Address", "http://srv-notification")
+    .WithEnvironment("ReverseProxy__Clusters__chat-cluster__Destinations__chat__Address", "http://srv-chat")
     .WithEnvironment("ReverseProxy__Clusters__bff-cluster__Destinations__bff__Address", "http://srv-bff")
     .WithEndpoint("http", endpoint =>
     {

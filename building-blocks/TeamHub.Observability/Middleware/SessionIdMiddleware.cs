@@ -1,0 +1,32 @@
+using Microsoft.AspNetCore.Http;
+using Serilog.Context;
+
+namespace TeamHub.Observability.Middleware;
+
+public sealed class SessionIdMiddleware(RequestDelegate next)
+{
+    public const string HeaderName = "X-Session-ID";
+    public const string ItemKey = "SessionId";
+
+    public async Task InvokeAsync(HttpContext context)
+    {
+        var sessionId = context.Request.Headers[HeaderName].FirstOrDefault();
+        if (string.IsNullOrWhiteSpace(sessionId))
+        {
+            sessionId = Guid.NewGuid().ToString();
+        }
+        else
+        {
+            sessionId = sessionId.Trim();
+        }
+
+        context.Request.Headers[HeaderName] = sessionId;
+        context.Items[ItemKey] = sessionId;
+        context.Response.Headers[HeaderName] = sessionId;
+
+        using (LogContext.PushProperty(ItemKey, sessionId))
+        {
+            await next(context);
+        }
+    }
+}

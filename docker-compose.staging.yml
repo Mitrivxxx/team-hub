@@ -40,6 +40,11 @@ services:
       - "127.0.0.1:5004:8080"
     restart: unless-stopped
 
+  srv-chat:
+    ports:
+      - "127.0.0.1:5005:8080"
+    restart: unless-stopped
+
   srv-bff:
     ports:
       - "127.0.0.1:5003:8080"

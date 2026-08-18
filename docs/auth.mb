@@ -2,32 +2,33 @@
 - Pin down the auth API contract and token/cookie behavior.
 
 ## Source of truth
-- `services/team-hub-auth/team-hub-auth/Controllers/AuthController*.cs`
-- `services/team-hub-auth/team-hub-auth/Controllers/MeController.cs`
+- `services/team-hub-auth/team-hub-auth/Controllers/Auth/`
+- `services/team-hub-auth/team-hub-auth/Controllers/Me/`
 - `services/team-hub-auth/team-hub-auth/Configuration/JwtOptions.cs`
 - `services/team-hub-auth/.env.example` (optional local `dotnet run`)
 - `.env.staging.example` (Compose staging)
 - `frontend/team-hub-web/src/app/core/auth/auth.service.ts`
 
 ## Do
-- Use base route `/api/auth/v0.0` (API version `0.0`).
+- Use base route `/api/auth/v1` (API version `1.0`).
 - Keep these endpoints:
-  - `POST /api/auth/v0.0/register` -> `201 Created`, `400 Bad Request` on format validation errors (`ValidationProblemDetails`, `type=…/validation-failed`), `409 Conflict` on business validation errors (duplicate username/email) with `errors` payload (`type=…/conflict`).
-  - `POST /api/auth/v0.0/login` -> `200 OK` with access token + user; request accepts `rememberMe` (boolean) to control persistent refresh cookie; errors as RFC 9457 `application/problem+json` (`invalid-credentials` / `account-locked` with `code`, `remainingAttempts`, `lockoutSeconds` extensions); `503 Service Unavailable` when Redis session store is down.
-  - `POST /api/auth/v0.0/refresh` -> `200 OK` with rotated refresh token cookie, `401 Unauthorized` ProblemDetails if invalid/missing; `503 Service Unavailable` when Redis session store is down.
-  - `POST /api/auth/v0.0/logout` -> `204 No Content` and cookie cleanup.
-  - `POST /api/auth/v0.0/change-password` -> `204 No Content` after username + name + surname verification; `400 Bad Request` on format validation errors; `401 Unauthorized` ProblemDetails when identity verification fails.
-  - `GET /api/auth/v0.0/me` -> `200 OK` current user (`id`, `username`, `email`, `name`, `surname`, `avatarUrl`); JWT required; `401` when missing/invalid.
-  - `PATCH /api/auth/v0.0/me` -> `200 OK`; body `{ name?, surname?, email? }` (at least one field); username is not editable; `400` format; `409 conflict` on duplicate email (`errors.email`); JWT required.
-  - `POST /api/auth/v0.0/me/change-password` -> `204 No Content`; body `{ currentPassword, newPassword }`; JWT required; `401` when current password is wrong.
-  - `PUT /api/auth/v0.0/me/avatar` -> `200 OK`; multipart `file` (JPEG/PNG/WebP, max 2 MB); JWT required; `400` validation; `503` when blob storage is not configured.
-  - `DELETE /api/auth/v0.0/me/avatar` -> `200 OK`; JWT required; `503` when blob storage is not configured.
-  - `GET /api/auth/v0.0/users` -> `200 OK` with all user profiles (`id`, `username`, `name`, `surname`) ordered by username; requires JWT Bearer; `401 Unauthorized` when missing/invalid.
+  - `POST /api/auth/v1/register` -> `201 Created`, `400 Bad Request` on format validation errors (`ValidationProblemDetails`, `type=…/validation-failed`), `409 Conflict` on business validation errors (duplicate username/email) with `errors` payload (`type=…/conflict`).
+  - `POST /api/auth/v1/login` -> `200 OK` with access token + user; request accepts `rememberMe` (boolean) to control persistent refresh cookie; errors as RFC 9457 `application/problem+json` (`invalid-credentials` / `account-locked` with `code`, `remainingAttempts`, `lockoutSeconds` extensions); `503 Service Unavailable` when Redis session store is down.
+  - `POST /api/auth/v1/refresh` -> `200 OK` with rotated refresh token cookie, `401 Unauthorized` ProblemDetails if invalid/missing; `503 Service Unavailable` when Redis session store is down.
+  - `POST /api/auth/v1/logout` -> `204 No Content` and cookie cleanup.
+  - `POST /api/auth/v1/change-password` -> `204 No Content` after username + name + surname verification; revokes all refresh sessions and clears refresh cookies; `400 Bad Request` on format validation errors; `401 Unauthorized` ProblemDetails when identity verification fails.
+  - `GET /api/auth/v1/me` -> `200 OK` current user (`id`, `username`, `email`, `name`, `surname`, `avatarUrl`); JWT required; `401` when missing/invalid.
+  - `PATCH /api/auth/v1/me` -> `200 OK`; body `{ name?, surname?, email? }` (at least one field); username is not editable; `400` format; `409 conflict` on duplicate email (`errors.email`); JWT required; when email changes, revokes all refresh sessions and clears refresh cookies (re-login required for updated JWT email claim).
+  - `POST /api/auth/v1/me/change-password` -> `204 No Content`; body `{ currentPassword, newPassword }`; JWT required; `401` when current password is wrong; revokes all refresh sessions and clears refresh cookies.
+  - `PUT /api/auth/v1/me/avatar` -> `200 OK`; multipart `file` (JPEG/PNG/WebP, max 2 MB); JWT required; `400` validation; `503` when blob storage is not configured.
+  - `DELETE /api/auth/v1/me/avatar` -> `200 OK`; JWT required; `503` when blob storage is not configured.
+  - `GET /api/auth/v1/users` -> `200 OK` search results (`id`, `username`, `name`, `surname`; `email` empty); requires `q` min length 2 (else `[]`); matches name/surname/username; requires JWT Bearer; `401 Unauthorized` when missing/invalid.
+- Access JWT includes `sub`, username, and `email` claims (`email` + `ClaimTypes.Email`) so organization `GET /me/invitations` can match pending invites.
 - Keep register validation:
   - format (`400`): `name`, `surname`, `username`, `password` field rules.
   - business (`409`): duplicate `username` in `errors.username` (case-insensitive).
 - Keep refresh token in `refreshToken` HttpOnly cookie (`SameSite=Lax`); when `rememberMe=false`, keep it session-scoped.
-- Store refresh sessions in Redis (`auth:session:{refreshTokenHash}`) with TTL matching refresh token expiry.
+- Store refresh sessions in Redis (`auth:session:{refreshTokenHash}`) with TTL matching refresh token expiry; maintain `auth:user-sessions:{userId}` SET index for revoke-all.
 - Keep `withCredentials: true` for login/refresh/logout in frontend clients.
 - Keep JWT options from env/config: `Jwt__Key`, `Jwt__Issuer`, `Jwt__Audience`, `Jwt:ExpireMinutes`.
 - Keep Redis connection from infrastructure: `Redis__ConnectionString` (Aspire injects; staging Compose sets `cache-redis:6379`).

@@ -13,7 +13,7 @@
 - `frontend/team-hub-web/src/app/public/pages/*`
 
 ## Do
-- Use `environment.apiUrl = '/api/auth/v0.0'` for auth calls.
+- Use `environment.apiUrl = '/api/auth/v1'` for auth calls.
 - In Angular dev server, keep proxy `/api` -> `https://localhost:8080` (infrastructure nginx HTTPS).
 - In docker, frontend nginx on port `4200` proxies `/api` -> `http://gw-nginx:80` (internal HTTP to infrastructure nginx).
 - Keep `withCredentials: true` on login/refresh/logout to support refresh cookie flow.
@@ -22,13 +22,14 @@
 - After successful register, auto-login via `/login` and redirect to `/app`.
 - Treat auth response shape as source contract for UI state:
   - `accessToken`, `expiresInSeconds`, `user` (`id`, `username`, `email`, `name`, `surname`, `avatarUrl`).
-- Profile page (`/app/profile`) uses JWT `GET/PATCH /me`, `POST /me/change-password`, `PUT|DELETE /me/avatar`.
+- Profile page (`/app/profile`) uses JWT `GET/PATCH /me`, `POST /me/change-password`, `PUT|DELETE /me/avatar`. After password or email change, clear local session and redirect to `/login`.
+- User search (`searchUsers`) requires `q` with min length 2; results omit email.
 - Set `X-Correlation-ID` on every outbound API request via `correlationIdInterceptor` (new UUID per request).
 - Set `X-Session-ID` on every outbound API request via `sessionIdInterceptor` (one ID per visit in `sessionStorage`).
 - Reuse one `X-Correlation-ID` for the full register flow (`POST /register` + auto `POST /login`) via `CorrelationContextService`.
 - Register interceptors in `app.config.ts` with `provideHttpClient(withInterceptors([sessionIdInterceptor, correlationIdInterceptor]))`.
-- Trace create-account in Grafana: `{service=~"gateway|auth", env="prod"} | json | CorrelationId="<uuid>" | RequestPath=~"/api/auth/(register|login)"`.
-- Trace visit in Grafana: `{service="auth", env="prod"} | json | SessionId="<session-id>"`.
+- Trace create-account in Grafana: copy **response** `X-Correlation-ID` (TraceId). Loki apps: `{service_name=~"team-hub-gateway|team-hub-auth"} | json | CorrelationId="<trace-id>"`. Loki nginx: `{service_name="gw-nginx"} | json | CorrelationId="<request-uuid>"` or `| TraceId="<trace-id>"`.
+- Trace visit in Grafana: `{service_name="team-hub-auth"} | json | SessionId="<session-id>"`.
 
 ## Don't
 - Do not call auth service directly on `http://localhost:5001` from frontend.

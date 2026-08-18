@@ -8,10 +8,42 @@
     ".NETCoreApp,Version=v10.0": {
       "TeamHub.Redis/1.0.0": {
         "dependencies": {
+          "OpenTelemetry.Instrumentation.StackExchangeRedis": "1.17.0-beta.1",
           "StackExchange.Redis": "3.0.11"
         },
         "runtime": {
           "TeamHub.Redis.dll": {}
+        }
+      },
+      "OpenTelemetry.Api/1.17.0": {
+        "runtime": {
+          "lib/net10.0/OpenTelemetry.Api.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.17.0.2115"
+          }
+        }
+      },
+      "OpenTelemetry.Api.ProviderBuilderExtensions/1.17.0": {
+        "dependencies": {
+          "OpenTelemetry.Api": "1.17.0"
+        },
+        "runtime": {
+          "lib/net10.0/OpenTelemetry.Api.ProviderBuilderExtensions.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.17.0.2115"
+          }
+        }
+      },
+      "OpenTelemetry.Instrumentation.StackExchangeRedis/1.17.0-beta.1": {
+        "dependencies": {
+          "OpenTelemetry.Api.ProviderBuilderExtensions": "1.17.0",
+          "StackExchange.Redis": "3.0.11"
+        },
+        "runtime": {
+          "lib/net10.0/OpenTelemetry.Instrumentation.StackExchangeRedis.dll": {
+            "assemblyVersion": "1.17.0.1217",
+            "fileVersion": "1.17.0.1217"
+          }
         }
       },
       "RESPite/3.0.11": {
@@ -49,6 +81,27 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "OpenTelemetry.Api/1.17.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-mSBxzomZgHIJu9CyVNqyDu/n2JHEtqVgfcCD1Br0cV5iLYogjZOMqhlVLt99PEp+0KGBNUR3GXgeOdN2GR3F9g==",
+      "path": "opentelemetry.api/1.17.0",
+      "hashPath": "opentelemetry.api.1.17.0.nupkg.sha512"
+    },
+    "OpenTelemetry.Api.ProviderBuilderExtensions/1.17.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Xgc3Qf9B9TFMFpx6exTdGqMWuYIT2miNzkdMPutVvT9YuMFaEovXWke1Gb6z8NxYaQbbGF38vYLuSg1JCeui5Q==",
+      "path": "opentelemetry.api.providerbuilderextensions/1.17.0",
+      "hashPath": "opentelemetry.api.providerbuilderextensions.1.17.0.nupkg.sha512"
+    },
+    "OpenTelemetry.Instrumentation.StackExchangeRedis/1.17.0-beta.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ZRRKG1yNfLf2N3+CvZ3zQqcdpYLB8/D+srrpvIhIoAOaqq931SDc5lVjHjfKwsBr49ozEorYfDbLf3Jm64VxOQ==",
+      "path": "opentelemetry.instrumentation.stackexchangeredis/1.17.0-beta.1",
+      "hashPath": "opentelemetry.instrumentation.stackexchangeredis.1.17.0-beta.1.nupkg.sha512"
     },
     "RESPite/3.0.11": {
       "type": "package",

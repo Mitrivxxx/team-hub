@@ -64,6 +64,7 @@ public sealed class KafkaConsumerBackgroundService<TMessage, THandler> : Backgro
                     if (result?.Message?.Value is null)
                         continue;
 
+                    using var activity = KafkaActivity.StartConsume(_registration.Topic);
                     TMessage? message;
                     try
                     {
@@ -71,6 +72,7 @@ public sealed class KafkaConsumerBackgroundService<TMessage, THandler> : Backgro
                     }
                     catch (JsonException ex)
                     {
+                        KafkaActivity.SetError(activity, ex);
                         _logger.LogError(ex, "Failed to deserialize Kafka message on {Topic}", _registration.Topic);
                         consumer.Commit(result);
                         continue;
@@ -82,10 +84,18 @@ public sealed class KafkaConsumerBackgroundService<TMessage, THandler> : Backgro
                         continue;
                     }
 
-                    await using var scope = _scopeFactory.CreateAsyncScope();
-                    var handler = scope.ServiceProvider.GetRequiredService<THandler>();
-                    await handler.HandleAsync(message, stoppingToken);
-                    consumer.Commit(result);
+                    try
+                    {
+                        await using var scope = _scopeFactory.CreateAsyncScope();
+                        var handler = scope.ServiceProvider.GetRequiredService<THandler>();
+                        await handler.HandleAsync(message, stoppingToken);
+                        consumer.Commit(result);
+                    }
+                    catch (Exception ex) when (ex is not OperationCanceledException)
+                    {
+                        KafkaActivity.SetError(activity, ex);
+                        throw;
+                    }
                 }
                 catch (ConsumeException ex)
                 {

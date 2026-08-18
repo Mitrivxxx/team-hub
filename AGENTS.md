@@ -11,6 +11,7 @@
 - `services/team-hub-gateway` - reverse proxy (YARP).
 - `services/team-hub-organization` - API organization (.NET Web API) + internal gRPC members.
 - `services/team-hub-notification` - API notifications (.NET Web API; Kafka consumer for org member-added).
+- `services/team-hub-chat` - API chat (.NET Web API scaffold; no business logic yet).
 - `services/team-hub-bff` - GraphQL BFF (Hot Chocolate) aggregating auth + organization over gRPC.
 - `frontend/team-hub-web` - UI (Angular).
 - `infrastructure/nginx` - edge reverse proxy (nginx) before gateway.
@@ -31,8 +32,8 @@
 ## Zasady glowna
 - Najpierw sprawdz kod i config, potem zmieniaj.
 - Nie wymyslaj endpointow/portow/uslug.
-- Frontend gada przez infrastructure nginx i gateway (`/api/auth/*`, `/api/organizations/*`, `/api/notifications/*`), nie bezposrednio z serwisami.
-- Nazwy runtime (Docker Compose / Aspire): wzorzec `[typ]-[modul]` — np. `srv-auth`, `srv-organization`, `srv-notification`, `gw-api`, `gw-nginx`, `ui-web`, `db-postgres`, `cache-redis`, `msg-kafka`, `mon-otel`. Foldery kodu pozostaja `services/team-hub-*`.
+- Frontend gada przez infrastructure nginx i gateway (`/api/auth/*`, `/api/organizations/*`, `/api/notifications/*`, `/api/chat/*`), nie bezposrednio z serwisami.
+- Nazwy runtime (Docker Compose / Aspire): wzorzec `[typ]-[modul]` — np. `srv-auth`, `srv-organization`, `srv-notification`, `srv-chat`, `gw-api`, `gw-nginx`, `ui-web`, `db-postgres`, `cache-redis`, `msg-kafka`, `mon-otel`. Foldery kodu pozostaja `services/team-hub-*`.
 - Aktualizuj dokumentacje po zmianie kontraktu, flow, configu.
 
 ## Obowiazkowe pliki komponentow

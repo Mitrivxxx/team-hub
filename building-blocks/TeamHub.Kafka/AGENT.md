@@ -5,14 +5,14 @@
 - `KafkaOptions.cs` — `Kafka:BootstrapServers`, optional `Kafka:ClientId`
 - `ServiceCollectionExtensions.cs` — `AddTeamHubKafkaProducer`, `AddTeamHubKafkaConsumer<TMessage,THandler>`
 - `IKafkaProducer` — `ProduceAsync<T>` (JSON) and `ProduceRawAsync` (pre-serialized outbox payloads)
-- `Events/OrganizationMemberAddedEvent.cs` — shared domain event contract
+- `Events/OrganizationMemberAddedEvent.cs` — shared domain event contract (`organizationName` included for notification copy)
 - `KafkaTopics.cs` — topic name constants
 
 ## Do
 - Use Confluent.Kafka under the hood; keep domain handlers in services.
 - Publish JSON with camelCase property names.
 - Consumer commits after successful handler; unique business keys for idempotency live in the consumer service.
-- Use `ProduceRawAsync` when publishing already-serialized outbox rows.
+- Create producer/consumer spans via `ActivitySource("TeamHub.Kafka")` (`kafka produce {topic}` / `kafka consume {topic}`).
 - Reference this library via `ProjectReference` from producers/consumers.
 
 ## Don't

@@ -11,6 +11,9 @@ public static class ApplicationBuilderExtensions
     public static IApplicationBuilder UseTeamHubCorrelationId(this IApplicationBuilder app) =>
         app.UseMiddleware<CorrelationIdMiddleware>();
 
+    public static IApplicationBuilder UseTeamHubSessionId(this IApplicationBuilder app) =>
+        app.UseMiddleware<SessionIdMiddleware>();
+
     public static IApplicationBuilder UseTeamHubUserIdLogging(this IApplicationBuilder app) =>
         app.UseMiddleware<UserIdLoggingMiddleware>();
 }
