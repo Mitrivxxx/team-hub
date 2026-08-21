@@ -44,7 +44,7 @@
 - Use `building-blocks/TeamHub.Redis` for service-side Redis connection bootstrap.
 - Use `building-blocks/TeamHub.BlobStorage` for Azurite/blob client bootstrap in organization service.
 - Use `building-blocks/TeamHub.Observability` for OpenTelemetry and Serilog bootstrap.
-- Root Compose env: `.env.dev` (monitoring companion) and `.env.staging` (full stack); never commit secrets.
+- Root Compose env: `.env.dev` (infra + monitoring companion) and `.env.staging` (full stack); never commit secrets.
 
 ## Don't
 - Do not add business logic or auth validation in nginx.
@@ -60,14 +60,13 @@
 - **Port 8081 (internal):** `stub_status` for Prometheus exporter only.
 
 ## Redis
-- Staging container: `cache-redis-staging` (Compose staging)
-- Aspire: resource `cache-redis` (dynamic host port)
-- Host port (Compose): `6379`
-- Docker network: `cache-redis:6379`
+- Compose-dev: `cache-redis-dev` on `127.0.0.1:6379` (network `team-hub-dev`)
+- Staging: `cache-redis-staging`
+- Docker network DNS: `cache-redis:6379`
 
 ## Azurite
-- Aspire: resource `blob-storage` (dev; `WithDataVolume`)
-- Staging Compose: `blob-storage-staging` (emulator for pre-prod; volume `AZURITE_VOLUME_NAME`)
+- Compose-dev: `blob-storage-dev` on `127.0.0.1:10000` (volume `azurite_data_dev`)
+- Staging: `blob-storage-staging` (volume `AZURITE_VOLUME_NAME`)
 - Host blob port: `10000`
 - Docker network: `blob-storage:10000`
 - Browser SAS URLs: `BlobStorage__PublicBlobEndpoint=http://127.0.0.1:10000/devstoreaccount1`

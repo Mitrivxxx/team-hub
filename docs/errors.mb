@@ -5,7 +5,7 @@
 - `building-blocks/TeamHub.Observability/Problems/ProblemTypes.cs`
 - `building-blocks/TeamHub.Observability/Problems/TeamHubProblemDetailsFactory.cs`
 - `building-blocks/TeamHub.Observability/Middleware/ExceptionMiddleware.cs`
-- Service mappers: `OrganizationExceptionMapper`, `RedisUnavailableExceptionMapper`, `NotificationExceptionMapper`
+- Service mappers: `OrganizationExceptionMapper`, `RedisUnavailableExceptionMapper`, `NotificationExceptionMapper`, `ChatExceptionMapper`
 
 ## Do
 - Content-Type: `application/problem+json`.
@@ -48,6 +48,16 @@
 | suffix | HTTP | when |
 |--------|------|------|
 | `unauthorized` | 401 | missing/invalid JWT `sub` when resolving current user |
+
+### Chat
+| suffix | HTTP | when |
+|--------|------|------|
+| `chat-not-found` | 404 | org / conversation / message / pin / attachment missing or soft-deleted |
+| `forbidden` | 403 | not an org or conversation member; missing OWNER/ADMIN |
+| `conflict` | 409 | duplicate DIRECT pair, last OWNER leave/demote, DIRECT add-member |
+| `validation-failed` | 400 | type/role/body/file validation |
+| `unauthorized` | 401 | missing/invalid JWT `sub` |
+| `service-unavailable` | 503 | blob storage not configured; organization gRPC down |
 
 ### Validation
 - Format / ModelState → `ValidationProblemDetails` with `type=…/validation-failed` and `errors`.

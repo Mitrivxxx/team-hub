@@ -26,8 +26,8 @@
 - Enrich logs with `TraceId`, `SpanId` (`Serilog.Enrichers.Span`); push logs via `Serilog.Sinks.OpenTelemetry` (dev localhost collector, prod `mon-otel`).
 - Exclude `/health` and `/metrics` from ASP.NET Core trace instrumentation and Serilog request logging.
 - Use shared middleware: Exception (first) → CorrelationId → SessionId → Authentication/Authorization → UserIdLogging → Serilog request logging.
-- `CorrelationIdMiddleware`: prefer non-empty OpenTelemetry `TraceId`, else trimmed `X-Correlation-ID`, else new Guid (`N`); set request/response headers + `LogContext`; ignore empty/whitespace TraceId (`000…0`) and headers.
-- `SessionIdMiddleware`: trimmed `X-Session-ID` or new Guid; echo on response; `LogContext` + `HttpContext.Items["SessionId"]`.
+- `SessionIdMiddleware`: first `X-Session-ID` value (comma-separated duplicates collapsed) or new Guid; echo a single value on response (`OnStarting` so YARP/downstream copies do not accumulate); `LogContext` + `HttpContext.Items["SessionId"]`.
+- `CorrelationIdMiddleware`: prefer non-empty OpenTelemetry `TraceId`, else first trimmed `X-Correlation-ID`, else new Guid (`N`); set request/response headers + `LogContext`; collapse duplicate response values on `OnStarting`.
 - `ExceptionMiddleware`: RFC 9457 `application/problem+json` with stable `type` URIs, `correlationId` (and `sessionId` when `HttpContext.Items["SessionId"]` is set); service-specific mappings via `IExceptionProblemDetailsMapper`.
 - Call `AddTeamHubProblemDetails()` so ModelState / FluentValidation returns `ValidationProblemDetails` (`type` = `…/validation-failed`) with `correlationId`.
 - Controllers returning intentional errors use `TeamHubProblemDetailsFactory` (same shape as middleware).

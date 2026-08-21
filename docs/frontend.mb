@@ -6,6 +6,7 @@
 - `frontend/team-hub-web/proxy.conf.json`
 - `frontend/team-hub-web/nginx.conf`
 - `frontend/team-hub-web/src/app/core/auth/auth.service.ts`
+- `frontend/team-hub-web/src/app/core/http/auth.interceptor.ts`
 - `frontend/team-hub-web/src/app/core/http/correlation-id.interceptor.ts`
 - `frontend/team-hub-web/src/app/core/http/correlation-context.service.ts`
 - `frontend/team-hub-web/src/app/core/http/session-id.interceptor.ts`
@@ -18,16 +19,17 @@
 - In docker, frontend nginx on port `4200` proxies `/api` -> `http://gw-nginx:80` (internal HTTP to infrastructure nginx).
 - Keep `withCredentials: true` on login/refresh/logout to support refresh cookie flow.
 - Send `rememberMe` in login payload to control persistent session.
-- Keep session restore via `refresh()` on app start (`restoreSession()` logic).
+- Restore session via `AuthService.initialize()` (`POST /refresh`) before routing (`provideAppInitializer` + guards).
+- Retry API `401` once through `authInterceptor` using a single in-flight `/refresh`.
 - After successful register, auto-login via `/login` and redirect to `/app`.
 - Treat auth response shape as source contract for UI state:
   - `accessToken`, `expiresInSeconds`, `user` (`id`, `username`, `email`, `name`, `surname`, `avatarUrl`).
 - Profile page (`/app/profile`) uses JWT `GET/PATCH /me`, `POST /me/change-password`, `PUT|DELETE /me/avatar`. After password or email change, clear local session and redirect to `/login`.
 - User search (`searchUsers`) requires `q` with min length 2; results omit email.
 - Set `X-Correlation-ID` on every outbound API request via `correlationIdInterceptor` (new UUID per request).
-- Set `X-Session-ID` on every outbound API request via `sessionIdInterceptor` (one ID per visit in `sessionStorage`).
+- Persist only the first `X-Session-ID` token (`SessionContextService`); duplicated response headers must not accumulate.
 - Reuse one `X-Correlation-ID` for the full register flow (`POST /register` + auto `POST /login`) via `CorrelationContextService`.
-- Register interceptors in `app.config.ts` with `provideHttpClient(withInterceptors([sessionIdInterceptor, correlationIdInterceptor]))`.
+- Register interceptors in `app.config.ts` with `provideHttpClient(withInterceptors([authInterceptor, sessionIdInterceptor, correlationIdInterceptor]))`.
 - Trace create-account in Grafana: copy **response** `X-Correlation-ID` (TraceId). Loki apps: `{service_name=~"team-hub-gateway|team-hub-auth"} | json | CorrelationId="<trace-id>"`. Loki nginx: `{service_name="gw-nginx"} | json | CorrelationId="<request-uuid>"` or `| TraceId="<trace-id>"`.
 - Trace visit in Grafana: `{service_name="team-hub-auth"} | json | SessionId="<session-id>"`.
 

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TeamHub.GrpcContracts")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dad5d39bbb08e47c9a7e12362d0de2f2021f7c87")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+14123a096ae54920ab18b7ea4b48dd1e0275a591")]
 [assembly: System.Reflection.AssemblyProductAttribute("TeamHub.GrpcContracts")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TeamHub.GrpcContracts")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

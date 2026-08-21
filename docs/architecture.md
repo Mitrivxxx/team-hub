@@ -7,7 +7,7 @@
 - `TeamHub.sln`
 - `aspire/TeamHub.AppHost/Program.cs`
 - `docker-compose.yml` (shared base)
-- `docker-compose.dev.yml` (Aspire companion overrides — monitoring only; use `scripts/compose-dev.sh`)
+- `docker-compose.dev.yml` (Aspire companion: Postgres/Redis/Kafka/Azurite + monitoring; use `scripts/compose-dev.sh`)
 - `docker-compose.staging.yml` (full-stack staging overlay)
 - `.env.dev.example` / `.env.staging.example`
 - `services/team-hub-gateway/team-hub-gateway/Program.cs`
@@ -29,7 +29,7 @@
 ## Do
 - Treat flow as: frontend -> infrastructure nginx -> gateway -> auth|team|notification|chat|bff; BFF uses internal gRPC to auth/organization.
 - **Preferred local dev:** Aspire AppHost (`cd aspire/TeamHub.AppHost && dotnet run`) — full stack, dashboard, auto-wired connection strings.
-- **Optional Aspire companion:** `./scripts/compose-dev.sh up -d` — monitoring only (Grafana/Loki/Tempo/Prometheus/OTel; scrapes Aspire host ports via `host.docker.internal`).
+- **Aspire companion infra:** `./scripts/compose-dev.sh up -d --wait` (or `./scripts/dev-up.sh`) — Postgres/Redis/Kafka/Azurite + monitoring on network `team-hub-dev`; Aspire AppHost runs apps only and scrapes via `host.docker.internal`.
 - **Staging:** `./scripts/compose-staging.sh up --build -d` — full Docker stack; secrets in root `.env.staging`.
 - Aspire JWT in `aspire/TeamHub.AppHost/appsettings.Development.json`; staging JWT/DB/Grafana in `.env.staging` (from `.env.staging.example`).
 - Use gateway routes `/api/auth/{**catch-all}`, `/api/organizations/{**catch-all}`, `/api/notifications/{**catch-all}`, `/api/chat/{**catch-all}`, and `/api/graphql/{**catch-all}` as declared reverse proxy routes.
@@ -44,15 +44,18 @@
   - organization `5102` (Aspire) / `8081` (Docker): `ListMembers`
   - BFF composes All Members via GraphQL + DataLoader
 - Keep auth DB host context-aware:
-  - Aspire: database `auth_db` (dynamic host/port from dashboard)
+  - Aspire + compose-dev: database `auth_db` on `127.0.0.1:5433`
   - staging Compose: database `authdb` on `db-postgres:5432`
 - Keep organization DB host context-aware:
-  - Aspire: database `organization_db`
+  - Aspire + compose-dev: database `organization_db` on `127.0.0.1:5433`
   - staging Compose: database `organizationdb` on `db-postgres:5432`
 - Keep notification DB host context-aware:
-  - Aspire: database `notification_db`
+  - Aspire + compose-dev: database `notification_db` on `127.0.0.1:5433`
   - staging Compose: database `notificationdb` on `db-postgres:5432`
-- Keep blob storage (Azurite in Aspire/staging) for organization/team/user avatars: Aspire `blobs` referenced by `srv-organization` and `srv-auth`; staging Compose `BlobStorage__*` on both.
+- Keep chat DB host context-aware:
+  - Aspire + compose-dev: database `chat_db` on `127.0.0.1:5433`
+  - staging Compose: database `chatdb` on `db-postgres:5432`
+- Keep blob storage (Azurite in compose-dev / staging) for avatars: Aspire injects `Aspire:DevInfra:BlobStorage` (`127.0.0.1:10000`); staging Compose `BlobStorage__*` on auth/organization/chat.
 
 ## Don't
 - Do not bypass gateway for frontend API calls.

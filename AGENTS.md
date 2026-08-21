@@ -11,7 +11,7 @@
 - `services/team-hub-gateway` - reverse proxy (YARP).
 - `services/team-hub-organization` - API organization (.NET Web API) + internal gRPC members.
 - `services/team-hub-notification` - API notifications (.NET Web API; Kafka consumer for org member-added).
-- `services/team-hub-chat` - API chat (.NET Web API scaffold; no business logic yet).
+- `services/team-hub-chat` - API chat (.NET Web API; org-scoped conversations/messages).
 - `services/team-hub-bff` - GraphQL BFF (Hot Chocolate) aggregating auth + organization over gRPC.
 - `frontend/team-hub-web` - UI (Angular).
 - `infrastructure/nginx` - edge reverse proxy (nginx) before gateway.
@@ -24,10 +24,10 @@
 - `building-blocks/TeamHub.Observability` - shared OTEL/Serilog + Exception/CorrelationId/UserIdLogging middleware.
 - `building-blocks/TeamHub.GrpcContracts` - shared gRPC protobuf contracts.
 - `docker-compose.yml` - shared Compose base (infra + apps).
-- `docker-compose.dev.yml` - Aspire companion overrides (monitoring only; use `scripts/compose-dev.sh`).
+- `docker-compose.dev.yml` - Aspire companion (Postgres/Redis/Kafka/Azurite + monitoring; `scripts/compose-dev.sh` / `scripts/dev-up.sh`).
 - `docker-compose.staging.yml` - full-stack staging overlay.
 - `.env.dev.example` / `.env.staging.example` - Compose env templates (secrets stay local).
-- `TeamHub.sln` - solution file; prefer `aspire/TeamHub.AppHost` for local full-stack dev.
+- `TeamHub.sln` - solution file; prefer compose-dev + Aspire AppHost for local full-stack dev.
 
 ## Zasady glowna
 - Najpierw sprawdz kod i config, potem zmieniaj.
@@ -40,6 +40,7 @@
 - W kazdym mikroserwisie i we frontendzie musi byc `AGENT.md`.
 - Jesli `AGENT.md` nie istnieje, utworz go przy pierwszej pracy.
 - Po kazdej zmianie funkcjonalnej zaktualizuj `AGENT.md`, aby byl spojny z aktualnym stanem komponentu.
+- Wspolne zasady mikroserwisow: `services/AGENT.mb` (czytaj przed zmiana w `services/`; szczegoly zostaja w `AGENT.md` serwisu).
 
 ## Styl pracy
 - Uzywaj mozliwie najmniej slow.

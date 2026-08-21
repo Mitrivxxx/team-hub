@@ -1,0 +1,13 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "db-postgres (team-hub-dev)",
+      "Group": "Team Hub",
+      "Host": "db-postgres",
+      "Port": 5432,
+      "MaintenanceDB": "postgres",
+      "Username": "teamhub",
+      "SSLMode": "prefer"
+    }
+  }
+}

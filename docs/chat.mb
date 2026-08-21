@@ -2,17 +2,68 @@
 
 ## Route
 - Gateway: `/api/chat/{**catch-all}` → `srv-chat`
-- Base path: `/api/chat/v1` (scaffold; no business endpoints yet)
+- Base path: `/api/chat/v1`
+- JWT required on domain routes (`sub` = user id). Org membership via organization gRPC `ListMembers`. Conversation access requires an active `conversation_members` row.
 
 ## Runtime
 - Aspire / local: `http://localhost:5005`
 - Docker: host `5005` → container `8080`
-- Health: `GET /health`
+- Health: `GET /health` (PostgreSQL)
+- Health (versioned): `GET /api/chat/v1/health` (anonymous)
 - Metrics: `GET /metrics`
+- Internal gRPC: exposes `OrganizationMemberService.ListMembers` (proxied from `team-hub-organization`).
 
-## Status
-- Empty .NET 10 service with Observability, JWT auth wiring, Asp.Versioning + Swagger (Development).
-- Add domain controllers under `ChatApiController` when implementing chat features.
+## Database
+- Aspire: `chat_db` (injected `ConnectionStrings:DefaultConnection`)
+- Staging Compose: `chatdb` on `db-postgres`
+- Schema: EF Core `ChatDbContext` + `Migrations/` (applied on startup)
+
+## Values
+- Conversation `type`: `DIRECT` | `GROUP`
+- Member `role`: `OWNER` | `ADMIN` | `MEMBER`
+- Message `messageType`: `TEXT` | `SYSTEM`
+
+## Endpoints
+
+Prefix: `/api/chat/v1/organizations/{orgId}/conversations`
+
+### Conversations
+- `GET /` → `200` paged (`page`, `pageSize` default 20, max 100); current user's active memberships, `lastMessageAt` desc
+- `POST /` → `201`; body `{ type, name?, memberUserIds[] }`
+  - `DIRECT`: exactly one other member, no name; `409` if a live DM pair exists
+  - `GROUP`: `name` required; creator is `OWNER`, others `MEMBER`
+- `GET /{conversationId}` → `200`
+- `PATCH /{conversationId}` → `200`; `{ name }` on `GROUP` only; `OWNER`/`ADMIN`
+- `DELETE /{conversationId}` → `204`; `OWNER`; soft-delete
+
+### Members
+- `GET /{conversationId}/members` → `200` active members
+- `POST /{conversationId}/members` → `201`; `{ userId, role }`; `GROUP` + `OWNER`/`ADMIN`; re-join clears `leftAt`
+- `PATCH /{conversationId}/members/{userId}` → `200`; `{ role }`; `OWNER`; cannot demote last owner (`409`)
+- `DELETE /{conversationId}/members/{userId}` → `204`; `OWNER`/`ADMIN`; cannot remove last owner (`409`)
+- `POST /{conversationId}/leave` → `204`; last owner `409`
+
+### Messages
+- `GET /{conversationId}/messages?before=&after=&pageSize=50` → `200` cursor on message id, chronological page
+- `GET /{conversationId}/messages/{messageId}` → `200`
+- `POST /{conversationId}/messages` → `201`; `{ content, messageType, replyToMessageId?, mentionUserIds[] }`
+- `PATCH /{conversationId}/messages/{messageId}` → `200`; `{ content }`; sender only; sets `editedAt`
+- `DELETE /{conversationId}/messages/{messageId}` → `204`; sender or `OWNER`/`ADMIN`; soft-delete
+- `PUT /{conversationId}/messages/{messageId}/reactions` → `200`; `{ reaction }` (one per user)
+- `DELETE /{conversationId}/messages/{messageId}/reactions` → `204`
+- `POST /{conversationId}/messages/{messageId}/read` → `204`
+- `GET /{conversationId}/messages/{messageId}/reads` → `200`
+
+### Attachments
+- `POST /{conversationId}/messages/{messageId}/attachments` → `201`; multipart `file` (JPEG/PNG/WebP/PDF/TXT/DOCX/XLSX, max 10 MB); `503` when blob is unset
+- `DELETE /{conversationId}/messages/{messageId}/attachments/{attachmentId}` → `204`; soft-delete
+
+### Pin / settings
+- `GET|PUT|DELETE /{conversationId}/pin` — one pin per user; PUT `{ messageId }`
+- `GET|PATCH /{conversationId}/settings` — `{ notificationsEnabled?, mutedUntil? }`
+
+## Errors
+RFC 9457 ProblemDetails. See `docs/errors.mb` (`chat-not-found`, `forbidden`, `conflict`, `validation-failed`, `service-unavailable`, `unauthorized`).
 
 ## Don't
 - Do not call chat HTTP from the frontend without going through nginx → gateway.

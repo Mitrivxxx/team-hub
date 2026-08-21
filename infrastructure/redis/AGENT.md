@@ -5,7 +5,7 @@
 - `infrastructure/redis/docker-compose.redis.yml`
 - `infrastructure/redis/.env.example`
 - Root `.env.staging.example` / `.env.dev.example` (container names via `REDIS_CONTAINER_NAME`)
-- Root `docker-compose.yml` (includes Redis for staging)
+- Root `docker-compose.yml` / `docker-compose.dev.yml` (includes Redis)
 
 ## Why compose fragment, not Dockerfile
 - Redis runs from the official `redis:7-alpine` image with no custom build.
@@ -22,7 +22,7 @@
 - Keep connection string template in `infrastructure/redis/.env.example` (`Redis__ConnectionString`).
 - Use `building-blocks/TeamHub.Redis` (`TeamHub.Redis`) for `IConnectionMultiplexer` registration in services.
 - Use key prefixes per domain (e.g. auth: `auth:session:*`).
-- Container names come from root env (`cache-redis-staging` for staging; Aspire manages its own Redis).
+- Container names come from root env (`cache-redis-dev` for compose-dev; `cache-redis-staging` for staging).
 
 ## Don't
 - Do not add per-service Redis instances.
@@ -30,5 +30,5 @@
 - Do not put domain/session logic here (container config only; library lives in `building-blocks/TeamHub.Redis`).
 
 ## Connection strings
-- Aspire / host tools: from AppHost or `localhost:<mapped-port>`
+- Aspire apps (compose-dev): `127.0.0.1:6379` via `Aspire:DevInfra`
 - Docker network (staging): `cache-redis:6379`

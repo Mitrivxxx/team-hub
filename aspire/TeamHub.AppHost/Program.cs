@@ -1,3 +1,5 @@
+using TeamHub.AppHost;
+
 var seedMode = args.Contains("--seed", StringComparer.Ordinal);
 var appHostArgs = args.Where(a => !string.Equals(a, "--seed", StringComparison.Ordinal)).ToArray();
 
@@ -8,35 +10,24 @@ var jwtKey = builder.Configuration["Aspire:Jwt:Key"]
 var jwtIssuer = builder.Configuration["Aspire:Jwt:Issuer"] ?? "AuthService";
 var jwtAudience = builder.Configuration["Aspire:Jwt:Audience"] ?? "AuthServiceUsers";
 
+var infra = DevInfra.Load(builder.Configuration);
+DevInfra.EnsureReachable(infra, requireBlobStorage: !seedMode);
+
 const string otlpEndpoint = "http://127.0.0.1:4317";
-
-var postgres = builder.AddPostgres("db-postgres")
-    .WithDataVolume()
-    .WithPgAdmin();
-
-// Aspire resource names allow only letters, digits, hyphens — DB name can still be auth_db.
-var authDatabase = postgres.AddDatabase("auth-db", "auth_db");
-var organizationDatabase = postgres.AddDatabase("organization-db", "organization_db");
-var notificationDatabase = postgres.AddDatabase("notification-db", "notification_db");
-
-var redis = builder.AddRedis("cache-redis");
-// Stable host ports so service .env / docs (9092, 10000) stay valid beside Aspire injection.
-var kafka = builder.AddKafka("msg-kafka", port: 9092);
 
 if (seedMode)
 {
     Console.WriteLine("Team Hub Aspire seed mode: seed-auth → seed-auth-api → seed-organization → seed-notification");
-    Console.WriteLine("When seed-notification finishes, AppHost exits. Login: JanWilk123 / janwilk123");
+    Console.WriteLine("Infra: compose-dev Postgres/Redis/Kafka. When seed-notification finishes, AppHost exits.");
+    Console.WriteLine("Login: JanWilk123 / janwilk123");
 
     var seedAuth = builder.AddProject<Projects.team_hub_auth>("seed-auth", launchProfileName: null)
         .WithArgs("--seed")
-        .WithReference(authDatabase, "DefaultConnection")
-        .WithEnvironment("Redis__ConnectionString", redis)
+        .WithTeamHubDevPostgres(infra, "auth_db")
+        .WithTeamHubDevRedis(infra)
         .WithTeamHubJwt(jwtKey, jwtIssuer, jwtAudience)
         .WithTeamHubDevSeed()
-        .WithTeamHubOtlp(otlpEndpoint)
-        .WaitFor(authDatabase)
-        .WaitFor(redis);
+        .WithTeamHubOtlp(otlpEndpoint);
 
     // Temporary gRPC host for org/notification seed. Use dedicated ports (not 5001/5101) so a
     // running full stack does not collide; override appsettings Kestrel URLs explicitly.
@@ -46,8 +37,8 @@ if (seedMode)
     var seedAuthGrpcUrl = "http://127.0.0.1:" + seedAuthGrpcPort;
 
     var seedAuthApi = builder.AddProject<Projects.team_hub_auth>("seed-auth-api", launchProfileName: null)
-        .WithReference(authDatabase, "DefaultConnection")
-        .WithEnvironment("Redis__ConnectionString", redis)
+        .WithTeamHubDevPostgres(infra, "auth_db")
+        .WithTeamHubDevRedis(infra)
         .WithTeamHubJwt(jwtKey, jwtIssuer, jwtAudience)
         .WithEnvironment("ASPNETCORE_ENVIRONMENT", "Development")
         .WithTeamHubOtlp(otlpEndpoint)
@@ -65,35 +56,28 @@ if (seedMode)
             endpoint.UriScheme = "http";
             endpoint.IsProxied = false;
         })
-        .WaitFor(authDatabase)
-        .WaitFor(redis)
         .WaitForCompletion(seedAuth);
 
     var seedOrganization = builder.AddProject<Projects.team_hub_organization>("seed-organization", launchProfileName: null)
         .WithArgs("--seed")
-        .WithReference(organizationDatabase, "DefaultConnection")
+        .WithTeamHubDevPostgres(infra, "organization_db")
         .WithReference(seedAuthApi)
         .WithTeamHubJwt(jwtKey, jwtIssuer, jwtAudience)
         .WithEnvironment("Grpc__Auth", seedAuthGrpcUrl)
-        .WithEnvironment("Kafka__BootstrapServers", kafka)
-        .WithEnvironment("Kafka__ClientId", "seed-organization")
+        .WithTeamHubDevKafka(infra, "seed-organization")
         .WithTeamHubDevSeed(organizationCount: 1)
         .WithTeamHubOtlp(otlpEndpoint)
-        .WaitFor(organizationDatabase)
-        .WaitFor(kafka)
         .WaitFor(seedAuthApi)
         .WaitForCompletion(seedAuth);
 
     builder.AddProject<Projects.team_hub_notification>("seed-notification", launchProfileName: null)
         .WithArgs("--seed")
-        .WithReference(notificationDatabase, "DefaultConnection")
+        .WithTeamHubDevPostgres(infra, "notification_db")
         .WithTeamHubJwt(jwtKey, jwtIssuer, jwtAudience)
         .WithEnvironment("Grpc__Auth", seedAuthGrpcUrl)
-        .WithEnvironment("Kafka__BootstrapServers", kafka)
-        .WithEnvironment("Kafka__ClientId", "seed-notification")
+        .WithTeamHubDevKafka(infra, "seed-notification")
         .WithTeamHubDevSeed()
         .WithTeamHubOtlp(otlpEndpoint)
-        .WaitFor(notificationDatabase)
         .WaitFor(seedAuthApi)
         .WaitForCompletion(seedOrganization);
 
@@ -102,24 +86,16 @@ if (seedMode)
     await app.ResourceNotifications.WaitForResourceAsync(
         "seed-notification",
         KnownResourceStates.Finished);
-    Console.WriteLine("Demo seed complete. Data persisted in Postgres volume. Exiting AppHost.");
+    Console.WriteLine("Demo seed complete. Data persisted in compose-dev Postgres volume. Exiting AppHost.");
     await app.StopAsync();
     return;
 }
 
-var blobs = builder.AddAzureStorage("blob-storage")
-    .RunAsEmulator(emulator => emulator.WithBlobPort(10000).WithDataVolume())
-    .AddBlobs("blobs");
-
 var auth = builder.AddProject<Projects.team_hub_auth>("srv-auth")
-    .WithReference(authDatabase, "DefaultConnection")
-    .WithReference(blobs)
-    .WithEnvironment("Redis__ConnectionString", redis)
+    .WithTeamHubDevPostgres(infra, "auth_db")
+    .WithTeamHubDevRedis(infra)
+    .WithTeamHubDevBlobStorage(infra)
     .WithTeamHubJwt(jwtKey, jwtIssuer, jwtAudience)
-    .WithEnvironment("BlobStorage__ConnectionString", blobs)
-    .WithEnvironment("BlobStorage__ContainerName", "avatars")
-    .WithEnvironment("BlobStorage__PublicBlobEndpoint", "http://127.0.0.1:10000/devstoreaccount1")
-    .WithEnvironment("BlobStorage__SasExpiryMinutes", "60")
     .WithEnvironment("ASPNETCORE_ENVIRONMENT", "Development")
     .WithTeamHubOtlp(otlpEndpoint)
     .WithEndpoint("http", endpoint =>
@@ -133,23 +109,15 @@ var auth = builder.AddProject<Projects.team_hub_auth>("srv-auth")
         endpoint.Port = 5101;
         endpoint.UriScheme = "http";
         endpoint.IsProxied = false;
-    })
-    .WaitFor(authDatabase)
-    .WaitFor(redis)
-    .WaitFor(blobs);
+    });
 
 var organization = builder.AddProject<Projects.team_hub_organization>("srv-organization")
-    .WithReference(organizationDatabase, "DefaultConnection")
+    .WithTeamHubDevPostgres(infra, "organization_db")
     .WithReference(auth)
-    .WithReference(blobs)
-    .WithEnvironment("BlobStorage__ConnectionString", blobs)
-    .WithEnvironment("BlobStorage__ContainerName", "avatars")
-    .WithEnvironment("BlobStorage__PublicBlobEndpoint", "http://127.0.0.1:10000/devstoreaccount1")
-    .WithEnvironment("BlobStorage__SasExpiryMinutes", "60")
+    .WithTeamHubDevBlobStorage(infra)
     .WithTeamHubJwt(jwtKey, jwtIssuer, jwtAudience)
     .WithEnvironment("Grpc__Auth", "http://127.0.0.1:5101")
-    .WithEnvironment("Kafka__BootstrapServers", kafka)
-    .WithEnvironment("Kafka__ClientId", "srv-organization")
+    .WithTeamHubDevKafka(infra, "srv-organization")
     .WithEnvironment("ASPNETCORE_ENVIRONMENT", "Development")
     .WithTeamHubOtlp(otlpEndpoint)
     .WithEndpoint("http", endpoint =>
@@ -163,29 +131,26 @@ var organization = builder.AddProject<Projects.team_hub_organization>("srv-organ
         endpoint.Port = 5102;
         endpoint.UriScheme = "http";
         endpoint.IsProxied = false;
-    })
-    .WaitFor(organizationDatabase)
-    .WaitFor(kafka)
-    .WaitFor(blobs);
+    });
 
 var notification = builder.AddProject<Projects.team_hub_notification>("srv-notification")
-    .WithReference(notificationDatabase, "DefaultConnection")
+    .WithTeamHubDevPostgres(infra, "notification_db")
     .WithTeamHubJwt(jwtKey, jwtIssuer, jwtAudience)
-    .WithEnvironment("Kafka__BootstrapServers", kafka)
-    .WithEnvironment("Kafka__ClientId", "srv-notification")
+    .WithTeamHubDevKafka(infra, "srv-notification")
     .WithEnvironment("ASPNETCORE_ENVIRONMENT", "Development")
     .WithTeamHubOtlp(otlpEndpoint)
     .WithEndpoint("http", endpoint =>
     {
         endpoint.Port = 5004;
         endpoint.IsProxied = false;
-    })
-    .WaitFor(notificationDatabase)
-    .WaitFor(kafka);
+    });
 
 var chat = builder.AddProject<Projects.team_hub_chat>("srv-chat")
+    .WithTeamHubDevPostgres(infra, "chat_db")
+    .WithTeamHubDevBlobStorage(infra)
     .WithTeamHubJwt(jwtKey, jwtIssuer, jwtAudience)
     .WithEnvironment("ASPNETCORE_ENVIRONMENT", "Development")
+    .WithEnvironment("Grpc__Organization", "http://127.0.0.1:5102")
     .WithTeamHubOtlp(otlpEndpoint)
     .WithEndpoint("http", endpoint =>
     {

@@ -53,6 +53,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "team-hub-chat", "team-hub-c
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "team-hub-chat", "services\team-hub-chat\team-hub-chat\team-hub-chat.csproj", "{A29D9E46-87EA-48C7-BA6C-2BA623296611}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "team-hub-chat.Tests", "services\team-hub-chat\team-hub-chat.Tests\team-hub-chat.Tests.csproj", "{7F3A9C21-8E4B-4D6A-A1C2-9B0E5F7D3A18}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -255,6 +257,18 @@ Global
 		{A29D9E46-87EA-48C7-BA6C-2BA623296611}.Release|x64.Build.0 = Release|Any CPU
 		{A29D9E46-87EA-48C7-BA6C-2BA623296611}.Release|x86.ActiveCfg = Release|Any CPU
 		{A29D9E46-87EA-48C7-BA6C-2BA623296611}.Release|x86.Build.0 = Release|Any CPU
+		{7F3A9C21-8E4B-4D6A-A1C2-9B0E5F7D3A18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F3A9C21-8E4B-4D6A-A1C2-9B0E5F7D3A18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F3A9C21-8E4B-4D6A-A1C2-9B0E5F7D3A18}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7F3A9C21-8E4B-4D6A-A1C2-9B0E5F7D3A18}.Debug|x64.Build.0 = Debug|Any CPU
+		{7F3A9C21-8E4B-4D6A-A1C2-9B0E5F7D3A18}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7F3A9C21-8E4B-4D6A-A1C2-9B0E5F7D3A18}.Debug|x86.Build.0 = Debug|Any CPU
+		{7F3A9C21-8E4B-4D6A-A1C2-9B0E5F7D3A18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F3A9C21-8E4B-4D6A-A1C2-9B0E5F7D3A18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F3A9C21-8E4B-4D6A-A1C2-9B0E5F7D3A18}.Release|x64.ActiveCfg = Release|Any CPU
+		{7F3A9C21-8E4B-4D6A-A1C2-9B0E5F7D3A18}.Release|x64.Build.0 = Release|Any CPU
+		{7F3A9C21-8E4B-4D6A-A1C2-9B0E5F7D3A18}.Release|x86.ActiveCfg = Release|Any CPU
+		{7F3A9C21-8E4B-4D6A-A1C2-9B0E5F7D3A18}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -282,5 +296,6 @@ Global
 		{0BCDF10C-5B6A-4D65-AC19-8C99372D4B15} = {F8364035-CDA1-3FFB-89C5-187C916D220D}
 		{566CC9D6-C01A-7B80-907E-26E496156BF2} = {5EF46000-3E9B-4371-ACD5-7361A0BB59B9}
 		{A29D9E46-87EA-48C7-BA6C-2BA623296611} = {566CC9D6-C01A-7B80-907E-26E496156BF2}
+		{7F3A9C21-8E4B-4D6A-A1C2-9B0E5F7D3A18} = {566CC9D6-C01A-7B80-907E-26E496156BF2}
 	EndGlobalSection
 EndGlobal

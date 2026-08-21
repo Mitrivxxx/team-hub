@@ -13,7 +13,8 @@
 - `infrastructure/monitoring/.env.example`
 - `infrastructure/monitoring/.nginx-edge-logs/` (Aspire + compose-dev shared edge access logs; gitignored except `.gitkeep`)
 - Root `.env.dev.example` / `.env.staging.example`
-- Root `docker-compose.dev.yml` (Aspire companion overrides; merged by `scripts/compose-dev.sh`)
+- Root `docker-compose.dev.yml` (Aspire companion: infra + monitoring overrides; merged by `scripts/compose-dev.sh`)
+- `infrastructure/monitoring/docker-compose.dev.infra.yml` (includes postgres/redis/kafka/azurite for compose-dev)
 - Root `docker-compose.yml` (includes monitoring for staging)
 
 ## Why compose fragment, not Dockerfile
@@ -60,7 +61,7 @@
 - W3C `traceparent` propagates trace context between gateway and auth automatically.
 
 ## First telemetry in Grafana
-- Aspire + monitoring: `./scripts/compose-dev.sh up -d` then generate traffic via Aspire endpoints.
+- Aspire + compose-dev: `./scripts/compose-dev.sh up -d --wait` (or `./scripts/dev-up.sh`) then generate traffic via Aspire endpoints.
 - Staging: `./scripts/compose-staging.sh up --build -d` then `curl -k https://localhost:8080/health` or `curl http://localhost:5001/health`.
 - Open Grafana `http://localhost:3000` (user/password from `.env.dev` / `.env.staging`).
 - Dashboards (folder **Team Hub**): Overview, Auth, Edge Nginx, Runtime.
@@ -78,8 +79,7 @@
 - Nginx edge access logs (Aspire companion): host dir `.nginx-edge-logs`.
 
 ## Do
-- Prefer `./scripts/compose-dev.sh` for Aspire companion (merges monitoring base + `docker-compose.dev.yml` overrides). Compose `include` cannot override imported services.
-- Keep this stack optional and infrastructure-only for Aspire.
+- Prefer `./scripts/compose-dev.sh` for Aspire companion (merges monitoring base + `docker-compose.dev.yml`; includes Postgres/Redis/Kafka/Azurite). Compose `include` cannot override imported services.
 - Keep secrets (Grafana admin password) in local env files, not committed.
 
 ## Don't

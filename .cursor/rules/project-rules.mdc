@@ -15,9 +15,10 @@ alwaysApply: true
 
 ## Source of truth
 - `docker-compose.yml` (shared base)
-- `docker-compose.dev.yml` (Aspire companion overrides — monitoring only; `scripts/compose-dev.sh`)
+- `docker-compose.dev.yml` (Aspire companion: Postgres/Redis/Kafka/Azurite + monitoring; `scripts/compose-dev.sh` / `scripts/dev-up.sh`)
 - `docker-compose.staging.yml` (full-stack staging overlay)
 - `.env.dev.example` / `.env.staging.example`
+- `aspire/TeamHub.AppHost/DevInfra.cs` / `appsettings.Development.json` (`Aspire:DevInfra`)
 - `infrastructure/nginx/nginx.conf`
 - `infrastructure/postgres/docker-compose.postgres.yml`
 - `infrastructure/redis/docker-compose.redis.yml`
@@ -31,6 +32,7 @@ alwaysApply: true
 - `services/team-hub-auth/team-hub-auth/Controllers/Me/`
 - `services/team-hub-organization/team-hub-organization/Program.cs`
 - `docs/README.mb` and related `docs/*.mb`
+- `services/AGENT.mb` (shared microservice conventions)
 - Component `AGENT.md` files in each service and frontend
 
 ## Do
@@ -39,10 +41,10 @@ alwaysApply: true
 - Route notification API through gateway path `/api/notifications/{**catch-all}`.
 - Route chat API through gateway path `/api/chat/{**catch-all}`.
 - Keep auth endpoints aligned with controllers: `register`, `login`, `refresh`, `logout`.
-- Local daily dev: Aspire AppHost (`cd aspire/TeamHub.AppHost && dotnet run`).
-- Optional Aspire companion monitoring: `./scripts/compose-dev.sh up -d` (project `team-hub-dev`).
+- Local daily dev: `./scripts/dev-up.sh` (compose-dev infra + Aspire apps). Infra first: `./scripts/compose-dev.sh up -d --wait`.
+- Compose-dev project/network `team-hub-dev`: Postgres `5433`, Redis `6379`, Kafka `9092`, Azurite `10000` + monitoring.
 - Staging full stack: `./scripts/compose-staging.sh up --build -d` (`ASPNETCORE_ENVIRONMENT=Production`, root `.env.staging`).
-- Use documented ports/env from config (`8080`, `5000`, `5001`, `5002`, `5003`, `5004`, `5005`, `4200`, `5433`) and verify before edits.
+- Use documented ports/env from config (`8080`, `5000`, `5001`, `5002`, `5003`, `5004`, `5005`, `4200`, `5433`, `6379`, `9092`, `10000`) and verify before edits.
 - Update docs in `docs/` and component `AGENT.md` when API contract, ports, or runtime flow changes.
 - Prefer minimal diffs and preserve existing naming/style in touched files.
 

@@ -4,10 +4,10 @@
 ## Source of truth
 - `aspire/TeamHub.AppHost/Program.cs`
 - `docker-compose.yml` (shared base)
-- `docker-compose.dev.yml` (Aspire companion overrides — monitoring only; use `scripts/compose-dev.sh`)
+- `docker-compose.dev.yml` (Aspire companion: Postgres/Redis/Kafka/Azurite + monitoring; use `scripts/compose-dev.sh`)
 - `docker-compose.staging.yml` (full-stack staging overlay; localhost binds)
 - `.env.dev.example` / `.env.staging.example`
-- `scripts/compose-dev.sh` / `scripts/compose-staging.sh`
+- `scripts/compose-dev.sh` / `scripts/dev-up.sh` / `scripts/dev-seed.sh` / `scripts/compose-staging.sh`
 - `frontend/team-hub-web/package.json`
 - `infrastructure/monitoring/docker-compose.monitoring.yml`
 - `infrastructure/monitoring/otel-collector-config.yaml`
@@ -16,22 +16,22 @@
 - `infrastructure/monitoring/prometheus.dev.yml`
 
 ## Do
-- **Preferred local dev (full stack, one command):**
+- **Preferred local dev:**
   - prerequisites: .NET 10 SDK, Aspire 13 (`Aspire.AppHost.Sdk` via NuGet), Docker, Node.js/npm
-  - `cd aspire/TeamHub.AppHost && dotnet run`
-  - opens Aspire Dashboard (URL in console); endpoints: frontend `https://localhost:4200`, nginx API `https://localhost:8080`, gateway `http://localhost:5000`
-  - JWT dev config: `aspire/TeamHub.AppHost/appsettings.Development.json` (`Aspire:Jwt:*`)
-  - stop with `Ctrl+C` in AppHost terminal
-- **Optional monitoring next to Aspire:**
-  - `cp .env.dev.example .env.dev` (set `GRAFANA_ADMIN_PASSWORD`)
-  - `./scripts/compose-dev.sh up -d` (merges `infrastructure/monitoring/docker-compose.monitoring.yml` + `docker-compose.dev.yml`)
-  - project `team-hub-dev` — Grafana/Loki/Tempo/Prometheus/OTel only (Aspire owns Postgres/Redis/Kafka/Azurite/apps)
-  - Prometheus uses `prometheus.dev.yml` (`host.docker.internal:5000`–`5005`); nginx exporter scrapes `host.docker.internal:8081`
-  - AppHost OTLP → `http://127.0.0.1:4317`; edge logs shared via `infrastructure/monitoring/.nginx-edge-logs`
+  - `cp .env.dev.example .env.dev` (once; set `GRAFANA_ADMIN_PASSWORD` if exposing Grafana)
+  - `./scripts/dev-up.sh` — compose-dev infra + monitoring (`--wait`), then Aspire AppHost apps
+  - or: `./scripts/compose-dev.sh up -d --wait` then `cd aspire/TeamHub.AppHost && dotnet run`
+  - project `team-hub-dev`, network `team-hub-dev`: Postgres `5433`, PgAdmin `5050`, Redis `6379`, Kafka `9092`, Azurite `10000` + Grafana/Loki/Tempo/Prometheus/OTel
+  - PgAdmin: `http://127.0.0.1:5050` (`PGADMIN_DEFAULT_*` from `.env.dev`; server `db-postgres` pre-registered; DB password = `POSTGRES_PASSWORD`)
+  - Aspire runs apps only (`srv-*`, `gw-api`, `gw-nginx`, `ui-web`); fail-fast if infra ports are down
+  - endpoints: frontend `https://localhost:4200`, nginx API `https://localhost:8080`, gateway `http://localhost:5000`
+  - JWT + DevInfra: `aspire/TeamHub.AppHost/appsettings.Development.json` (`Aspire:Jwt:*`, `Aspire:DevInfra:*`)
+  - Ctrl+C stops AppHost only; compose-dev keeps running
+  - Prometheus: `prometheus.dev.yml` (`host.docker.internal:5000`–`5005`); OTLP → `http://127.0.0.1:4317`
 - **Demo seed via Aspire** (Development; auth → org → notification inbox for JanWilk):
-  - `cd aspire/TeamHub.AppHost && dotnet run -- --seed` (or `dotnet run --launch-profile seed`)
+  - `./scripts/dev-seed.sh` (or compose-dev `--wait` then `dotnet run -- --seed`)
   - AppHost exits when `seed-notification` Finished; login `JanWilk123` / `janwilk123` (Owner of `demo-org-1`)
-  - re-seed: remove Aspire Postgres named volume, then run `--seed` again
+  - re-seed: `docker volume rm postgres_data_dev` (see `.env.dev`), then `./scripts/dev-seed.sh` again
   - details: `aspire/AGENT.md`
 - **Staging full stack (Docker):**
   - `./scripts/setup-certs.sh` (mkcert = trusted HTTPS in browser; otherwise self-signed with warning)
@@ -51,7 +51,7 @@
   - auth (direct) `http://localhost:5001` (`srv-auth-staging`); health `GET http://localhost:5001/health`
   - chat (direct) `http://localhost:5005` (`srv-chat-staging`); health `GET http://localhost:5005/health`
   - redis `localhost:6379` (`cache-redis-staging`)
-  - postgres `localhost:5433` (`db-postgres-staging`, databases `authdb` + `organizationdb` + `notificationdb`)
+  - postgres `localhost:5433` (`db-postgres-staging`, databases `authdb` + `organizationdb` + `notificationdb` + `chatdb`)
   - Azurite blob `localhost:10000` (`blob-storage-staging`)
   - monitoring Grafana `http://localhost:3000`
   - monitoring Loki `http://localhost:3100`
@@ -107,7 +107,7 @@
 - Do not keep secrets in committed `.env*.example` files or repo root tracked env files.
 - Do not use staging Compose for daily local dev when Aspire AppHost is available.
 - Do not start Aspire AppHost and staging Compose on the same host ports at once.
-- Do not expect `docker-compose.dev.yml` alone to start monitoring or Postgres/Redis/Kafka — use `./scripts/compose-dev.sh`; Aspire owns app infra for local dev.
+- Do not expect `docker-compose.dev.yml` alone — use `./scripts/compose-dev.sh` (or `./scripts/dev-up.sh`). Compose owns Postgres/Redis/Kafka/Azurite + monitoring; Aspire owns apps.
 - Do not run heavy builds/tests for docs-only updates.
 - Do not verify auth flow by bypassing gateway when checking end-to-end.
 

@@ -1,13 +1,69 @@
-# Dev companion overrides for Aspire — monitoring only.
-# Merged with infrastructure/monitoring/docker-compose.monitoring.yml via compose-dev.sh.
-# Paths below are relative to infrastructure/monitoring/ (first -f file directory).
-# Aspire AppHost starts Postgres, Redis, Kafka, Azurite, apps, nginx, and UI.
-# Usage: ./scripts/compose-dev.sh up -d
-# Metrics scrape Aspire host ports via host.docker.internal (prometheus.dev.yml).
+# Dev companion overrides for Aspire — infra + monitoring.
+# Merged via compose-dev.sh (order matters; see scripts/compose-dev.sh).
+# Volume paths below are relative to infrastructure/monitoring/ (first -f file directory).
+# Aspire AppHost runs apps only; compose-dev owns Postgres/Redis/Kafka/Azurite + monitoring.
+# Usage: ./scripts/compose-dev.sh up -d --wait
 
 name: team-hub-dev
 
+networks:
+  default:
+    name: team-hub-dev
+
 services:
+  db-postgres:
+    ports: !override
+      - "127.0.0.1:${POSTGRES_PORT:-5433}:5432"
+    restart: unless-stopped
+
+  cache-redis:
+    ports: !override
+      - "127.0.0.1:${REDIS_PORT:-6379}:6379"
+    restart: unless-stopped
+
+  msg-kafka:
+    ports: !override
+      - "127.0.0.1:${KAFKA_PORT:-9092}:9092"
+    restart: unless-stopped
+
+  blob-storage:
+    ports: !override
+      - "127.0.0.1:${AZURITE_BLOB_PORT:-10000}:10000"
+    # Base healthcheck treats Azurite 400 as failure; TCP listen is enough for Aspire readiness.
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -S -O /dev/null http://127.0.0.1:10000/devstoreaccount1 2>&1 | grep -q 'HTTP/' || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Dev-only UI for compose-dev Postgres (replaces former Aspire WithPgAdmin).
+  # Volume path relative to infrastructure/monitoring/ (first -f file).
+  db-pgadmin:
+    image: dpage/pgadmin4:8.14
+    container_name: ${PGADMIN_CONTAINER_NAME:-db-pgadmin-dev}
+    depends_on:
+      db-postgres:
+        condition: service_healthy
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@example.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_REPLACE_SERVERS_ON_STARTUP: "True"
+      PGADMIN_SERVER_JSON_FILE: /pgadmin4/servers.json
+    ports:
+      - "127.0.0.1:${PGADMIN_PORT:-5050}:80"
+    volumes:
+      - ../postgres/pgadmin/servers.json:/pgadmin4/servers.json:ro
+      - pgadmin_data:/var/lib/pgadmin
+    healthcheck:
+      test: ["CMD", "wget", "-O", "-", "http://127.0.0.1:80/misc/ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
   mon-prometheus:
     volumes:
       - ./prometheus.dev.yml:/etc/prometheus/prometheus.yml:ro
@@ -25,3 +81,7 @@ services:
     volumes:
       - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml:ro
       - ./.nginx-edge-logs:/var/log/nginx-edge:ro
+
+volumes:
+  pgadmin_data:
+    name: ${PGADMIN_VOLUME_NAME:-pgadmin_data_dev}

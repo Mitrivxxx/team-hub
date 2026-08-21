@@ -125,6 +125,10 @@ services:
       dockerfile: services/team-hub-chat/Dockerfile
     container_name: ${CHAT_CONTAINER_NAME}
     depends_on:
+      db-postgres:
+        condition: service_healthy
+      blob-storage:
+        condition: service_healthy
       mon-otel:
         condition: service_started
     environment:
@@ -132,6 +136,11 @@ services:
       Jwt__Key: ${Jwt__Key}
       Jwt__Issuer: ${Jwt__Issuer}
       Jwt__Audience: ${Jwt__Audience}
+      ConnectionStrings__DefaultConnection: Host=db-postgres;Port=5432;Database=chatdb;Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+      BlobStorage__ConnectionString: ${BlobStorage__ConnectionString}
+      BlobStorage__ContainerName: ${BlobStorage__ContainerName:-avatars}
+      BlobStorage__PublicBlobEndpoint: ${BlobStorage__PublicBlobEndpoint}
+      BlobStorage__SasExpiryMinutes: ${BlobStorage__SasExpiryMinutes:-60}
       OTEL_EXPORTER_OTLP_ENDPOINT: http://mon-otel:4317
       Observability__OtlpEndpoint: http://mon-otel:4317
     ports:
@@ -141,7 +150,7 @@ services:
       interval: 120s
       timeout: 5s
       retries: 5
-      start_period: 30s
+      start_period: 45s
 
   srv-bff:
     build:

@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "PE0o9C1+Nvs=",
+  "dgSpecHash": "aXYwVPaX+Ok=",
   "success": true,
   "projectFilePath": "/home/matsma/project/team-hub/building-blocks/TeamHub.Kafka/TeamHub.Kafka.csproj",
   "expectedPackageFiles": [
-    "/tmp/cursor-sandbox-cache/eb75461cbe043fd26cf6b6cca929ec59/nuget/confluent.kafka/2.12.0/confluent.kafka.2.12.0.nupkg.sha512",
-    "/tmp/cursor-sandbox-cache/eb75461cbe043fd26cf6b6cca929ec59/nuget/librdkafka.redist/2.12.0/librdkafka.redist.2.12.0.nupkg.sha512"
+    "/home/matsma/.nuget/packages/confluent.kafka/2.12.0/confluent.kafka.2.12.0.nupkg.sha512",
+    "/home/matsma/.nuget/packages/librdkafka.redist/2.12.0/librdkafka.redist.2.12.0.nupkg.sha512"
   ],
   "logs": []
 }

@@ -17,12 +17,28 @@ public sealed class CorrelationIdMiddleware(RequestDelegate next)
 
         context.Request.Headers[HeaderName] = correlationId;
         context.Items[ItemKey] = correlationId;
-        context.Response.Headers[HeaderName] = correlationId;
+        WriteSingleResponseHeader(context, correlationId);
+        context.Response.OnStarting(() =>
+        {
+            WriteSingleResponseHeader(context, correlationId);
+            return Task.CompletedTask;
+        });
 
         using (LogContext.PushProperty(ItemKey, correlationId))
         {
             await next(context);
         }
+
+        if (!context.Response.HasStarted)
+        {
+            WriteSingleResponseHeader(context, correlationId);
+        }
+    }
+
+    static void WriteSingleResponseHeader(HttpContext context, string correlationId)
+    {
+        context.Response.Headers.Remove(HeaderName);
+        context.Response.Headers[HeaderName] = correlationId;
     }
 
     static string ResolveCorrelationId(HttpContext context)
@@ -34,10 +50,10 @@ public sealed class CorrelationIdMiddleware(RequestDelegate next)
             return traceId;
         }
 
-        var incomingHeaderValue = context.Request.Headers[HeaderName].FirstOrDefault();
+        var incomingHeaderValue = RequestHeaderValues.First(context.Request.Headers, HeaderName);
         if (!string.IsNullOrWhiteSpace(incomingHeaderValue))
         {
-            return incomingHeaderValue.Trim();
+            return incomingHeaderValue;
         }
 
         return Guid.NewGuid().ToString("N");

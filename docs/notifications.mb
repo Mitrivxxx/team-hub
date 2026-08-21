@@ -5,11 +5,13 @@
 - Base path: `/api/notifications/v1`
 
 ## Endpoints
-- `GET /api/notifications/v1/me` → `200 OK`; JWT required
+Prefix: `/api/notifications/v1/organizations/{organizationId}`
+
+- `GET /` → `200 OK`; JWT required
   - Response: array of `{ id, type, title, body, organizationId, createdAt, isRead }`
-  - Filtered by JWT `sub` (user id)
-- `POST /api/notifications/v1/me/{id}/read` → `204 No Content` (or `404`)
-- `POST /api/notifications/v1/me/read-all` → `204 No Content`
+  - Filtered by JWT `sub` (user id) and `organizationId`
+- `POST /{id}/read` → `204 No Content` (or `404`)
+- `POST /read-all` → `204 No Content` (current user + organization only)
 
 ## Kafka events consumed
 - Topic: `organization.events`
@@ -34,8 +36,10 @@
 - Storage: PostgreSQL `notification_db` (Aspire) / `notificationdb` (staging Compose)
 
 ## Frontend
-- `/app/notifications` loads inbox via `NotificationService` → `GET /me`
-- Mark read uses `POST /me/{id}/read` and `POST /me/read-all`
+- Org-scoped: `/app/organizations/:slug/notifications` (member-only, same access as chat)
+- Hub tile on `/app/organizations/:slug`
+- `NotificationService` → `GET /organizations/{organizationId}`
+- Mark read uses `POST /organizations/{organizationId}/{id}/read` and `POST /organizations/{organizationId}/read-all`
 
 ## Don't
 - Do not call organization HTTP from notification for this flow (event-driven only).

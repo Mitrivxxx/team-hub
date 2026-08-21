@@ -28,8 +28,10 @@
   - format (`400`): `name`, `surname`, `username`, `password` field rules.
   - business (`409`): duplicate `username` in `errors.username` (case-insensitive).
 - Keep refresh token in `refreshToken` HttpOnly cookie (`SameSite=Lax`); when `rememberMe=false`, keep it session-scoped.
-- Store refresh sessions in Redis (`auth:session:{refreshTokenHash}`) with TTL matching refresh token expiry; maintain `auth:user-sessions:{userId}` SET index for revoke-all.
+- Store refresh sessions in Redis (`auth:session:{refreshTokenHash}`) with TTL matching refresh token expiry; maintain `auth:user-sessions:{userId}` SET index for revoke-all. After rotation, the previous refresh token remains valid for 15 seconds.
 - Keep `withCredentials: true` for login/refresh/logout in frontend clients.
+- Restore the session on app start with one `/refresh` call; retry API `401` once after refresh.
+- Keep refresh-token rotation with a short reuse grace window so concurrent `/refresh` calls do not drop the session.
 - Keep JWT options from env/config: `Jwt__Key`, `Jwt__Issuer`, `Jwt__Audience`, `Jwt:ExpireMinutes`.
 - Keep Redis connection from infrastructure: `Redis__ConnectionString` (Aspire injects; staging Compose sets `cache-redis:6379`).
 - Keep PostgreSQL connection: Aspire `auth_db`; staging Compose `Host=db-postgres;...;Database=authdb;...` from root `.env.staging`.

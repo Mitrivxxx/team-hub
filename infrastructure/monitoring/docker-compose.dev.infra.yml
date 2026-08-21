@@ -1,0 +1,9 @@
+# Included by compose-dev.sh after the monitoring base.
+# Paths are relative to this file (infrastructure/monitoring/).
+# Overrides live in root docker-compose.dev.yml (Compose cannot override included services in the same file).
+
+include:
+  - path: ../postgres/docker-compose.postgres.yml
+  - path: ../redis/docker-compose.redis.yml
+  - path: ../kafka/docker-compose.kafka.yml
+  - path: ../azurite/docker-compose.azurite.yml

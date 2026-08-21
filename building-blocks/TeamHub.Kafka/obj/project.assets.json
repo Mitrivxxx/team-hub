@@ -200,7 +200,7 @@
     ]
   },
   "packageFolders": {
-    "/tmp/cursor-sandbox-cache/eb75461cbe043fd26cf6b6cca929ec59/nuget": {}
+    "/home/matsma/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
@@ -208,7 +208,7 @@
       "projectUniqueName": "/home/matsma/project/team-hub/building-blocks/TeamHub.Kafka/TeamHub.Kafka.csproj",
       "projectName": "TeamHub.Kafka",
       "projectPath": "/home/matsma/project/team-hub/building-blocks/TeamHub.Kafka/TeamHub.Kafka.csproj",
-      "packagesPath": "/tmp/cursor-sandbox-cache/eb75461cbe043fd26cf6b6cca929ec59/nuget",
+      "packagesPath": "/home/matsma/.nuget/packages/",
       "outputPath": "/home/matsma/project/team-hub/building-blocks/TeamHub.Kafka/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [

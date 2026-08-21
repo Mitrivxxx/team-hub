@@ -8,15 +8,16 @@
 ## Do
 - Read in this order before coding:
   1. `architecture.md`
-  2. `gateway.mb`
-  3. `auth.mb`
-  4. `organization.mb` / `notifications.mb` / `chat.mb` (as needed)
-  5. `errors.mb`
-  6. `database.mb`
-  7. `frontend.mb`
-  8. `backend.mb`
-  9. `runbook.mb`
-  10. `coding-style.mb`
+  2. `../services/AGENT.mb` (when changing anything under `services/`)
+  3. `gateway.mb`
+  4. `auth.mb`
+  5. `organization.mb` / `notifications.mb` / `chat.mb` (as needed)
+  6. `errors.mb`
+  7. `database.mb`
+  8. `frontend.mb`
+  9. `backend.mb`
+  10. `runbook.mb`
+  11. `coding-style.mb`
 - Use file-specific docs for implementation details, not assumptions.
 
 ## Don't
